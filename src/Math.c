@@ -58,3 +58,24 @@ float dotProduct(Vector2d a,Vector2d b)
 {
     return (a.x * b.x + a.y + b.y);
 }
+
+float lerp(float a,float b,float t)
+{
+    return (1.0f - t) * a + b * t;
+}
+float inverseLerp(float a,float b,float value)
+{
+    return (value - a) / (b - a);
+}
+Vector2d lerpVector2d(Vector2d a, Vector2d b, float t)
+{
+    
+}
+bool testPointRect(Vector2d point, Rectangle rect)
+{
+
+}
+bool testRect(Rectangle r1,Rectangle r2)
+{
+
+}

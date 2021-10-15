@@ -76,6 +76,12 @@ Vector2d scaleVector2d(Vector2d v,float scalar);
 float distVector2d(Vector2d a, Vector2d b);
 float dotProduct(Vector2d a,Vector2d b);
 
+//Some utilites fonctions
+float lerp(float a,float b,float t);
+float inverseLerp(float a,float b,float value);
+Vector2d lerpVector2d(Vector2d a, Vector2d b, float t);
+
+
 //Collisions
 bool testPointRect(Vector2d point, Rectangle rect);
 bool testRect(Rectangle r1,Rectangle r2);

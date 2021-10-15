@@ -88,9 +88,9 @@ void drawPlayer(Player* player)
     //Rectangle rect = {player->texture.width/2.0f,0.0f,player->texture.width/2.0f,
     //player->texture.height/4.0f};
 
-    Rectangle rect = {0,0,128,64};
+    Rectangle rect = {75, 45, 180, 208};
 
-    Rectangle position = {player->position.x,player->position.y,32,32};
+    Rectangle position = {player->position.x,player->position.y,64,64};
 
 
     Vector2 center = {player->texture.width / 2.0f,player->texture.height / 2.0f};
