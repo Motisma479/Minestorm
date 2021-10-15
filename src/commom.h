@@ -1,0 +1,8 @@
+#pragma once
+
+#define SCREEN_WIDTH 1000
+#define SCREEN_HEIGHT 900
+#define PLAYER_ANGULAR_SPEED 360
+#define ENEMY_COUNT 20
+#define BULLET_CAPACITY 64
+#define MAX_ENEMY_LIFE 3
