@@ -6,7 +6,7 @@ OBJS=src/main.o
 CC?=gcc
 TARGET?=$(shell $(CC) -dumpmachine)
 
-CFLAGS=-O0 -g -Wall -Wextra -Wno-unused-parameter
+CFLAGS=-O0 -g -Wall -Wextra -Wno-unused-parameter -Iinclude
 CPPFLAGS=-Iinclude -Ithird_party/include -MMD
 LDFLAGS=-Lthird_party/libs-$(TARGET)
 LDLIBS=-lraylib
