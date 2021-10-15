@@ -2,12 +2,26 @@
 #include "minestorm.h"
 
 
+#if 0
+void DrawEnemy4(Game *game, Vector2 Position, float rotation, float scale, Color color)
+{
+	Vector2 Size = {30 * scale, 28 * scale};
+	Position.x += game->playArea.x;
+	Position.y += game->playArea.y;
+	DrawTexturePro(game->atlas, (Rectangle){880, 110, 40, 40},
+				   (Rectangle){Position.x, Position.y, Size.x, Size.y},
+				   (Vector2){0, 0}, rotation, color);
+}
+#endif
+
+// TODO(v.caraulan): These are not enemies, I should rename the functions
+
 void DrawEnemy3(Game *game, Vector2 Position, float rotation, float scale, Color color)
 {
 	Vector2 Size = {30 * scale, 28 * scale};
 	Position.x += game->playArea.x;
 	Position.y += game->playArea.y;
-	DrawTexturePro(game->atlas, (Rectangle){440, 115, 30, 28},
+	DrawTexturePro(game->atlas, (Rectangle){880, 110, 40, 40},
 				   (Rectangle){Position.x, Position.y, Size.x, Size.y},
 				   (Vector2){0, 0}, rotation, color);
 }
