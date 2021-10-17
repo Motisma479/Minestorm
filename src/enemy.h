@@ -11,10 +11,10 @@ typedef enum EnemyType
 
 typedef struct Enemy
 {
-    Vector2 position;
-    Vector2 speed;
-    float rotation;
-    int life;
+	Vector2 position;
+	Vector2 speed;
+	float rotation;
+	int life;
 
 	EnemyType type;
 	Texture2D *texture;

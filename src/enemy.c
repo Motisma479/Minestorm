@@ -3,12 +3,12 @@
 
 void initEnemy(Texture2D *texture,  Enemy* enemy)
 {
-    enemy->life = MAX_ENEMY_LIFE;
-    enemy->position.x = GetRandomValue(0,SCREEN_WIDTH);
-    enemy->position.y = GetRandomValue(0,SCREEN_HEIGHT);
-    enemy->speed.x = GetRandomValue(-20,80);
-    enemy->speed.y = GetRandomValue(-20,80);
-    enemy->rotation = GetRandomValue(0,360);
+	enemy->life = MAX_ENEMY_LIFE;
+	enemy->position.x = GetRandomValue(0,SCREEN_WIDTH);
+	enemy->position.y = GetRandomValue(0,SCREEN_HEIGHT);
+	enemy->speed.x = GetRandomValue(-20,80);
+	enemy->speed.y = GetRandomValue(-20,80);
+	enemy->rotation = GetRandomValue(0,360);
 	enemy->type = GetRandomValue(0, 3);
 
 	switch (enemy->type)
@@ -51,4 +51,3 @@ void drawEnemy(Enemy* enemy)
 	Vector2 center = {position.width / 2.0f, position.height / 2.0f};
 	DrawTexturePro(*enemy->texture, enemy->textureCoord ,position,center,enemy->rotation,RED);
 }
-

@@ -3,9 +3,9 @@
 
 typedef struct Bullet
 {
-    Vector2 position;
-    float speed;
-    float angle;
+	Vector2 position;
+	float speed;
+	float angle;
 } Bullet;
 
 void initBullet(Bullet* bullet,Vector2 position,float angle);
