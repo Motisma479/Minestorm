@@ -19,10 +19,10 @@ typedef struct Game
 
 	Player player;
 
-	Enemy *enemies;
+	Enemy enemies[ENEMY_COUNT];
 
 	int    bulletCount;
-	Bullet *bullets;
+	Bullet bullets[BULLET_CAPACITY];
 } Game;
 
 bool initGame(Game* game);

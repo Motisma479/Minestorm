@@ -1,7 +1,15 @@
 #include "game.h"
+
+//cross->textureCoord[0] = (Rectangle){345, 90, 75, 75};
+//ship->textureCoord[0] = (Rectangle){513, 89, 256, 79};
+
 #include <stdlib.h>
 
+// TODO(v.caraulan): NO GLOBALS EVER
 static int framesCounter = 0;
+
+#include <stdio.h>
+
 bool initGame(Game* game)
 {
 	game->gameIsRunning = true;
@@ -12,26 +20,12 @@ bool initGame(Game* game)
     //Init Player
     initPlayer(&game->player);
 
-
-	//----------------------------
-	// TODO(v.caraulan): This is not permanent,
-	// Have to free this at the end if I decide this is how we're going to do this
-	unsigned char *mem = malloc((sizeof(Enemy) * ENEMY_COUNT) +
-								(sizeof(Bullet) * BULLET_CAPACITY) * 2);
-	game->enemies = (Enemy *)mem;
-	game->bullets = (Bullet *)(mem + (sizeof(Enemy) * ENEMY_COUNT));
-	//----------------------------
-
-    /////inti ememies
+	/////init ememies
     for(int i = 0; i < ENEMY_COUNT; i++)
-    {
 		initEnemy(&game->atlas, &game->enemies[i]);
-    }
 
-    //load data
-    loadData(game);
-
-    if(!game->gameIsRunning)
+	loadData(game);
+	if(!game->gameIsRunning)
     {
 
         return false;
@@ -45,6 +39,7 @@ void runLoop(Game* game)
 {
     while (!WindowShouldClose() && game->gameIsRunning)
     {
+		game->ticksCount = GetFrameTime();
         processInput(game);
         updateGame(game);
         drawGame(game);
@@ -54,43 +49,35 @@ void runLoop(Game* game)
 void processInput(Game* game)
 {
     if(IsKeyPressed(KEY_P))
-        game->gamePaused = !game->gamePaused;
+		game->gamePaused = !game->gamePaused;
 
-    //player inputs
-    inputPlayer(&game->player);
+	// TODO(v.caraulan): We can have a flag with all input
+	if(IsKeyDown(KEY_UP))
+		game->player.moving = true;
+    else
+		game->player.moving = false;
 
-    //add bullet to the game
     if(IsKeyPressed(KEY_SPACE))
         gameAddBullet(game,game->player.position);
 
 }
 void updateGame(Game* game)
 {
-    game->ticksCount = GetFrameTime();
     if(!game->gamePaused)
     {
-        //update all objects in game
-        updatePlayer(&game->player,game->ticksCount);
+        updatePlayer(&game->player, game->ticksCount);
 
-        //update enemies
         for(int i = 0; i < ENEMY_COUNT; i++)
-        {
-			updateEnemy(&game->enemies[i],game->ticksCount);
-        }
+			updateEnemy(&game->enemies[i], game->ticksCount);
 
-        //update bullets
         for(int i = 0; i < game->bulletCount; i++)
         {
 			Bullet* bullet = &game->bullets[i];
 			updateBullet(bullet,game->ticksCount);
         }
         gameRemoveBullet(game);
-
-        //show game's stats
-        gameStats(game);
-
-        //check if there no more enemies
-        gameIsOver(game);
+		gameStats(game);
+		gameIsOver(game);
 
     }
     else
@@ -111,16 +98,14 @@ void drawGame(Game* game)
 {
     BeginDrawing();
 
-    ClearBackground(RAYWHITE);
-	DrawTexture(game->background, 0,0,RAYWHITE);
-    if(!game->gamePaused)
+    //ClearBackground(RAYWHITE);
+	DrawTextureEx(game->background, (Vector2){0, 0}, 0, 1.5f, RAYWHITE);
+	if(!game->gamePaused)
     {
 
         //draw enemies
         for(int i = 0; i < ENEMY_COUNT; i++)
-        {
 			drawEnemy(&game->enemies[i]);
-        }
 
         //draw bullets
         for(int i = 0; i < game->bulletCount; i++)
@@ -132,8 +117,8 @@ void drawGame(Game* game)
         //draw Player
 		drawPlayer(&game->player, 0.5f, GREEN);
     }
-	DrawTexture(game->foreground, 0,0,RAYWHITE);
-    if(game->gamePaused && (framesCounter/30)%2)
+	DrawTextureEx(game->foreground, (Vector2){0, 0}, 0, 1.5f, RAYWHITE);
+    if(game->gamePaused && (framesCounter / 30) % 2)
     {
         DrawText("GAME PAUSED",SCREEN_WIDTH/2 - MeasureText("GAME PAUSED",50) + 150,
 				 SCREEN_HEIGHT / 2,50,PURPLE);
@@ -146,9 +131,7 @@ void drawGame(Game* game)
 void gameAddBullet(Game* game, Vector2 position)
 {
     if(game->bulletCount == BULLET_CAPACITY)
-    {
-        return;
-    }
+		return;
 
     Bullet bullet = {0};
 
