@@ -1,233 +1,126 @@
 #include "game.h"
+#include "commom.h"
 
-static int framesCounter = 0;
+static int frameCount = 0;
+
 bool initGame(Game* game)
 {
-    game->gameIsRunning = true;
-    game->gamePaused = false;
-    
-    InitWindow(SCREEN_WIDTH,SCREEN_HEIGHT,"VICTOR-MATHIEU-OSVALDO");
-    SetTargetFPS(60);
+	InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "[--MATHIEU-VICTOR-OSVALDO--GP1--MINESTORM PROJECT--ISART DIGITAL--]");
+	SetTargetFPS(60);
 
-    //Init Player
-    initPlayer(&game->player);
+	game->gamePaused = false;
+	game->gameIsRunning = true;
+	loadGameData(game);
 
-    //inti ememies
-    //for(int i = 0; i < ENEMY_COUNT; i++)
-    //{
-        //initEnemy(&game->enemies[i]);
-    //}
+	initPlayer(&game->player);
+	game->player.active = true;
 
-    //load data
-    loadData(game);
-
-    if(!game->gameIsRunning)
-    {
-        
-        return false;
-    }
-
-    game->ticksCount = 0;
-
-    return true;
-}
-void runLoop(Game* game)
-{
-    while (!WindowShouldClose() && game->gameIsRunning)
-    {
-        processInput(game);
-        updteGame(game);
-        drawGame(game);
-    }
-    
+	return game->gameIsRunning;
 }
 void processInput(Game* game)
 {
-    if(IsKeyPressed(KEY_P))
-        game->gamePaused = !game->gamePaused;
+	if (IsKeyPressed(KEY_F) && game->gameIsRunning && !game->layer.active)
+	{
+		initLayer(&game->layer);
+		game->layer.active = true;
+	}
 
-    //player inputs
-    inputPlayer(&game->player);
+	if (IsKeyDown(KEY_ESCAPE) && game->gameIsRunning)
+	{
+		game->gameIsRunning = false;
+	}
 
-    //add bullet to the game
-    if(IsKeyPressed(KEY_SPACE))
-        gameAddBullet(game,game->player.position);
-    
+	if (IsKeyPressed(KEY_SPACE))
+	{
+		game->gamePaused = !game->gamePaused;
+	}
+
+ 	inputsPlayer(&game->player);
 }
-void updteGame(Game* game)
+void updateGame(Game* game)
 {
-    game->ticksCount = GetFrameTime();
-    if(!game->gamePaused)
-    {
-        //update all objects in game
-        updatePlayer(&game->player,game->ticksCount);
+	float deltaTime = GetFrameTime();
+	//if (game->layer.layerEnd && !game->player.active)
+	//{
+		//initPlayer(&game->player);
+		//game->player.active = true;
+	//}
+	if (!game->gamePaused)
+	{
+		//TODO : updating all game objects
 
-        //update enemies
-        //for(int i = 0; i < ENEMY_COUNT; i++)
-        //{
-            //updateEnemy(&game->enemies[i],game->ticksCount);
-        //}
+		updateLayer(&game->layer,deltaTime);
+		updatePlayer(&game->player, deltaTime);
 
-        //update bullets
-        //for(int i = 0; i < game->bulletCount; i++)
-        //{
-            //Bullet* bullet = &game->bullets[i];
-            //updateBullet(bullet,game->ticksCount);
-        //}
-        //gameRemoveBullet(game);
-
-        //show game's stats
-        gameStats(game);
-
-        //check if there no more enemies
-        gameIsOver(game);
-
-    }
-    else
-    {
-        //TODO
-        framesCounter++;
-
-    }
+	}
+	else
+	{
+		//TODO
+		frameCount++;
+	}
 }
 
-void gameStats(Game* game)
+void runGameLoop(Game* game)
 {
-    DrawText(TextFormat("Enemy count: %d",gameEnemyAliveCount(game)),10,10,20,PURPLE);
-    DrawText(TextFormat("Bullet count: %d",game->bulletCount),10,50,20,PURPLE);
+	while (!WindowShouldClose() && game->gameIsRunning) 
+	{
+		processInput(game);
+		updateGame(game);
+		drawGame(game);
+	}
 }
-
 void drawGame(Game* game)
 {
-    BeginDrawing();
+	BeginDrawing();
+	ClearBackground(RAYWHITE);
 
-    ClearBackground(RAYWHITE);
+	drawGameBackground(game);
 
-    if(!game->gamePaused)
-    {
+	if (!game->gamePaused)
+	{
+		//display all game objects
+		drawLayer(&game->layer,game->gameTexture);
 
-        //draw enemies
-        //for(int i = 0; i < ENEMY_COUNT; i++)
-        //{
-            //drawEnemy(&game->enemies[i]);
-        //}
+		drawPlayer(&game->player,game->gameTexture);
+	}
+	else
+	{
+		pauseGame();
+	}
 
-        //draw bullets
-        //for(int i = 0; i < game->bulletCount; i++)
-        //{
-            //Bullet* bullet = &game->bullets[i];
-            //drawBullet(bullet);
-        //}
-
-        //draw Player
-        drawPlayer(&game->player);
-    }
-   
-    if(game->gamePaused && (framesCounter/30)%2)
-    {
-        DrawText("GAME PAUSED",SCREEN_WIDTH/2 - MeasureText("GAME PAUSED",50) + 150,
-        SCREEN_HEIGHT / 2,50,PURPLE);
-    }
-
-
-    EndDrawing();
+	EndDrawing();
 }
-void gameAddBullet(Game* game, Vector2 position)
+void shutdown(Game* game)
 {
-    if(game->bulletCount == BULLET_CAPACITY)
-    {
-        return;
-    }
-
-    Bullet bullet = {0};
-
-    //inti bullet
-    initBullet(&bullet,position,game->player.rotation);
-    
-    game->bullets[game->bulletCount] = bullet;
-    game->bulletCount += 1;
-}
-void gameRemoveBullet(Game* game)
-{
-    //remove bullets
-    for(int i = 0; i < game->bulletCount; i++)
-    {
-        Bullet* bullet = &game->bullets[i];
-        
-        if(bullet->position.x < 0.0f || bullet->position.x > (float) SCREEN_WIDTH
-        || bullet->position.y < 0.0f || bullet->position.y > (float)SCREEN_HEIGHT)
-        {
-            game->bullets[i] = game->bullets[game->bulletCount - 1];
-            game->bulletCount -= 1;
-
-            unloadBulletData(bullet);
-        }
-    }
+	game->gameIsRunning = false;
+	if (!game->gameIsRunning)
+	{
+		unloadGameData(game);
+		CloseWindow();
+	}
 }
 
-int gameEnemyAliveCount(Game* game)
+void loadGameData(Game* game)
 {
-    int count = 0;
-    for(int i = 0; i < ENEMY_COUNT; i++)
-    {
-        if(game->enemies[i].life > 0)
-            count++;
-    }
-
-    return count;
+	game->background = LoadTexture("assets/background.png");
+	game->foreground =  LoadTexture("assets/foreground.png");
+	game->gameTexture = LoadTexture("assets/mines.png");
 }
-void loadData(Game* game)
+void unloadGameData(Game* game)
 {
-    //load player data
-    loadPlayerData(&game->player);
-
-    //load enemy data
-    //for(int i = 0; i < ENEMY_COUNT; i++)    for(int i = 0; i < ENEMY_COUNT; i++)
-    //{
-        //initEnemy(&game->enemies[i]);
-    //}
-}
-void unloadData(Game* game)
-{
-    unloadPlayerdata(&game->player);
-
-    for(int i = 0; i < ENEMY_COUNT; i++)
-    {
-        unLoadEnemyData(&game->enemies[i]);
-    }
+	UnloadTexture(game->background);
+	UnloadTexture(game->foreground);
+	UnloadTexture(game->gameTexture);
 }
 
-//TODO : Collisions
-void gameCollisions(Game* game)
+void drawGameBackground(Game* game)
 {
-    for(int i = 0; i < game->bulletCount; i++)
-    {
-        //Bullet* bullet = &game->bullets[i];
-        for(int j = 0; j < ENEMY_COUNT; j++)
-        {
-            //Enemy* enemy = &game->enemies[j];
-
-        }
-    }
+	DrawTexture(game->background, 0, 0, WHITE);
+	DrawTexture(game->foreground, 0, 0, WHITE);
 }
 
-void gameIsOver(Game* game)
+void pauseGame()
 {
-    for(int i = 0; i < ENEMY_COUNT; i++)
-    {
-        if(game->enemies[i].life > 0)
-            return;
-    }
-
-    game->gameIsRunning = false;
-}
-
-void Shutdown(Game* game)
-{
-    game->gameIsRunning = false;
-    if(!game->gameIsRunning)
-    {
-        unloadData(game);
-        CloseWindow();
-    }  
+	if ((frameCount / 30) % 2) DrawText("GAME PAUSED",
+		(int)SCREEN_WIDTH / 2 - MeasureText("GAME PAUSED",50) + 200, (int)SCREEN_HEIGHT/2 -50,50,WHITE);
 }

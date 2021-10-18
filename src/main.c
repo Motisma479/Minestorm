@@ -2,17 +2,16 @@
 #include "game.h"
 
 
-
-int main(void)
+int main()
 {
-    printf("MINESTORM GAME\n");
+	printf("OSVALDO LOANDA\n");
 
-    Game game;
-    bool success = initGame(&game);
-    if(success)
-    {
-        runLoop(&game);
-    }
-    Shutdown(&game);
-    return 0;
+	Game game;
+	bool success = initGame(&game);
+	if (success)
+	{
+		runGameLoop(&game);
+	}
+	shutdown(&game);
+	return 0;
 }

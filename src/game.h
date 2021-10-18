@@ -1,42 +1,29 @@
 #pragma once
 #include <raylib.h>
-#include <stdbool.h>
-#include "commom.h"
 #include "player.h"
-#include "enemy.h"
-#include "bullet.h"
+#include "mineLayer.h"
 
 typedef struct Game
 {
-    bool gameIsRunning;
-    bool gamePaused;
-    float ticksCount;
+	bool gameIsRunning;
+	bool gamePaused;
 
-    Player player;
+	Texture2D background;
+	Texture2D foreground;
+	Texture2D gameTexture;
 
-    Enemy enemies[ENEMY_COUNT];
-
-    int bulletCount;
-    Bullet bullets[BULLET_CAPACITY];
-    
+	Player player;
+	MineLayer layer;
 } Game;
 
 bool initGame(Game* game);
-void runLoop(Game* game);
 void processInput(Game* game);
-void updteGame(Game* game);
+void updateGame(Game* game);
+void runGameLoop(Game* game);
 void drawGame(Game* game);
+void shutdown(Game* game);
 
-void gameStats(Game* game);
-
-int gameEnemyAliveCount(Game* game);
-
-void gameAddBullet(Game* game, Vector2 position);
-void gameRemoveBullet(Game* game);
-void gameCollisions(Game* game);
-
-void loadData(Game* game);
-void unloadData(Game* game);
-
-void gameIsOver(Game* game);
-void Shutdown(Game* game);
+void pauseGame();
+void drawGameBackground(Game* game);
+void loadGameData(Game* game);
+void unloadGameData(Game* game);

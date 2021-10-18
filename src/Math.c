@@ -1,6 +1,6 @@
 #include "Math.h"
 
-
+/*
 Vector2d zeroVector2d()
 {
     return (Vector2d){0.0f,0.0f};
@@ -78,4 +78,4 @@ bool testPointRect(Vector2d point, Rectangle rect)
 bool testRect(Rectangle r1,Rectangle r2)
 {
 
-}
+}*/

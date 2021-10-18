@@ -1,26 +1,27 @@
 #pragma once
 #include <raylib.h>
+#include <stdbool.h>
 
 typedef struct Player
 {
-    Vector2 position;
-    float speed;
-    float rotation;
+	Vector2 position;
+	float speed;
+	float rotation;
+	bool active;
+	bool moving;
+	bool turnLeft;
+	bool turnRight;
+	bool teleportation;
 
-    bool turnRight;
-    bool turnLeft;
-    bool moving;
-
-    Texture2D texture;
 } Player;
 
-void initPlayer(Player* player);
-void inputPlayer(Player* player);
-void updatePlayer(Player* player,float deltatime);
-void drawPlayer(Player* player);
 
+void initPlayer(Player* player);
+void inputsPlayer(Player* player);
+void updatePlayer(Player* player,float deltaTime);
+void drawPlayer(Player* player,const Texture2D texture);
+
+void teleportingPlayer(Player* player);
 Vector2 getPlayerDirection(Player* player);
 
-void loadPlayerData(Player* player);
-void unloadPlayerdata(Player* player);
 
