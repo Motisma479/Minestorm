@@ -11,6 +11,7 @@ int main(void)
 	{
 		runLoop(&game);
 	}
+
 	Shutdown(&game);
 	return 0;
 }

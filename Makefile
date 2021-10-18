@@ -2,15 +2,15 @@ PROGRAM=minestorm
 
 # Add your objs to generate in OBJS var
 
-SD = /home/viccarau/Work/minestorm/src/
+SD = /home/ISART/v.caraulan/Work/minestorm/src/
 
-SRC= $(SD)main.c $(SD)game.c $(SD)player.c $(SD)enemy.c $(SD)bullet.c $(SD)Math.c
-OBJS= $(SD)main.o $(SD)game.o $(SD)player.o $(SD)enemy.o $(SD)bullet.o $(SD)Math.o
+SRC= $(SD)main.c $(SD)game.c $(SD)player.c $(SD)enemy.c $(SD)bullet.c $(SD)Math.c $(SD)draw.c
+OBJS= $(SD)main.o $(SD)game.o $(SD)player.o $(SD)enemy.o $(SD)bullet.o $(SD)Math.o $(SD)draw.o
 #OBJS = $(SRC:$(SD)%.c=$(SD)%.o)
 CC=gcc
 TARGET=$(shell $(CC) -dumpmachine)
 
-CFLAGS=-O0 -g -Wall -Wextra -Wno-unused-parameter -Iinclude #-fsanitize=address
+CFLAGS=-O0 -g -Wall -Wextra -Wno-unused-parameter -Isrc #-fsanitize=address
 CPPFLAGS=-Iinclude -Ithird_party/include -MMD
 LDFLAGS=-Lthird_party/libs-$(TARGET)
 LDLIBS=-lraylib

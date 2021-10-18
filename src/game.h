@@ -6,15 +6,23 @@
 #include "enemy.h"
 #include "bullet.h"
 
+typedef enum
+{
+	GS_MENU,
+	GS_PAUSE,
+	GS_PLAY,
+	GS_PLAY2,
+	GS_GAMEOVER,
+	GS_CLOSE,
+} GameState;
 typedef struct Game
 {
+	GameState state;
 	Texture2D atlas;
 	Texture2D foreground;
 	Texture2D background;
 
 	Rectangle bulletCoord;
-	bool gameIsRunning;
-	bool gamePaused;
 	float ticksCount;
 
 	Player player;
@@ -29,7 +37,6 @@ bool initGame(Game* game);
 void runLoop(Game* game);
 void processInput(Game* game);
 void updateGame(Game* game);
-void drawGame(Game* game);
 
 void gameStats(Game* game);
 

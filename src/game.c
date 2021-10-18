@@ -1,4 +1,5 @@
 #include "game.h"
+#include "draw.h"
 
 //cross->textureCoord[0] = (Rectangle){345, 90, 75, 75};
 //ship->textureCoord[0] = (Rectangle){513, 89, 256, 79};
@@ -8,43 +9,42 @@
 // TODO(v.caraulan): NO GLOBALS EVER
 static int framesCounter = 0;
 
-#include <stdio.h>
-
 bool initGame(Game* game)
 {
-	game->gameIsRunning = true;
-	game->gamePaused = false;
+	game->state = GS_MENU;
 	InitWindow(SCREEN_WIDTH,SCREEN_HEIGHT,"VICTOR-MATHIEU-OSVALDO");
+	SetExitKey(KEY_NULL);
 	SetTargetFPS(60);
 
-	//Init Player
 	initPlayer(&game->player);
 
 	for(int i = 0; i < ENEMY_COUNT; i++)
 		initEnemy(&game->atlas, &game->enemies[i]);
-
 	loadData(game);
-	if(!game->gameIsRunning)
-		return false;
 	game->ticksCount = 0;
 	return true;
 }
 
 void runLoop(Game* game)
 {
-	while (!WindowShouldClose() && game->gameIsRunning)
+	while (!WindowShouldClose() && game->state != GS_CLOSE)
 	{
 		game->ticksCount = GetFrameTime();
 		processInput(game);
 		updateGame(game);
-		drawGame(game);
+		drawGame(game, framesCounter);
 	}
 
 }
 void processInput(Game* game)
 {
-	if(IsKeyPressed(KEY_P))
-		game->gamePaused = !game->gamePaused;
+	if(IsKeyPressed(KEY_SPACE))
+	{
+		if (game->state == GS_PLAY)
+			game->state = GS_PAUSE;
+		else if (game->state == GS_PAUSE)
+			game->state = GS_PLAY;
+	}
 
 	// TODO(v.caraulan): We can have a flag with all input
 	if(IsKeyDown(KEY_UP))
@@ -52,34 +52,52 @@ void processInput(Game* game)
 	else
 		game->player.moving = false;
 
-	if(IsKeyPressed(KEY_SPACE))
-		gameAddBullet(game,game->player.position);
-
-}
-void updateGame(Game* game)
-{
-	if(!game->gamePaused)
+	if(IsKeyPressed(KEY_F))
+		game->player.shooting = true;
+	if(IsKeyPressed(KEY_ESCAPE))
 	{
-		updatePlayer(&game->player, game->ticksCount);
-
-		for(int i = 0; i < ENEMY_COUNT; i++)
-			updateEnemy(&game->enemies[i], game->ticksCount);
-
-		for(int i = 0; i < game->bulletCount; i++)
-		{
-			Bullet* bullet = &game->bullets[i];
-			updateBullet(bullet,game->ticksCount);
-		}
-		gameRemoveBullet(game);
-		gameStats(game);
-		gameIsOver(game);
+		if (game->state == GS_MENU)
+			game->state = GS_CLOSE;
+		if (game->state == GS_PAUSE)
+			game->state = GS_MENU;
 
 	}
-	else
-	{
-		//TODO
-		framesCounter++;
+}
 
+void updateGame(Game* game)
+{
+	switch(game->state)
+	{
+		case GS_MENU:
+		{
+			if (game->player.shooting)
+				game->state = GS_PLAY;
+			game->player.shooting = false;
+			framesCounter++;
+		}break;
+		case GS_PLAY: 
+		case GS_PLAY2:
+		{
+			if (game->player.shooting)
+				gameAddBullet(game,game->player.position);
+			updatePlayer(&game->player, game->ticksCount);
+
+			for(int i = 0; i < ENEMY_COUNT; i++)
+				updateEnemy(&game->enemies[i], game->ticksCount);
+
+			for(int i = 0; i < game->bulletCount; i++)
+			{
+				Bullet* bullet = &game->bullets[i];
+				updateBullet(bullet,game->ticksCount);
+			}
+			gameRemoveBullet(game);
+			gameStats(game);
+			gameIsOver(game);
+		}break;
+		default:
+		{
+			framesCounter++;
+		}
 	}
 }
 
@@ -89,40 +107,6 @@ void gameStats(Game* game)
 	DrawText(TextFormat("Bullet count: %d",game->bulletCount),10,50,20,PURPLE);
 }
 
-void drawGame(Game* game)
-{
-	BeginDrawing();
-
-	//ClearBackground(RAYWHITE);
-	DrawTextureEx(game->background, (Vector2){0, 0}, 0, 1.5f, RAYWHITE);
-	if(!game->gamePaused)
-	{
-
-		//draw enemies
-		for(int i = 0; i < ENEMY_COUNT; i++)
-			drawEnemy(&game->enemies[i]);
-
-		//draw bullets
-		for(int i = 0; i < game->bulletCount; i++)
-		{
-			Bullet* bullet = &game->bullets[i];
-			drawBullet(bullet, &game->atlas);
-		}
-
-		//draw Player
-		drawPlayer(&game->player, 0.5f, GREEN);
-	}
-	DrawTextureEx(game->foreground, (Vector2){0, 0}, 0, 1.5f, RAYWHITE);
-	if(game->gamePaused && (framesCounter / 30) % 2)
-	{
-		DrawText("GAME PAUSED",SCREEN_WIDTH/2 - MeasureText("GAME PAUSED",50) + 150,
-				 SCREEN_HEIGHT / 2,50,PURPLE);
-	}
-
-
-	EndDrawing();
-}
-
 void gameAddBullet(Game* game, Vector2 position)
 {
 	if(game->bulletCount == BULLET_CAPACITY)
@@ -130,7 +114,6 @@ void gameAddBullet(Game* game, Vector2 position)
 
 	Bullet bullet = {0};
 
-	//inti bullet
 	initBullet(&bullet,position, game->player.rotation);
 
 	game->bullets[game->bulletCount] = bullet;
@@ -139,7 +122,6 @@ void gameAddBullet(Game* game, Vector2 position)
 
 void gameRemoveBullet(Game* game)
 {
-	//remove bullets
 	for(int i = 0; i < game->bulletCount; i++)
 	{
 		Bullet* bullet = &game->bullets[i];
@@ -161,7 +143,6 @@ int gameEnemyAliveCount(Game* game)
 		if(game->enemies[i].life > 0)
 			count++;
 	}
-
 	return count;
 }
 void loadData(Game* game)
@@ -200,16 +181,12 @@ void gameIsOver(Game* game)
 		if(game->enemies[i].life > 0)
 			return;
 	}
-
-	game->gameIsRunning = false;
+	game->state = GS_GAMEOVER;
 }
 
 void Shutdown(Game* game)
 {
-	game->gameIsRunning = false;
-	if(!game->gameIsRunning)
-	{
-		unloadData(game);
-		CloseWindow();
-	}
+	game->state = GS_CLOSE;
+	unloadData(game);
+	CloseWindow();
 }

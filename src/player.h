@@ -6,8 +6,9 @@ typedef struct Player
     Vector2 position;
     float speed;
     float rotation;
-
+	int  lives;
 	bool moving;
+	bool shooting;
 
     Texture2D *texture;
 	Rectangle textureCoord;

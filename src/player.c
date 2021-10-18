@@ -6,6 +6,7 @@ void initPlayer(Player* player)
 {
     player->position.x = SCREEN_WIDTH / 2.0f;
     player->position.y = SCREEN_HEIGHT / 2.0f;
+	player->lives = 3;
     player->speed = 10.0f;
     player->rotation = 0.0f;
     player->moving = false;
@@ -44,6 +45,8 @@ void updatePlayer(Player* player, float deltaTime)
 	//deacceleration
 	acceleration.x -= acceleration.x / 100.0f;
 	acceleration.y -= acceleration.y / 100.0f;
+
+	player->shooting = false;
 }
 
 void drawPlayer(Player* player, float scale, Color color)
