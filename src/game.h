@@ -16,9 +16,6 @@ typedef struct Game
 
 	Player player;
 	MineLayer layer;
-
-	int enemiesCount;
-	//Enemy enemies[ENEMY_CAPACITY];
 } Game;
 
 bool initGame(Game* game);

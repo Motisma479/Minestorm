@@ -109,12 +109,14 @@ void drawPlayer(Player* player, const Texture2D texture)
 	//{
 		//DrawTexturePro(texture, rect, position, center, player->rotation, SKYBLUE);
 	//}
-
+	//Vector2 points = {100.0f,100.0f};
+	//Vector2 textCoords = {player->position.x,player->position.y};
 	if (player->active)
 	{
 		if (!player->teleportation)
 		{
 			DrawTexturePro(texture, rect, position, center, player->rotation, SKYBLUE);
+			//DrawTexturePoly(texture,center,&points,&textCoords,100,GREEN);
 		}
 	}
 

@@ -48,7 +48,7 @@ typedef struct MagneticFireballMine //pursuit the player
 } MagneticFireballMine;
 
 //With these struct, we define a union enemy to simulate a OPP
-typedef union
+typedef union Enemy
 {
     int type;
     EnemyTranform enemyBase;
@@ -65,9 +65,7 @@ void initEnemy(Enemy* enemy);
 void updateEnemy(Enemy* enemy,float deltaTime);
 void drawEnemy(Enemy* enemy,const Texture2D texture);
 
-void initFloatingMine(FloatingMine* mine);
-void updateFloatingMine(FloatingMine* mine,float deltaTime);
-void drawFloatingMine(FloatingMine* mine,const Texture2D texture);
+
 
 
 

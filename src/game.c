@@ -10,7 +10,7 @@ bool initGame(Game* game)
 
 	game->gamePaused = false;
 	game->gameIsRunning = true;
-	game->enemiesCount = 0;
+	
 	loadGameData(game);
 
 	initPlayer(&game->player);
@@ -20,11 +20,11 @@ bool initGame(Game* game)
 }
 void processInput(Game* game)
 {
-	//if (IsKeyPressed(KEY_F) && game->gameIsRunning && !game->layer.active)
-	//{
-		//initLayer(&game->layer);
-		//game->layer.active = true;
-	//}
+	if (IsKeyPressed(KEY_F) && game->gameIsRunning && !game->layer.active)
+	{
+		initLayer(&game->layer);
+		game->layer.active = true;
+	}
 
 	if (IsKeyDown(KEY_ESCAPE) && game->gameIsRunning)
 	{
@@ -49,12 +49,6 @@ void updateGame(Game* game)
 	if (!game->gamePaused)
 	{
 		//TODO : updating all game objects
-
-		//update enemies
-		//for(int i = 0; i < game->enemiesCount; i++)
-		//{
-			//updateEnemy(&game->enemies[i],deltaTime);
-		//}
 
 		updateLayer(&game->layer,deltaTime);
 		updatePlayer(&game->player, deltaTime);
@@ -86,12 +80,6 @@ void drawGame(Game* game)
 	if (!game->gamePaused)
 	{
 		//display all game objects
-
-		//draw enemies
-		//for(int i = 0; i < game->enemiesCount; i++)
-		//{
-			//drawEnemy(&game->enemies[i],game->gameTexture);
-		//}
 
 		drawLayer(&game->layer,game->gameTexture);
 
@@ -141,12 +129,6 @@ void pauseGame(Game* game)
 
 void addEnemyToGame(Game* game)
 {
-	//Enemy enemy = {0};
-	//enemy.type = FLOATING_MINE;
 
-	//initEnemy(&enemy);
-
-	//game->enemies[game->enemiesCount] = enemy;
-	//game->enemiesCount += 1;	
 
 }
