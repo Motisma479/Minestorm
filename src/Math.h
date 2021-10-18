@@ -12,14 +12,6 @@ typedef struct Vector2d
      
 } Vector2d;
 
-//Line
-typedef struct Line
-{
-    int nbPoints;
-    Vector2d* points;
-
-} Line;
-
 //Line segment
 typedef struct LineSegment
 {
@@ -37,12 +29,12 @@ typedef struct Circle
 } Circle;
 
 //Rectangle
-typedef struct Rectangle
+typedef struct AABB
 {
     Vector2d min;
     Vector2d max;
 
-} Rectangle;
+} AABB;
 
 //Oriented box
 typedef struct OBB
@@ -79,10 +71,11 @@ float dotProduct(Vector2d a,Vector2d b);
 //Some utilites fonctions
 float lerp(float a,float b,float t);
 float inverseLerp(float a,float b,float value);
-Vector2d lerpVector2d(Vector2d a, Vector2d b, float t);
-
 
 //Collisions
-bool testPointRect(Vector2d point, Rectangle rect);
-bool testRect(Rectangle r1,Rectangle r2);
-
+Vector2d pointOnLineSegment(LineSegment segment, float t);
+bool testPointRect(Vector2d point, AABB rect);
+bool testPointCircle(Vector2d point,Circle c);
+bool testRect(AABB r1,AABB r2);
+bool testCircle(Circle c1,Circle c2);
+bool testCircleRect(Circle c, AABB rect);
