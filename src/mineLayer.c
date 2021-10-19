@@ -1,5 +1,5 @@
 #include "mineLayer.h"
-#include "commom.h"
+#include "common.h"
 
 void initLayer(MineLayer* layer)
 {
@@ -24,7 +24,7 @@ void updateLayer(MineLayer* layer, float deltaTime)
 		layer->active = false;
 		layer->layerEnd = true;
 	}
-	
+
 }
 void drawLayer(MineLayer* layer, const Texture2D texture)
 {

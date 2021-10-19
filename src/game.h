@@ -5,7 +5,7 @@
 
 #include "mineLayer.h"
 #include "player.h"
-//#include "enemy.h"
+#include "enemy.h"
 #include "bullet.h"
 
 typedef enum
@@ -29,7 +29,7 @@ typedef struct Game
 
 	Player player;
 	MineLayer layer;
-	//Enemy enemies[ENEMY_COUNT];
+	Enemy enemies[ENEMY_COUNT];
 
 	int    bulletCount;
 	Bullet bullets[BULLET_CAPACITY];

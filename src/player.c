@@ -8,7 +8,7 @@ void initPlayer(Player* player)
     player->position.y = SCREEN_HEIGHT / 2.0f;
 	player->lives = 3;
     player->speed = 10.0f;
-    player->rotation = 0.0f;
+    player->rotation = -90.0f;
     player->textureCoord = (Rectangle){83, 58, 84, 140};
 }
 
@@ -74,12 +74,15 @@ void drawPlayer(Player* player, float scale, Color color, const Texture2D textur
 		player->textureCoord.width * scale,
 		player->textureCoord.height * scale
 	};
+	//playerPos.x += playerPos.width / 2;
+	//playerPos.y += playerPos.height / 2;
 	Vector2 origin = {playerPos.width / 2, playerPos.width / 2};
 
 	DrawRectanglePro(playerPos, origin, player->rotation + 90.0f, BLACK);
 
 	DrawTexturePro(texture, player->textureCoord,
 				   playerPos, origin, player->rotation + 90.0f, color);
+	//DrawCircle();
 }
 
 void teleportingPlayer(Player* player)

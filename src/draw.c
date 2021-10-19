@@ -59,8 +59,8 @@ void drawGame(Game* game, int frameCounter)
 		}break;
 		case GS_PLAY:
 		{
-			//for(int i = 0; i < ENEMY_COUNT; i++)
-			//drawEnemy(&game->enemies[i]);
+			for(int i = 0; i < ENEMY_COUNT; i++)
+				drawEnemy(&game->enemies[i], game->atlas);
 			for(int i = 0; i < game->bulletCount; i++)
 			{
 				Bullet* bullet = &game->bullets[i];

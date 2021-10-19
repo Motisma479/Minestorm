@@ -17,8 +17,8 @@ bool initGame(Game* game)
 
 	initPlayer(&game->player);
 
-	//for(int i = 0; i < ENEMY_COUNT; i++)
-	//initEnemy(&game->atlas, &game->enemies[i]);
+	for(int i = 0; i < ENEMY_COUNT; i++)
+		initEnemy(&game->enemies[i]);
 	loadData(game);
 	game->ticksCount = 0;
 	return true;
@@ -96,8 +96,8 @@ void updateGame(Game* game)
 				gameAddBullet(game,game->player.position);
 			updatePlayer(&game->player, game->ticksCount);
 
-			//for(int i = 0; i < ENEMY_COUNT; i++)
-			//updateEnemy(&game->enemies[i], game->ticksCount);
+			for(int i = 0; i < ENEMY_COUNT; i++)
+				updateEnemy(&game->enemies[i], game->ticksCount);
 
 			for(int i = 0; i < game->bulletCount; i++)
 			{
@@ -128,7 +128,7 @@ void gameAddBullet(Game* game, Vector2 position)
 
 	Bullet bullet = {0};
 
-	initBullet(&bullet,position, game->player.rotation);
+	initBullet(&bullet, position, game->player.rotation);
 
 	game->bullets[game->bulletCount] = bullet;
 	game->bulletCount += 1;
