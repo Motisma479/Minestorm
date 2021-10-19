@@ -10,6 +10,7 @@ bool initGame(Game* game)
 
 	game->gamePaused = false;
 	game->gameIsRunning = true;
+	game->bulletCount = 0;
 	
 	loadGameData(game);
 
@@ -20,11 +21,11 @@ bool initGame(Game* game)
 }
 void processInput(Game* game)
 {
-	if (IsKeyPressed(KEY_F) && game->gameIsRunning && !game->layer.active)
+	/*if (IsKeyPressed(KEY_F) && game->gameIsRunning && !game->layer.active)
 	{
 		initLayer(&game->layer);
 		game->layer.active = true;
-	}
+	}*/
 
 	if (IsKeyDown(KEY_ESCAPE) && game->gameIsRunning)
 	{
@@ -35,6 +36,13 @@ void processInput(Game* game)
 	{
 		game->gamePaused = !game->gamePaused;
 	}
+
+	//add bullet to the game
+    if(IsKeyPressed(KEY_F))
+	{
+		gameAddBullet(game,game->player.position);
+	}
+        
 
  	inputsPlayer(&game->player);
 }
@@ -52,6 +60,14 @@ void updateGame(Game* game)
 
 		updateLayer(&game->layer,deltaTime);
 		updatePlayer(&game->player, deltaTime);
+
+		//update bullets
+        for(int i = 0; i < game->bulletCount; i++)
+        {
+            Bullet* bullet = &game->bullets[i];
+            updateBullet(bullet,deltaTime);
+        }
+		gameRemoveBullet(game);
 
 	}
 	else
@@ -81,9 +97,16 @@ void drawGame(Game* game)
 	{
 		//display all game objects
 
-		drawLayer(&game->layer,game->gameTexture);
+		drawLayer(&game->layer,&game->gameTexture);
 
-		drawPlayer(&game->player,game->gameTexture);
+		drawPlayer(&game->player,&game->gameTexture);
+
+		//draw bullets
+        for(int i = 0; i < game->bulletCount; i++)
+        {
+            Bullet* bullet = &game->bullets[i];
+            drawBullet(bullet,&game->gameTexture);
+        }
 	}
 	else
 	{
@@ -94,12 +117,15 @@ void drawGame(Game* game)
 }
 void shutdown(Game* game)
 {
+	unloadGameData(game);
 	game->gameIsRunning = false;
-	if (!game->gameIsRunning)
+	//unloadGameData(game);
+	CloseWindow();
+	/*if (!game->gameIsRunning)
 	{
 		unloadGameData(game);
 		CloseWindow();
-	}
+	}*/
 }
 
 void loadGameData(Game* game)
@@ -131,4 +157,36 @@ void addEnemyToGame(Game* game)
 {
 
 
+}
+
+void gameAddBullet(Game* game, Vector2 position)
+{
+    if(game->bulletCount == BULLET_CAPACITY)
+    {
+        return;
+    }
+
+    Bullet bullet = {0};
+
+    //inti bullet
+    initBullet(&bullet,position,game->player.rotation);
+    
+    game->bullets[game->bulletCount] = bullet;
+    game->bulletCount += 1;
+}
+void gameRemoveBullet(Game* game)
+{
+    //remove bullets
+    for(int i = 0; i < game->bulletCount; i++)
+    {
+        Bullet* bullet = &game->bullets[i];
+        
+        if(bullet->position.x < 0.0f || bullet->position.x > (float) SCREEN_WIDTH
+        || bullet->position.y < 0.0f || bullet->position.y > (float)SCREEN_HEIGHT)
+        {
+            game->bullets[i] = game->bullets[game->bulletCount - 1];
+            game->bulletCount -= 1;
+
+        }
+    }
 }

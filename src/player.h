@@ -19,7 +19,7 @@ typedef struct Player
 void initPlayer(Player* player);
 void inputsPlayer(Player* player);
 void updatePlayer(Player* player,float deltaTime);
-void drawPlayer(Player* player,const Texture2D texture);
+void drawPlayer(Player* player,const Texture2D* texture);
 
 void teleportingPlayer(Player* player);
 Vector2 getPlayerDirection(Player* player);

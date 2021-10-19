@@ -100,9 +100,9 @@ void updatePlayer(Player* player,float deltaTime)
 		player->position = position;
 	}
 }
-void drawPlayer(Player* player, const Texture2D texture)
+void drawPlayer(Player* player, const Texture2D* texture)
 {
-	Rectangle rect = { 0.0f,0.0f,texture.width / 4.0f,texture.height / 2.0f };
+	Rectangle rect = { 0.0f,0.0f,texture->width / 4.0f,texture->height / 2.0f };
 	Rectangle position = { player->position.x,player->position.y,64.0f,64.0f };
 	Vector2 center = { 32.0f,32.0f };
 	//if (!player->teleportation && player->active)
@@ -115,7 +115,7 @@ void drawPlayer(Player* player, const Texture2D texture)
 	{
 		if (!player->teleportation)
 		{
-			DrawTexturePro(texture, rect, position, center, player->rotation, SKYBLUE);
+			DrawTexturePro(*texture, rect, position, center, player->rotation, SKYBLUE);
 			//DrawTexturePoly(texture,center,&points,&textCoords,100,GREEN);
 		}
 	}

@@ -13,7 +13,7 @@
 //enemies commom base
 typedef struct EnemyTranform
 {
-    ENEMY_TRANSFORM;
+    ENEMY_TRANSFORM
 } EnemyTranform;
 
 //enemy size
@@ -25,25 +25,25 @@ enum {FLOATING_MINE = 1, FIREBALL_MINE, MAGNETIC_MINE, MAGNETIC_FIREBALL_MINE};
 //All enemies objects
 typedef struct FloatingMine
 {
-    ENEMY_TRANSFORM;
+    ENEMY_TRANSFORM
 } FloatingMine;
 
 typedef struct FireBallMine
 {
-    ENEMY_TRANSFORM;
+    ENEMY_TRANSFORM
     bool touched; // to shoot if touched
 } FireBallMine;
 
 typedef struct MagneticMine //pursuit the player
 {
-    ENEMY_TRANSFORM;
+    ENEMY_TRANSFORM
     
 } MagneticMine;
 
 
 typedef struct MagneticFireballMine //pursuit the player
 {
-    ENEMY_TRANSFORM;
+    ENEMY_TRANSFORM
     bool touched; // to shoot if touched
 } MagneticFireballMine;
 

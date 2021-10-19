@@ -4,7 +4,6 @@
 void initBullet(Bullet* bullet,Vector2 position,float angle)
 {
     bullet->position = position;
-    bullet->texture = LoadTexture("assets/mines.png");
     bullet->speed = 700.0f;
     bullet->angle = angle;
 }
@@ -12,26 +11,18 @@ void updateBullet(Bullet* bullet,float deltaTime)
 {
     Vector2 position = bullet->position;
 
-    position.x +=bullet->speed * cosf(bullet->angle*DEG2RAD) * deltaTime;
-    position.y += bullet->speed * sinf(bullet->angle*DEG2RAD)* deltaTime;
+    position.x +=bullet->speed * cosf(bullet->angle*DEG2RAD - PI / 2.0f) * deltaTime;
+    position.y += bullet->speed * sinf(bullet->angle*DEG2RAD - PI / 2.0f)* deltaTime;
 
     bullet->position = position;
 }
 
-void drawBullet(Bullet* bullet)
+void drawBullet(Bullet* bullet,const Texture2D* texture)
 {
-    //DrawTexture(bullet->texture,bullet->position.x,bullet->position.y,WHITE);
+    float bulletSize = 128.0f;
+    Rectangle rect = {3.0f*texture->width/4.0f,0.0f,texture->width/4.0f,texture->height/2.0f};
+	Rectangle position = { bullet->position.x,bullet->position.y,bulletSize,bulletSize};
+	Vector2 center = { bulletSize/2.0f,bulletSize/2.0f};
+    DrawTexturePro(*texture,rect,position,center,bullet->angle,SKYBLUE);
 
-    Rectangle rect = {0,0,12,128};
-    Rectangle position = {bullet->position.x,bullet->position.y,64,64};
-
-    Vector2 center = {bullet->texture.width / 2.0f,bullet->texture.height / 2.0f};
-    DrawTexturePro(bullet->texture,rect,position,center,bullet->angle,WHITE);
-
-
-}
-
-void unloadBulletData(Bullet* bullet)
-{
-    UnloadTexture(bullet->texture);
 }

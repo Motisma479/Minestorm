@@ -26,14 +26,14 @@ void updateLayer(MineLayer* layer, float deltaTime)
 	}
 	
 }
-void drawLayer(MineLayer* layer, const Texture2D texture)
+void drawLayer(MineLayer* layer, const Texture2D* texture)
 {
 	if (layer->active && layer->scale >= 32.0f)
 	{
-		Rectangle rect = { texture.width / 2.0f,0.0f,texture.width / 4.0f,texture.height / 2.0f };
+		Rectangle rect = { texture->width / 2.0f,0.0f,texture->width / 4.0f,texture->height / 2.0f };
 		Rectangle position = { layer->position.x,layer->position.y,layer->scale,layer->scale};
 		Vector2 center = { layer->scale / 2.0f,layer->scale / 2.0f };
 
-		DrawTexturePro(texture, rect, position, center, layer->rotation, WHITE);
+		DrawTexturePro(*texture, rect, position, center, layer->rotation, WHITE);
 	}
 }
