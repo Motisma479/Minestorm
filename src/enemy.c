@@ -10,13 +10,12 @@ void initEnemy(Enemy* enemy)
 	enemy->speed.y = GetRandomValue(-20,80);
 	enemy->rotation = GetRandomValue(0,360);
 	enemy->type = GetRandomValue(0, 3);
-
 	switch (enemy->type)
 	{
-		case ET_MINE1: enemy->textureCoord = (Rectangle){70, 332, 117, 109}; break;
-		case ET_MINE2: enemy->textureCoord = (Rectangle){335, 332, 99, 105}; break;
-		case ET_MINE3: enemy->textureCoord = (Rectangle){567, 308, 149, 153}; break;
-		case ET_MINE4: enemy->textureCoord = (Rectangle){846, 332, 104, 106}; break;
+		case ET_FLOATING: enemy->textureCoord = (Rectangle){70, 332, 117, 109}; break;
+		case ET_FIREBALL: enemy->textureCoord = (Rectangle){846, 332, 104, 106}; break;
+		case ET_MAGNETIC: enemy->textureCoord = (Rectangle){335, 332, 99, 105}; break;
+		case ET_MAGNETIC_FIREBALL: enemy->textureCoord = (Rectangle){567, 308, 149, 153}; break;
 	}
 }
 

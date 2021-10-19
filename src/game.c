@@ -69,6 +69,7 @@ void processInput(Game* game)
 	setInputFlagPressed(KEY_F, &player1->action, PA_SHOOT);
 	setInputFlagPressed(KEY_T, &player1->action, PA_TELEPORT);
 	setInputFlagPressed(KEY_E, &player1->action, PA_TELEPORT);
+	// TODO(v.caraulan): HANDLE 2 buttons
 	setInputFlag(KEY_D, &player1->action, PA_TURN_LEFT);
 	setInputFlag(KEY_G, &player1->action, PA_TURN_RIGHT);
 	setInputFlag(KEY_R, &player1->action, PA_ACCELERATION);

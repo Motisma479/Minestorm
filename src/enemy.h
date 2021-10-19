@@ -3,10 +3,10 @@
 
 typedef enum EnemyType
 {
-	ET_MINE1,
-	ET_MINE2,
-	ET_MINE3,
-	ET_MINE4,
+	ET_FLOATING,
+	ET_FIREBALL,
+	ET_MAGNETIC,
+	ET_MAGNETIC_FIREBALL,
 } EnemyType;
 
 typedef struct Enemy
