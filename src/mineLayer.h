@@ -1,7 +1,6 @@
 #pragma once
 #include <raylib.h>
 
-
 typedef struct MineLayer
 {
 	Vector2 position;

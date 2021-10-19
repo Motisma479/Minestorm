@@ -5,7 +5,7 @@
 
 #include "mineLayer.h"
 #include "player.h"
-#include "enemy.h"
+//#include "enemy.h"
 #include "bullet.h"
 
 typedef enum
