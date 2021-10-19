@@ -22,7 +22,7 @@ typedef struct Player
 } Player;
 
 void    initPlayer(Player* player);
-void    updatePlayer(Player* player,float deltatime);
+void updatePlayer(Player* player, float deltaTime);
 void    drawPlayer(Player* player, float scale, Color color,
 				   const Texture2D texture);
 Vector2 getPlayerDirection(Player* player);

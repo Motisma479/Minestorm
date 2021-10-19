@@ -15,12 +15,11 @@ void updateBullet(Bullet* bullet,float deltaTime)
 	position->y += bullet->speed * sinf(bullet->angle*DEG2RAD) * deltaTime;
 }
 
-void drawBullet(Bullet* bullet, const Texture2D texture)
+void drawBullet(Bullet* bullet, const Texture2D texture, Color color)
 {
-	//DrawTexture(bullet->texture,bullet->position.x,bullet->position.y,WHITE);
 	Rectangle rect     = {885, 116, 25, 25};
-	Rectangle position = {bullet->position.x,bullet->position.y , rect.width / 2, rect.height / 2};
-	Vector2 origin     = {rect.width / 2, rect.height / 2};
+	Rectangle position = {bullet->position.x,bullet->position.y , rect.width / 4, rect.height / 4};
+	Vector2 origin     = {position.width / 2, position.height / 2};
 
-	DrawTexturePro(texture,rect,position,origin,bullet->angle, YELLOW);
+	DrawTexturePro(texture,rect,position,origin, 0, color);
 }

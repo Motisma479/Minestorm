@@ -44,8 +44,8 @@ void drawEnemy(Enemy* enemy, const Texture2D texture)
 	Rectangle position = {
 		enemy->position.x,
 		enemy->position.y,
-		enemy->textureCoord.width,
-		enemy->textureCoord.height};
+		enemy->textureCoord.width / 4,
+		enemy->textureCoord.height / 4};
 
 	Vector2 center = {position.width / 2.0f, position.height / 2.0f};
 	DrawTexturePro(texture, enemy->textureCoord ,position,center,enemy->rotation,RED);

@@ -54,11 +54,10 @@ void updatePlayer(Player* player, float deltaTime)
 	if (player->position.y < 80.0f) { player->position.y = (float)SCREEN_HEIGHT - 80.0f; }
 	else if (player->position.y > (float)SCREEN_HEIGHT - 80.0f) { player->position.y = 80.0f; }
 
+	float friction = 20.0f;
 	//deacceleration
-	player->acceleration.x -= player->acceleration.x / 100.0f;
-	player->acceleration.y -= player->acceleration.y / 100.0f;
-
-	player->action &= ~PA_SHOOT;
+	player->acceleration.x -= player->acceleration.x / friction;
+	player->acceleration.y -= player->acceleration.y / friction;
 }
 
 void drawPlayer(Player* player, float scale, Color color, const Texture2D texture)

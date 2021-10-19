@@ -5,9 +5,11 @@ static void drawScoreBoard(Game *game)
 	float scale = 0.1f;
 	Player player = game->player[0];
 
-	DrawText("Player ONE", 45, 0, 20, BLUE);
 	player.position = (Vector2){60, 30};
 	player.rotation = -90.0f;
+
+	DrawText("Player ONE", 45, 0, 20, BLUE);
+
 	if (player.lives > 0)
 		drawPlayer(&player, scale, BLUE, game->atlas);
 	player.position = (Vector2){80, 30};
@@ -18,6 +20,7 @@ static void drawScoreBoard(Game *game)
 		drawPlayer(&player, scale, BLUE, game->atlas);
 
 	DrawText(TextFormat("%d", game->player[0].score), 200, 0, 20, BLUE);
+
 	if (game->state == GS_PLAY2)
 	{
 		DrawText("Player TWO", 470, 0, 20, LIME);
@@ -55,6 +58,20 @@ static void drawPauseMenu(Game *game, int frameCounter)
 		DrawText("Esc",SCREEN_WIDTH/2 - MeasureText("Esc",25) + 125,
 				 SCREEN_HEIGHT / 3,25, RED);
 	}
+}
+
+static void drawGameOver(Game *game, int frameCounter)
+{
+	DrawText("Game Over" , SCREEN_WIDTH / 2 - MeasureText("Game Over",25) + 67,
+			 SCREEN_HEIGHT / 8,25, WHITE);
+	DrawText("Main Menu" , SCREEN_WIDTH / 3 - MeasureText("Resume",25),
+			 SCREEN_HEIGHT / 3,25, RED);
+	if((frameCounter / 30) % 2)
+	{
+		DrawText("Esc",SCREEN_WIDTH/2 - MeasureText("Esc",25) + 125,
+				 SCREEN_HEIGHT / 3,25, RED);
+	}
+	// TODO(v.caraulan): Score
 }
 
 static void drawMenu(Game *game, int frameCounter)
@@ -101,24 +118,15 @@ void drawGame(Game* game, int frameCounter)
 			for(int i = 0; i < game->bulletCount; i++)
 			{
 				Bullet* bullet = &game->bullets[i];
-				drawBullet(bullet, game->atlas);
+				drawBullet(bullet, game->atlas, SKYBLUE);
 			}
-			drawPlayer(&game->player[0], 0.5f, SKYBLUE, game->atlas);
+			drawPlayer(&game->player[0], 0.25f, SKYBLUE, game->atlas);
 			if (game->state == GS_PLAY2)
-				drawPlayer(&game->player[1], 0.5f, GREEN, game->atlas);
+				drawPlayer(&game->player[1], 0.25f, GREEN, game->atlas);
 		}break;
 		case GS_GAMEOVER:
 		{
-			DrawText("Game Over" , SCREEN_WIDTH / 2 - MeasureText("Game Over",25) + 67,
-					 SCREEN_HEIGHT / 8,25, WHITE);
-			DrawText("Main Menu" , SCREEN_WIDTH / 3 - MeasureText("Resume",25),
-					 SCREEN_HEIGHT / 3,25, RED);
-			if((frameCounter / 30) % 2)
-			{
-				DrawText("Esc",SCREEN_WIDTH/2 - MeasureText("Esc",25) + 125,
-						 SCREEN_HEIGHT / 3,25, RED);
-			}
-			// TODO(v.caraulan): Score
+			drawGameOver(game, frameCounter);
 		}break;
 		default:
 		{

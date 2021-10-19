@@ -112,12 +112,12 @@ void updateGame(Game* game)
 		case GS_PLAY:
 		case GS_PLAY2:
 		{
-			if (game->player[0].action & PA_SHOOT)
-				gameAddBullet(game, game->player[0].position, game->player[0].rotation);
 			updatePlayer(&game->player[0], game->ticksCount);
-
-			if (game->player[1].action & PA_SHOOT)
-				game->state = GS_PLAY2;
+			if (game->player[0].action & PA_SHOOT)
+			{
+				gameAddBullet(game, game->player[0].position, game->player[0].rotation);
+				game->player[0].action &= ~PA_SHOOT;
+			}
 			if (game->state == GS_PLAY2)
 			{
 				if (game->player[1].action & PA_SHOOT)
@@ -217,12 +217,16 @@ void gameCollisions(Game* game)
 
 void gameIsOver(Game* game)
 {
+	if (game->player[0].lives <= 0 && game->player[1].lives <= 0)
+		game->state = GS_GAMEOVER;
+#if 0
+	// TODO(v.caraulan): Advance to next level
 	for(int i = 0; i < ENEMY_COUNT; i++)
 	{
 		if(game->enemies[i].life > 0)
 			return;
 	}
-	game->state = GS_GAMEOVER;
+#endif
 }
 
 void Shutdown(Game* game)

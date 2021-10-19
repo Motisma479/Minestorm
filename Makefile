@@ -2,7 +2,8 @@ PROGRAM=minestorm
 
 # Add your objs to generate in OBJS var
 
-SD = /home/ISART/v.caraulan/Work/minestorm/src/
+#SD = /home/ISART/v.caraulan/Work/minestorm/src/
+SD = ./src/
 
 OBJS=$(SD)main.o $(SD)game.o $(SD)player.o $(SD)mineLayer.o $(SD)enemy.o $(SD)bullet.o $(SD)draw.o $(SD)Math.o
 

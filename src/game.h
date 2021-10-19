@@ -31,6 +31,7 @@ typedef struct Game
 	MineLayer layer;
 	Enemy enemies[ENEMY_COUNT];
 
+	// TODO(v.caraulan): Each player has its own bullets
 	int    bulletCount;
 	Bullet bullets[BULLET_CAPACITY];
 } Game;
