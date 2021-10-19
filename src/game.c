@@ -6,8 +6,7 @@
 
 #include <stdlib.h>
 
-// TODO(v.caraulan): NO GLOBALS EVER
-static int framesCounter = 0;
+static int framesCounter;
 
 bool initGame(Game* game)
 {
@@ -18,14 +17,14 @@ bool initGame(Game* game)
 
 	initPlayer(&game->player);
 
-	for(int i = 0; i < ENEMY_COUNT; i++)
-		initEnemy(&game->atlas, &game->enemies[i]);
+	//for(int i = 0; i < ENEMY_COUNT; i++)
+	//initEnemy(&game->atlas, &game->enemies[i]);
 	loadData(game);
 	game->ticksCount = 0;
 	return true;
 }
 
-void runLoop(Game* game)
+void runGameLoop(Game* game)
 {
 	while (!WindowShouldClose() && game->state != GS_CLOSE)
 	{
@@ -36,8 +35,27 @@ void runLoop(Game* game)
 	}
 
 }
+
+
+void setInputFlagPressed(KeyboardKey key, PlayerAction *flag, PlayerAction action)
+{
+	if(IsKeyPressed(key))
+		*flag |= action;
+	else
+		*flag &= ~action;
+}
+
+void setInputFlag(KeyboardKey key, PlayerAction *flag, PlayerAction action)
+{
+	if(IsKeyDown(key))
+		*flag |= action;
+	else
+		*flag &= ~action;
+}
+
 void processInput(Game* game)
 {
+	Player *player = &game->player;
 	if(IsKeyPressed(KEY_SPACE))
 	{
 		if (game->state == GS_PLAY)
@@ -46,21 +64,17 @@ void processInput(Game* game)
 			game->state = GS_PLAY;
 	}
 
-	// TODO(v.caraulan): We can have a flag with all input
-	if(IsKeyDown(KEY_UP))
-		game->player.moving = true;
-	else
-		game->player.moving = false;
-
-	if(IsKeyPressed(KEY_F))
-		game->player.shooting = true;
+	setInputFlagPressed(KEY_F, &player->action, PA_SHOOT);
+	setInputFlagPressed(KEY_T, &player->action, PA_TELEPORT);
+	setInputFlag(KEY_D, &player->action, PA_TURN_LEFT);
+	setInputFlag(KEY_G, &player->action, PA_TURN_RIGHT);
+	setInputFlag(KEY_R, &player->action, PA_ACCELERATION);
 	if(IsKeyPressed(KEY_ESCAPE))
 	{
 		if (game->state == GS_MENU)
 			game->state = GS_CLOSE;
-		if (game->state == GS_PAUSE)
+		if (game->state == GS_PAUSE || game->state == GS_GAMEOVER)
 			game->state = GS_MENU;
-
 	}
 }
 
@@ -70,20 +84,20 @@ void updateGame(Game* game)
 	{
 		case GS_MENU:
 		{
-			if (game->player.shooting)
+			if (game->player.action & PA_SHOOT)
 				game->state = GS_PLAY;
-			game->player.shooting = false;
+			game->player.action &= ~(PA_SHOOT);
 			framesCounter++;
 		}break;
 		case GS_PLAY: 
 		case GS_PLAY2:
 		{
-			if (game->player.shooting)
+			if (game->player.action & PA_SHOOT)
 				gameAddBullet(game,game->player.position);
 			updatePlayer(&game->player, game->ticksCount);
 
-			for(int i = 0; i < ENEMY_COUNT; i++)
-				updateEnemy(&game->enemies[i], game->ticksCount);
+			//for(int i = 0; i < ENEMY_COUNT; i++)
+			//updateEnemy(&game->enemies[i], game->ticksCount);
 
 			for(int i = 0; i < game->bulletCount; i++)
 			{
@@ -140,8 +154,8 @@ int gameEnemyAliveCount(Game* game)
 	int count = 0;
 	for(int i = 0; i < ENEMY_COUNT; i++)
 	{
-		if(game->enemies[i].life > 0)
-			count++;
+		//if(game->enemies[i].life > 0)
+		//count++;
 	}
 	return count;
 }
@@ -150,7 +164,6 @@ void loadData(Game* game)
 	game->atlas = LoadTexture("assets/mines.png");
 	game->background = LoadTexture("assets/background.png");
 	game->foreground = LoadTexture("assets/foreground.png");
-	game->player.texture = &game->atlas;
 }
 
 void unloadData(Game* game)
@@ -178,10 +191,10 @@ void gameIsOver(Game* game)
 {
 	for(int i = 0; i < ENEMY_COUNT; i++)
 	{
-		if(game->enemies[i].life > 0)
-			return;
+		//if(game->enemies[i].life > 0)
+		//return;
 	}
-	game->state = GS_GAMEOVER;
+	//game->state = GS_GAMEOVER;
 }
 
 void Shutdown(Game* game)

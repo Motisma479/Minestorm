@@ -1,5 +1,5 @@
 #include "player.h"
-#include "commom.h"
+#include "common.h"
 #include <math.h>
 
 void initPlayer(Player* player)
@@ -9,8 +9,12 @@ void initPlayer(Player* player)
 	player->lives = 3;
     player->speed = 10.0f;
     player->rotation = 0.0f;
-    player->moving = false;
     player->textureCoord = (Rectangle){83, 58, 84, 140};
+}
+
+Vector2 getPlayerDirection(Player* player)
+{
+    return (Vector2){cosf(player->rotation*DEG2RAD),sinf(player->rotation*DEG2RAD)};
 }
 
 void updatePlayer(Player* player, float deltaTime)
@@ -19,13 +23,25 @@ void updatePlayer(Player* player, float deltaTime)
 	Vector2 *position = &player->position;
 
 	//Rotation
-	if(IsKeyDown(KEY_LEFT))
+	if (player->action & PA_TURN_LEFT)
+	{
 		player->rotation -= PLAYER_ANGULAR_SPEED * deltaTime;
-	if(IsKeyDown(KEY_RIGHT))
+		player->rotation += (float)ANGULAR_FRICTION * deltaTime;
+	}
+
+	if (player->action & PA_TURN_RIGHT)
+	{
 		player->rotation += PLAYER_ANGULAR_SPEED * deltaTime;
+		player->rotation -= (float)ANGULAR_FRICTION * deltaTime;
+	}
+
+	if (player->action & PA_TELEPORT)
+	{
+		teleportingPlayer(player);
+	}
 
 	//Movement
-    if(player->moving)
+    if(player->action & PA_ACCELERATION)
     {
 		Vector2 direction = getPlayerDirection(player);
 
@@ -36,20 +52,20 @@ void updatePlayer(Player* player, float deltaTime)
 	position->y += acceleration.y * deltaTime;
 
 	// Wraparound
-	if(position->x < 0.0f) position->x = (float)SCREEN_WIDTH - 1.0f;
-	else if(position->x > (float)SCREEN_WIDTH) position->x = 1.0f;
+	if (position->x < 64.0f) { position->x = (float)SCREEN_WIDTH - 64.0f; }
+	else if (position->x > (float)SCREEN_WIDTH - 64.0f) { position->x = 64.0f; }
 
-	if(position->y < 0.0f) position->y = (float)SCREEN_HEIGHT - 1.0f;
-	else if(position->y > (float)SCREEN_HEIGHT) position->y = 1.0f;
+	if (position->y < 80.0f) { position->y = (float)SCREEN_HEIGHT - 80.0f; }
+	else if (position->y > (float)SCREEN_HEIGHT - 80.0f) { position->y = 80.0f; }
 
 	//deacceleration
 	acceleration.x -= acceleration.x / 100.0f;
 	acceleration.y -= acceleration.y / 100.0f;
 
-	player->shooting = false;
+	player->action &= ~PA_SHOOT;
 }
 
-void drawPlayer(Player* player, float scale, Color color)
+void drawPlayer(Player* player, float scale, Color color, const Texture2D texture)
 {
 	Rectangle playerPos =
 	{
@@ -60,14 +76,14 @@ void drawPlayer(Player* player, float scale, Color color)
 	};
 	Vector2 origin = {playerPos.width / 2, playerPos.width / 2};
 
-	// Uncomment this to see the collision box
-	//DrawRectanglePro(playerPos, origin, player->rotation + 90.0f, BLACK);
+	DrawRectanglePro(playerPos, origin, player->rotation + 90.0f, BLACK);
 
-	DrawTexturePro(*player->texture, player->textureCoord,
+	DrawTexturePro(texture, player->textureCoord,
 				   playerPos, origin, player->rotation + 90.0f, color);
 }
 
-Vector2 getPlayerDirection(Player* player)
+void teleportingPlayer(Player* player)
 {
-    return (Vector2){cosf(player->rotation*DEG2RAD),sinf(player->rotation*DEG2RAD)};
+	player->position = (Vector2) {(float)GetRandomValue(64,SCREEN_WIDTH - 64),
+		(float)GetRandomValue(80,SCREEN_HEIGHT - 80)};
 }
