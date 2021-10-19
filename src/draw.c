@@ -2,31 +2,38 @@
 
 static void drawScoreBoard(Game *game)
 {
-	DrawRectangle(40, 40, 120, 60, SKYBLUE);
-	DrawText("Player One", 45, 40, 20, BLUE);
-
+	float scale = 0.1f;
 	Player player = game->player[0];
 
-	player.position = (Vector2){60, 80};
-	drawPlayer(&player, 0.2f, BLUE, game->atlas);
-	player.position = (Vector2){80, 80};
-	drawPlayer(&player, 0.2f, BLUE, game->atlas);
-	player.position = (Vector2){100, 80};
-	drawPlayer(&player, 0.2f, BLUE, game->atlas);
+	DrawText("Player ONE", 45, 0, 20, BLUE);
+	player.position = (Vector2){60, 30};
+	player.rotation = -90.0f;
+	if (player.lives > 0)
+		drawPlayer(&player, scale, BLUE, game->atlas);
+	player.position = (Vector2){80, 30};
+	if (player.lives > 1)
+		drawPlayer(&player, scale, BLUE, game->atlas);
+	player.position = (Vector2){100, 30};
+	if (player.lives > 2)
+		drawPlayer(&player, scale, BLUE, game->atlas);
 
+	DrawText(TextFormat("%d", game->player[0].score), 200, 0, 20, BLUE);
 	if (game->state == GS_PLAY2)
 	{
-		DrawRectangle(200, 40, 120, 60, GREEN);
-		DrawText("Player TWO", 200, 40, 20, LIME);
+		DrawText("Player TWO", 470, 0, 20, LIME);
 
-		Player player = game->player[0];
-
-		player.position = (Vector2){60, 80};
-		drawPlayer(&player, 0.2f, BLUE, game->atlas);
-		player.position = (Vector2){80, 80};
-		drawPlayer(&player, 0.2f, BLUE, game->atlas);
-		player.position = (Vector2){100, 80};
-		drawPlayer(&player, 0.2f, BLUE, game->atlas);
+		player = game->player[1];
+		player.rotation = -90.0f;
+		player.position = (Vector2){530, 30};
+		if (player.lives > 0)
+			drawPlayer(&player, scale, LIME, game->atlas);
+		player.position = (Vector2){550, 30};
+		if (player.lives > 1)
+			drawPlayer(&player, scale, LIME, game->atlas);
+		player.position = (Vector2){570, 30};
+		if (player.lives > 2)
+			drawPlayer(&player, scale, LIME, game->atlas);
+		DrawText(TextFormat("%d", game->player[1].score), 370, 0, 20, LIME);
 	}
 }
 
