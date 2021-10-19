@@ -15,7 +15,8 @@ bool initGame(Game* game)
 	SetExitKey(KEY_NULL);
 	SetTargetFPS(60);
 
-	initPlayer(&game->player);
+	initPlayer(&game->player[0]);
+	initPlayer(&game->player[1]);
 
 	for(int i = 0; i < ENEMY_COUNT; i++)
 		initEnemy(&game->enemies[i]);
@@ -55,20 +56,34 @@ void setInputFlag(KeyboardKey key, PlayerAction *flag, PlayerAction action)
 
 void processInput(Game* game)
 {
-	Player *player = &game->player;
+	Player *player1 = &game->player[0];
+	Player *player2 = &game->player[1];
 	if(IsKeyPressed(KEY_SPACE))
 	{
-		if (game->state == GS_PLAY)
+		if (game->state == GS_PLAY || game->state == GS_PLAY2)
 			game->state = GS_PAUSE;
 		else if (game->state == GS_PAUSE)
 			game->state = GS_PLAY;
 	}
 
-	setInputFlagPressed(KEY_F, &player->action, PA_SHOOT);
-	setInputFlagPressed(KEY_T, &player->action, PA_TELEPORT);
-	setInputFlag(KEY_D, &player->action, PA_TURN_LEFT);
-	setInputFlag(KEY_G, &player->action, PA_TURN_RIGHT);
-	setInputFlag(KEY_R, &player->action, PA_ACCELERATION);
+	setInputFlagPressed(KEY_F, &player1->action, PA_SHOOT);
+	setInputFlagPressed(KEY_T, &player1->action, PA_TELEPORT);
+	setInputFlagPressed(KEY_E, &player1->action, PA_TELEPORT);
+	setInputFlag(KEY_D, &player1->action, PA_TURN_LEFT);
+	setInputFlag(KEY_G, &player1->action, PA_TURN_RIGHT);
+	setInputFlag(KEY_R, &player1->action, PA_ACCELERATION);
+
+	if(IsKeyPressed('K') && (game->state == GS_MENU))
+		game->state = GS_PLAY2;
+	if (game->state == GS_PLAY2)
+	{
+		setInputFlagPressed(KEY_K, &player2->action, PA_SHOOT);
+		setInputFlagPressed(KEY_U, &player2->action, PA_TELEPORT);
+		setInputFlagPressed(KEY_O, &player2->action, PA_TELEPORT);
+		setInputFlag(KEY_J, &player2->action, PA_TURN_LEFT);
+		setInputFlag(KEY_L, &player2->action, PA_TURN_RIGHT);
+		setInputFlag(KEY_I, &player2->action, PA_ACCELERATION);
+	}
 	if(IsKeyPressed(KEY_ESCAPE))
 	{
 		if (game->state == GS_MENU)
@@ -84,18 +99,31 @@ void updateGame(Game* game)
 	{
 		case GS_MENU:
 		{
-			if (game->player.action & PA_SHOOT)
+			if (game->player[1].action & PA_SHOOT)
+			{
+				game->state = GS_PLAY2;
+				game->player[1].action &= ~(PA_SHOOT);
+			}
+			else if (game->player[0].action & PA_SHOOT)
 				game->state = GS_PLAY;
-			game->player.action &= ~(PA_SHOOT);
+			game->player[0].action &= ~(PA_SHOOT);
 			framesCounter++;
 		}break;
-		case GS_PLAY: 
+		case GS_PLAY:
 		case GS_PLAY2:
 		{
-			if (game->player.action & PA_SHOOT)
-				gameAddBullet(game,game->player.position);
-			updatePlayer(&game->player, game->ticksCount);
+			if (game->player[0].action & PA_SHOOT)
+				gameAddBullet(game, game->player[0].position, game->player[0].rotation);
+			updatePlayer(&game->player[0], game->ticksCount);
 
+			if (game->player[1].action & PA_SHOOT)
+				game->state = GS_PLAY2;
+			if (game->state == GS_PLAY2)
+			{
+				if (game->player[1].action & PA_SHOOT)
+					gameAddBullet(game,game->player[1].position, game->player[1].rotation);
+				updatePlayer(&game->player[1], game->ticksCount);
+			}
 			for(int i = 0; i < ENEMY_COUNT; i++)
 				updateEnemy(&game->enemies[i], game->ticksCount);
 
@@ -107,7 +135,7 @@ void updateGame(Game* game)
 			gameRemoveBullet(game);
 			gameStats(game);
 			gameIsOver(game);
-		}break;
+		} break;
 		default:
 		{
 			framesCounter++;
@@ -121,14 +149,14 @@ void gameStats(Game* game)
 	DrawText(TextFormat("Bullet count: %d",game->bulletCount),10,50,20,PURPLE);
 }
 
-void gameAddBullet(Game* game, Vector2 position)
+void gameAddBullet(Game* game, Vector2 position, float rotation)
 {
 	if(game->bulletCount == BULLET_CAPACITY)
 		return;
 
 	Bullet bullet = {0};
 
-	initBullet(&bullet, position, game->player.rotation);
+	initBullet(&bullet, position, rotation);
 
 	game->bullets[game->bulletCount] = bullet;
 	game->bulletCount += 1;
@@ -191,10 +219,10 @@ void gameIsOver(Game* game)
 {
 	for(int i = 0; i < ENEMY_COUNT; i++)
 	{
-		//if(game->enemies[i].life > 0)
-		//return;
+		if(game->enemies[i].life > 0)
+			return;
 	}
-	//game->state = GS_GAMEOVER;
+	game->state = GS_GAMEOVER;
 }
 
 void Shutdown(Game* game)

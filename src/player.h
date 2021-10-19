@@ -13,23 +13,21 @@ typedef enum PlayerAction
 typedef struct Player
 {
     Vector2      position;
-    float        speed;
+	Vector2      acceleration;
     float        rotation;
 	int          lives;
+	int          score;
 	PlayerAction action;
 	Rectangle    textureCoord;
 } Player;
 
-void initPlayer(Player* player);
-void updatePlayer(Player* player,float deltatime);
-void drawPlayer(Player* player, float scale, Color color, const Texture2D texture);
-
+void    initPlayer(Player* player);
+void    updatePlayer(Player* player,float deltatime);
+void    drawPlayer(Player* player, float scale, Color color,
+				   const Texture2D texture);
 Vector2 getPlayerDirection(Player* player);
-
-void loadPlayerData(Player* player);
-void unloadPlayerdata(Player* player);
-
-void inputsPlayer(Player* player);
-
-void teleportingPlayer(Player* player);
+void    loadPlayerData(Player* player);
+void    unloadPlayerdata(Player* player);
+void    inputsPlayer(Player* player);
+void    teleportingPlayer(Player* player);
 Vector2 getPlayerDirection(Player* player);

@@ -1,5 +1,35 @@
 #include "game.h"
 
+static void drawScoreBoard(Game *game)
+{
+	DrawRectangle(40, 40, 120, 60, SKYBLUE);
+	DrawText("Player One", 45, 40, 20, BLUE);
+
+	Player player = game->player[0];
+
+	player.position = (Vector2){60, 80};
+	drawPlayer(&player, 0.2f, BLUE, game->atlas);
+	player.position = (Vector2){80, 80};
+	drawPlayer(&player, 0.2f, BLUE, game->atlas);
+	player.position = (Vector2){100, 80};
+	drawPlayer(&player, 0.2f, BLUE, game->atlas);
+
+	if (game->state == GS_PLAY2)
+	{
+		DrawRectangle(200, 40, 120, 60, GREEN);
+		DrawText("Player TWO", 200, 40, 20, LIME);
+
+		Player player = game->player[0];
+
+		player.position = (Vector2){60, 80};
+		drawPlayer(&player, 0.2f, BLUE, game->atlas);
+		player.position = (Vector2){80, 80};
+		drawPlayer(&player, 0.2f, BLUE, game->atlas);
+		player.position = (Vector2){100, 80};
+		drawPlayer(&player, 0.2f, BLUE, game->atlas);
+	}
+}
+
 static void drawPauseMenu(Game *game, int frameCounter)
 {
 	DrawText("Resume" , SCREEN_WIDTH / 3 - MeasureText("Resume",25),
@@ -46,7 +76,6 @@ void drawGame(Game* game, int frameCounter)
 	BeginDrawing();
 
 	DrawTextureEx(game->background, (Vector2){0, 0}, 0, 1.0f, WHITE);
-
 	switch(game->state)
 	{
 		case GS_MENU:
@@ -58,6 +87,7 @@ void drawGame(Game* game, int frameCounter)
 			drawPauseMenu(game, frameCounter);
 		}break;
 		case GS_PLAY:
+		case GS_PLAY2:
 		{
 			for(int i = 0; i < ENEMY_COUNT; i++)
 				drawEnemy(&game->enemies[i], game->atlas);
@@ -66,7 +96,9 @@ void drawGame(Game* game, int frameCounter)
 				Bullet* bullet = &game->bullets[i];
 				drawBullet(bullet, game->atlas);
 			}
-			drawPlayer(&game->player, 0.5f, SKYBLUE, game->atlas);
+			drawPlayer(&game->player[0], 0.5f, SKYBLUE, game->atlas);
+			if (game->state == GS_PLAY2)
+				drawPlayer(&game->player[1], 0.5f, GREEN, game->atlas);
 		}break;
 		case GS_GAMEOVER:
 		{
@@ -87,5 +119,6 @@ void drawGame(Game* game, int frameCounter)
 		}
 	}
 	DrawTextureEx(game->foreground, (Vector2){0, 0}, 0, 1.0f, WHITE);
+	drawScoreBoard(game);
 	EndDrawing();
 }

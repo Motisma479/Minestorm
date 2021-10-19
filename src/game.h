@@ -27,7 +27,7 @@ typedef struct Game
 	Rectangle bulletCoord;
 	float ticksCount;
 
-	Player player;
+	Player player[2];
 	MineLayer layer;
 	Enemy enemies[ENEMY_COUNT];
 
@@ -44,7 +44,7 @@ void gameStats(Game* game);
 
 int gameEnemyAliveCount(Game* game);
 
-void gameAddBullet(Game* game, Vector2 position);
+void gameAddBullet(Game* game, Vector2 position, float rotation);
 void gameRemoveBullet(Game* game);
 void gameCollisions(Game* game);
 
