@@ -2,6 +2,7 @@
 #include <raylib.h>
 #include <stdbool.h>
 
+
 typedef struct Player
 {
 	Vector2 position;
@@ -12,6 +13,8 @@ typedef struct Player
 	bool turnLeft;
 	bool turnRight;
 	bool teleportation;
+
+	
 
 } Player;
 

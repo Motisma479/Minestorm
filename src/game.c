@@ -1,5 +1,5 @@
 #include "game.h"
-
+#include "testCollision.h"
 
 static int frameCount = 0;
 
@@ -17,7 +17,16 @@ bool initGame(Game* game)
 	initPlayer(&game->player);
 	game->player.active = true;
 
-	return game->gameIsRunning;
+	    //inti ememies
+    for(int i = 0; i < ENEMY_COUNT; i++)
+    {
+        initFloatingMine(&game->enemies[i]);
+    }
+
+	if(!game->gameIsRunning)
+		return false;
+
+	return true;
 }
 void processInput(Game* game)
 {
@@ -58,6 +67,12 @@ void updateGame(Game* game)
 	{
 		//TODO : updating all game objects
 
+		//update enemies
+        for(int i = 0; i < ENEMY_COUNT; i++)
+        {
+            updateFloatingMine(&game->enemies[i],deltaTime);
+        }
+
 		updateLayer(&game->layer,deltaTime);
 		updatePlayer(&game->player, deltaTime);
 
@@ -68,6 +83,9 @@ void updateGame(Game* game)
             updateBullet(bullet,deltaTime);
         }
 		gameRemoveBullet(game);
+
+		//test collision
+		testGameCollisions(game);
 
 	}
 	else
@@ -97,6 +115,12 @@ void drawGame(Game* game)
 	{
 		//display all game objects
 
+		//draw enemies
+        for(int i = 0; i < ENEMY_COUNT; i++)
+        {
+            drawFloatingMine(&game->enemies[i],&game->gameTexture);
+        }
+
 		drawLayer(&game->layer,&game->gameTexture);
 
 		drawPlayer(&game->player,&game->gameTexture);
@@ -107,6 +131,13 @@ void drawGame(Game* game)
             Bullet* bullet = &game->bullets[i];
             drawBullet(bullet,&game->gameTexture);
         }
+
+		if(game->thisHasCollideWith)
+		{
+			DrawText("COLLISION",SCREEN_WIDTH / 2.0f - MeasureText("COLLISION",50) + 150.0f,
+                SCREEN_HEIGHT / 2.0f,50,RED);
+			game->thisHasCollideWith = false;
+		}
 	}
 	else
 	{
@@ -120,12 +151,12 @@ void shutdown(Game* game)
 	unloadGameData(game);
 	game->gameIsRunning = false;
 	//unloadGameData(game);
-	CloseWindow();
-	/*if (!game->gameIsRunning)
+	//CloseWindow();
+	if (!game->gameIsRunning)
 	{
-		unloadGameData(game);
+		//unloadGameData(game);
 		CloseWindow();
-	}*/
+	}
 }
 
 void loadGameData(Game* game)

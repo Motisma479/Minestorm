@@ -6,8 +6,9 @@
 
 #define PLAYER_ANGULAR_SPEED 360
 #define ANGULAR_FRICTION  200
-#define ENEMY_CAPACITY 10
+//#define ENEMY_CAPACITY 10
 #define BULLET_CAPACITY 64
+#define ENEMY_COUNT 20
 
 /*
 DestRect : Magnetic Mine

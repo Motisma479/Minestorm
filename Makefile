@@ -1,7 +1,7 @@
 PROGRAM=minestorm
 
 # Add your objs to generate in OBJS var
-OBJS=src/main.o src/game.o src/player.o src/mineLayer.o src/enemy.o src/bullet.o src/Math.o
+OBJS=src/main.o src/game.o src/player.o src/mineLayer.o src/floatingMine.o src/bullet.o src/testCollision.o src/Math.o
 
 CC=gcc
 TARGET=$(shell $(CC) -dumpmachine)

@@ -1,11 +1,15 @@
 #pragma once
 #include <raylib.h>
+#include "Math.h"
 
 typedef struct Bullet
 {
     Vector2 position;
     float speed;
     float angle;
+    float scale;
+
+    AABB rectComponent;
 
 } Bullet;
 

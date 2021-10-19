@@ -31,8 +31,10 @@ typedef struct Circle
 //Rectangle
 typedef struct AABB
 {
-    Vector2d min;
-    Vector2d max;
+    //Vector2d min;
+    //Vector2d max;
+    Vector2d position;
+    Vector2d size;
 
 } AABB;
 

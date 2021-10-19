@@ -2,7 +2,7 @@
 #include <raylib.h>
 #include "player.h"
 #include "mineLayer.h"
-#include "enemy.h"
+#include "floatingMine.h"
 #include "commom.h"
 #include "bullet.h"
 
@@ -10,6 +10,7 @@ typedef struct Game
 {
 	bool gameIsRunning;
 	bool gamePaused;
+	bool thisHasCollideWith;
 
 	Texture2D background;
 	Texture2D foreground;
@@ -18,6 +19,7 @@ typedef struct Game
 	Player player;
 	MineLayer layer;
 
+	FloatingMine enemies[ENEMY_COUNT];
 
     int bulletCount;
     Bullet bullets[BULLET_CAPACITY];
