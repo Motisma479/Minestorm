@@ -1,5 +1,6 @@
 #include "bullet.h"
 #include <math.h>
+#include "common.h"
 
 void initBullet(Bullet* bullet,Vector2 position,float angle)
 {
@@ -10,9 +11,20 @@ void initBullet(Bullet* bullet,Vector2 position,float angle)
 void updateBullet(Bullet* bullet,float deltaTime)
 {
 	Vector2 *position = &bullet->position;
+	Vector2 *addPosition = &bullet->addPosition;
 
-	position->x += bullet->speed * cosf(bullet->angle*DEG2RAD) * deltaTime;
-	position->y += bullet->speed * sinf(bullet->angle*DEG2RAD) * deltaTime;
+	float xDeplacement = bullet->speed * cosf(bullet->angle*DEG2RAD) * deltaTime;
+	float yDeplacement = bullet->speed * sinf(bullet->angle*DEG2RAD) * deltaTime;
+	position->x += xDeplacement;
+	position->y += yDeplacement;
+	addPosition->x += xDeplacement;
+	addPosition->y += yDeplacement;
+
+	if (position->x < 64.0f) { position->x = (float)SCREEN_WIDTH - 64.0f; }
+	else if (position->x > (float)SCREEN_WIDTH - 64.0f) { position->x = 64.0f; }
+
+	if (position->y < 80.0f) { position->y = (float)SCREEN_HEIGHT - 80.0f; }
+	else if (position->y > (float)SCREEN_HEIGHT - 80.0f) { position->y = 80.0f; }
 }
 
 void drawBullet(Bullet* bullet, const Texture2D texture, Color color)

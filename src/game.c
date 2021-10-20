@@ -1,5 +1,6 @@
 #include "game.h"
 #include "draw.h"
+#include "Math.h"
 
 //cross->textureCoord[0] = (Rectangle){345, 90, 75, 75};
 //ship->textureCoord[0] = (Rectangle){513, 89, 256, 79};
@@ -236,12 +237,12 @@ void gameAddBullet(Player *player)
 
 void gameRemoveBullet(Player *player)
 {
+
 	for(int i = 0; i < player->bulletCount; i++)
 	{
 		Bullet* bullet = &player->bullets[i];
 
-		if(bullet->position.x < 0.0f || bullet->position.x > (float) SCREEN_WIDTH
-		   || bullet->position.y < 0.0f || bullet->position.y > (float)SCREEN_HEIGHT)
+		if (lengthVector2d((Vector2d){bullet->addPosition.x, bullet->addPosition.y}) > SCREEN_HEIGHT / 2)
 		{
 			player->bullets[i] = player->bullets[player->bulletCount - 1];
 			player->bulletCount -= 1;

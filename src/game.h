@@ -12,9 +12,11 @@ typedef enum
 {
 	GS_MENU,
 	GS_PAUSE,
+	GS_PAUSE2,
 	GS_PLAY,
 	GS_PLAY2,
 	GS_GAMEOVER,
+	GS_GAMEOVER2,
 	GS_CLOSE,
 } GameState;
 

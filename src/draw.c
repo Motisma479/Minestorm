@@ -19,7 +19,7 @@ static void drawScoreBoard(Game *game, Vector2 offset)
 	if (player.lives > 2)
 		drawPlayer(&player, scale, BLUE, game->atlas);
 
-	DrawText(TextFormat("%d", game->player[0].score), 200 + offset.x, 0 + offset.y, 20, BLUE);
+	DrawText(TextFormat("%d", game->player[0].score), 240 + offset.x, 0 + offset.y, 20, BLUE);
 
 	if (game->state == GS_PLAY2)
 	{
@@ -142,7 +142,16 @@ void drawGame(Game* game, int frameCounter)
 		}
 	}
 	DrawTextureEx(game->foreground, (Vector2){0, 0}, 0, 1.0f, WHITE);
-	drawScoreBoard(game, (Vector2){400, 20});
+	drawScoreBoard(game, (Vector2){0, 0});
+#if 0
+	if (game->state == GS_PAUSE)
+	{
+		DrawRectangle(70, 400, 245, 40, SKYBLUE);
+		DrawRectangle(315, 400, 255, 40, GREEN);
+		drawScoreBoard(game, (Vector2){30, 400});
+	}
+#endif
+
 
 #if 0
 
@@ -153,10 +162,10 @@ void drawGame(Game* game, int frameCounter)
 
 	typedef struct Image {
 		void *data;             // Image raw data
-		int width;              // Image base width
-		int height;             // Image base height
-		int mipmaps;            // Mipmap levels, 1 by default
-		int format;             // Data format (PixelFormat type)
+		int  width;              // Image base width
+		int  height;             // Image base height
+		int  mipmaps;            // Mipmap levels, 1 by default
+		int  format;             // Data format (PixelFormat type)
 	} Image;
 
 	Image image = LoadImage("./assets/mines.png");

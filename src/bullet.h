@@ -4,6 +4,7 @@
 typedef struct Bullet
 {
 	Vector2 position;
+	Vector2 addPosition;
 	float speed;
 	float angle;
 } Bullet;
