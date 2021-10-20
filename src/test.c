@@ -66,7 +66,7 @@ int main()
 		}
 		int intersecting = 0;
 		printf("They are intersecting %d\n", intersecting = satAlgorithm(a, b, 4, 4));
-		Color color = WHITE;
+		Color color = GREEN;
 		if (intersecting)
 			color = RED;
 		DrawLine(b->x, b->y, b[1].x, b[1].y, color);

@@ -143,5 +143,36 @@ void drawGame(Game* game, int frameCounter)
 	}
 	DrawTextureEx(game->foreground, (Vector2){0, 0}, 0, 1.0f, WHITE);
 	drawScoreBoard(game, (Vector2){400, 20});
+
+#if 0
+
+	// TODO(v.caraulan): What I started doing here.
+	// I want to take the segments of the collision polygons
+	// from the image automatically.
+	// We could also do it manualy with an image processor, or something like that;
+
+	typedef struct Image {
+		void *data;             // Image raw data
+		int width;              // Image base width
+		int height;             // Image base height
+		int mipmaps;            // Mipmap levels, 1 by default
+		int format;             // Data format (PixelFormat type)
+	} Image;
+
+	Image image = LoadImage("./assets/mines.png");
+	printf("image format = %d\n", image.format);
+	unsigned char *m = image.data;
+
+	for (int i = 0; i < image.width;i++)
+	{
+		for (int j = 0; j < image.height; j++)
+		{
+
+			if (m[i * image.width + j] != 0)
+				ImageDrawPixel(&image, j, i, RED);
+		}
+	}
+	UnloadImage(image);
+#endif
 	EndDrawing();
 }

@@ -1,6 +1,5 @@
 PROGRAM=minestorm
-
-TEST = my_test
+TEST_COLLISION = test_collision
 
 # Add your objs to generate in OBJS var
 
@@ -27,17 +26,17 @@ DEPS=$(OBJS:.o=.d)
 
 .PHONY: all clean
 
-all: $(PROGRAM) $(TEST)
+all: $(PROGRAM)  $(TEST_COLLISION)
 
 -include $(DEPS)
 
 %.o: %.c
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@
 
-$(PROGRAM): $(OBJS) $(TEST)
+$(PROGRAM): $(OBJS)
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-$(TEST): ./src/test.o ./src/Math.c
+$(TEST_COLLISION): ./src/test.o ./src/Math.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o $@
 build.tar.gz: $(PROGRAM) $(wildcard assets/*)
 	tar czf build.tar.gz $(PROGRAM) assets

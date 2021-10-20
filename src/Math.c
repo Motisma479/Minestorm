@@ -197,7 +197,7 @@ Vector2d getNormal(Vector2d a, Vector2d b)
 
 	result.x = (b.y - a.y);
 	result.y = -(b.x - a.x);
-	result = normalizeVector2d(result);
+	//result = normalizeVector2d(result);
 	return (result);
 }
 
