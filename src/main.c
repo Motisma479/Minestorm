@@ -10,14 +10,61 @@ int main()
 {
 	printf("MINE_STORM GAME\n");
 
-	Range r1 = {0.05f,0.4f};//min
-	Range r2 = {0.5f,0.4f};//max
+	InitWindow(800,600,"[--MATHIEU-VICTOR-OSVALDO--GP1--MINESTORM PROJECT--ISART DIGITAL--]");
+	SetTargetFPS(60);
+
+	//for test SAT(triangle - triangle)
+	Triangle triangle1;
+	triangle1.v1 = (Vector2d){400.0f,50.0f};
+	triangle1.v2 = (Vector2d){150.0f,150.0f};
+	triangle1.v3 = (Vector2d){650.0f,200.0f};
+
+	Vector2 v11 = {0};
+	Vector2 v12 = {0};
+	Vector2 v13 = {0};
+	v11 = (Vector2){triangle1.v1.x,triangle1.v1.y};
+	v12 = (Vector2){triangle1.v2.x,triangle1.v2.y};
+	v13 = (Vector2){triangle1.v3.x,triangle1.v3.y};
+
+	Triangle triangle2;
+	triangle2.v1 = (Vector2d){10.0f,10.0f};
+	triangle2.v2 = (Vector2d){10.0f,20.0f};
+	triangle2.v3 = (Vector2d){30.0f,5.0f};
+
+	Vector2 v21 = {0};
+	Vector2 v22 = {0};
+	Vector2 v23 = {0};
+	v21 = (Vector2){triangle2.v1.x,triangle2.v1.y};
+	v22 = (Vector2){triangle2.v2.x,triangle2.v2.y};
+	v23 = (Vector2){triangle2.v3.x,triangle2.v3.y};
+
+	PolygonShape tr1;
+	PolygonShape tr2;
+	tr1.type = TRIANGLE_SHAPE;
+	tr2.shapes.triangle = triangle1;
+	tr2.type = TRIANGLE_SHAPE;
+	tr2.shapes.triangle = triangle2;
+
+	bool isColliding = intersect(tr1,tr1.type,tr2,tr2.type);
+
+	printf("IsCollinding = %d\n",isColliding);
 
 
-	//Range range = getMinRange() ;
+	while(!WindowShouldClose())
+	{
+		BeginDrawing();
+		ClearBackground(RAYWHITE);
 
-	printf("Minrange = (%.2f;%.2f)\tMaxrange = (%.2f;%.2f)\n",getMinRange(r1,r2).min,getMinRange(r1,r2).max,
-	getMaxRange(r1,r2).min,getMaxRange(r1,r2).max);
+
+		DrawTriangleLines(v11,v12,v13,PURPLE);
+
+		DrawTriangleLines(v21,v22,v23,PINK);
+
+		EndDrawing();
+	}
+	CloseWindow();
+
+
 
 	/*Game game;
 	bool success = initGame(&game);

@@ -1,5 +1,4 @@
 #include "Math.h"
-#include <raylib.h>
 #include <stdio.h>
 #include <math.h>
 
@@ -142,14 +141,6 @@ bool testCircleRect(Circle c, AABB rect)
 }
 
 
-void drawShape()
-{
-    DrawPolyLines((Vector2){100.0f,200.0f},3,100.0f,0.0f,RED);
-    Vector2d v1 = {2.5f,3.4f};
-    Vector2d v2 = {2.51f,3.4f};
-    printf("%d\n", isEqualToVector2d(v1,v2));
-}
-
 
 void getNumberOfVertices(PolygonShape shape,int type,int* nbVertices)
 {
@@ -212,4 +203,124 @@ Range getPointProjOnVector(Vector2d vector, Vector2d point)
     r.min = r.max = dotProduct(vector,point);
 
     return r;
+}
+
+bool rangeOverlapRange(Range r1, Range r2)
+{
+    return (r1.min <= r2.max ) && (r2.min <= r1.max);
+}
+
+bool intersect(PolygonShape shape1,int type1,PolygonShape shape2,int type2)
+{
+    //to taste
+    shape1.type = type1;//TRIANGLE_SHAPE;
+    shape2.type = type2;//TRIANGLE_SHAPE;
+
+    //To store the nomber of axis of shapes
+    int nbAxis1 = 0;
+    int nbAxis2 = 0;
+
+    //Get the nomber of vertices, and put it in nbAxis1 and nbAxis2
+    getNumberOfVertices(shape1,shape1.type,&nbAxis1);
+    getNumberOfVertices(shape2,shape2.type,&nbAxis2);
+
+    //Axis
+    Vector2d axis1[nbAxis1];
+    Vector2d axis2[nbAxis2];
+
+    //Store the vertices of shapes
+    Vector2d vertices1[nbAxis1];
+    Vector2d vertices2[nbAxis2];
+
+    //axis1
+    Vector2d p11 = shape1.shapes.triangle.v1;
+    Vector2d p12 = shape1.shapes.triangle.v2;
+    Vector2d p13 = shape1.shapes.triangle.v3;
+
+    vertices1[0] = p11;
+    vertices1[1] = p11;
+    vertices1[2] = p11;
+
+    for(int i = 1; i < nbAxis1 - 1; i++)
+    {
+        Vector2d p1 = vertices1[i];
+        Vector2d p2 = vertices1[i+1 == nbAxis1 ? 0 : i + 1];
+
+        Vector2d edge = subsVector2d(p1,p2);
+
+        Vector2d normal = {edge.y,-edge.x};
+
+        Vector2d normalNormalized = normalizeVector2d(normal);
+
+        axis1[i] = normalNormalized;
+    }
+
+
+
+
+    //axis2
+    Vector2d p21 = shape2.shapes.triangle.v1;
+    Vector2d p22 = shape2.shapes.triangle.v2;
+    Vector2d p23 = shape2.shapes.triangle.v3;
+
+    vertices2[0] = p21;
+    vertices2[1] = p21;
+    vertices2[2] = p23;
+
+
+    for(int i = 0; i < nbAxis2; i++)
+    {
+        Vector2d p1 = vertices2[i];
+        Vector2d p2 = vertices2[i+1 == nbAxis2 ? 0 : i + 1];
+
+        Vector2d edge = subsVector2d(p1,p2);
+
+        Vector2d normal = {edge.y,-edge.x};
+
+        Vector2d normalNormalized = normalizeVector2d(normal);
+
+        axis2[i] = normalNormalized;
+    }
+
+
+    //Loop over axis1
+    //float min = dotProduct(axis1[0],vertices1[0]); //project vertex1 of shape1 onto axi1 of axis1
+    //float max = min;
+    for(int i = 0; i < nbAxis1; i++)
+    {
+        Vector2d axes = axis1[i];
+
+        //project shape1 and shape2 onto axis1
+        Range proj1 = getPointProjOnVector(axes,vertices1[i]);
+        Range proj2 = getPointProjOnVector(axes,vertices1[i]);
+    
+
+        //TODO : test if projej1 don't overlap proj2 return false;
+        if(!rangeOverlapRange(proj1,proj2))
+        {
+            return false;
+        }
+    }
+
+    //Loop over axis2
+    for(int i = 0; i < nbAxis2; i++)
+    {
+        Vector2d axes = axis2[i];
+
+        //project shape1 and shape2 onto axis1
+        //float proj1 = dotProduct(axes,vertices2[i]);
+        //float proj2 = dotProduct(axes,vertices2[i]);
+        Range proj1 = getPointProjOnVector(axes,vertices1[i]);
+        Range proj2 = getPointProjOnVector(axes,vertices1[i]);
+
+        //TODO : test if projej1 don't overlap proj2 return false;
+        if(!rangeOverlapRange(proj1,proj2))
+        {
+            return false;
+        }
+
+    }
+
+    return true;
+
 }

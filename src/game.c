@@ -67,8 +67,6 @@ void updateGame(Game* game)
 	if (!game->gamePaused)
 	{
 		//TODO : updating all game objects
-		drawShape();
-
 		//update enemies
         /*for(int i = 0; i < ENEMY_COUNT; i++)
         {
@@ -156,12 +154,12 @@ void shutdown(Game* game)
 	//game->gameIsRunning = false;
 	//unloadGameData(game);
 	//CloseWindow();
-	if (!game->gameIsRunning)
-	{
-		game->gameIsRunning = false;
+	//if (!game->gameIsRunning)
+	//{
+		//game->gameIsRunning = false;
 		//unloadGameData(game);
-		CloseWindow();
-	}
+		//CloseWindow();
+	//}
 }
 
 void loadGameData(Game* game)

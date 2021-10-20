@@ -130,5 +130,7 @@ Range getPointProjOnVector(Vector2d vector, Vector2d point);
 void getNumberOfVertices(PolygonShape shape,int type,int* nbVertices);
 Range getMinRange(Range r1, Range r2);
 Range getMaxRange(Range r1, Range r2);
+bool rangeOverlapRange(Range r1, Range r2);
 
-void drawShape();
+
+bool intersect(PolygonShape shape1,int type1,PolygonShape shape2,int type2);
