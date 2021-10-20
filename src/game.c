@@ -143,7 +143,7 @@ void drawGame(Game* game)
 	}
 	else
 	{
-		pauseGame(game);
+		//pauseGame(game);
 	}
 
 	EndDrawing();
