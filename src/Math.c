@@ -1,19 +1,23 @@
 #include "Math.h"
 #include <raylib.h>
 #include <stdio.h>
+#include <math.h>
 
 Vector2d zeroVector2d()
 {
     return (Vector2d){0.0f,0.0f};
 }
+
 Vector2d addVector2d(Vector2d a,Vector2d b)
 {
     return (Vector2d){a.x + b.x, a.y + b.y};
 }
+
 Vector2d subsVector2d(Vector2d a,Vector2d b)
 {
     return (Vector2d){a.x - b.x, a.y - b.y};
 }
+
 bool isEqualToVector2d(Vector2d a,Vector2d b)
 {
     bool test = (a.x - b.x) >= -EPSILON  && (a.x - b.x) <= EPSILON && 
@@ -51,25 +55,27 @@ Vector2d scaleVector2d(Vector2d v,float scalar)
 {
     return (Vector2d){v.x * scalar, v.y * scalar};
 }
+
 float distVector2d(Vector2d a, Vector2d b)
 {
     return lengthVector2d(subsVector2d(a,b));
 }
+
 float dotProduct(Vector2d a,Vector2d b)
 {
-    return (a.x * b.x + a.y + b.y);
+    return (a.x * b.x + a.y * b.y);
 }
 
 float lerp(float a,float b,float t)
 {
     return (1.0f - t) * a + b * t;
 }
+
 float inverseLerp(float a,float b,float value)
 {
     return (value - a) / (b - a);
 }
  
-
 Vector2d pointOnLineSegment(LineSegment segment, float t)
 {
     Vector2d seg;
@@ -144,15 +150,9 @@ void drawShape()
     printf("%d\n", isEqualToVector2d(v1,v2));
 }
 
-/*int countVertices(PolygonShape)
-{
-
-}
-*/
 
 void getNumberOfVertices(PolygonShape shape,int type,int* nbVertices)
 {
-      //int count;
       shape.type = type;
 
     switch (shape.type)
@@ -188,4 +188,28 @@ void getNumberOfVertices(PolygonShape shape,int type,int* nbVertices)
         default:
             break;
     }
+}
+
+Range getMinRange(Range r1, Range r2)
+{
+    Range r = {0.0f,0.0f};
+    r = (fabs(r1.max - r1.min) > fabs(r2.max - r2.min)) ? r2 : r1;
+
+    return r; 
+}
+
+Range getMaxRange(Range r1, Range r2)
+{
+    Range r = {0.0f,0.0f};
+    r = (fabs(r1.max - r1.min) > fabs(r2.max - r2.min)) ? r1 : r2;
+    
+    return r; 
+}
+
+Range getPointProjOnVector(Vector2d vector, Vector2d point)
+{
+    Range r = {0.0f,0.0f};
+    r.min = r.max = dotProduct(vector,point);
+
+    return r;
 }

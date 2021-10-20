@@ -10,6 +10,15 @@ int main()
 {
 	printf("MINE_STORM GAME\n");
 
+	Range r1 = {0.05f,0.4f};//min
+	Range r2 = {0.5f,0.4f};//max
+
+
+	//Range range = getMinRange() ;
+
+	printf("Minrange = (%.2f;%.2f)\tMaxrange = (%.2f;%.2f)\n",getMinRange(r1,r2).min,getMinRange(r1,r2).max,
+	getMaxRange(r1,r2).min,getMaxRange(r1,r2).max);
+
 	/*Game game;
 	bool success = initGame(&game);
 	if (success)
@@ -20,7 +29,7 @@ int main()
 	*/
 
 	//test shape 1
-	ConvexPolygon poly;
+	/*ConvexPolygon poly;
 	poly.nbPoints = GetRandomValue(10,20);
 	printf("poly.nbPoints = %d\n",poly.nbPoints);
 	poly.points = calloc(0,poly.nbPoints * sizeof(Vector2));
@@ -28,19 +37,19 @@ int main()
 	for(int i = 0; i < poly.nbPoints; i++)
 	{
 		poly.points[i] = (Vector2d){GetRandomValue(-1000,1000) / 10.0f,GetRandomValue(-1000,1000) / 10.0f};
-	}
+	}*/
 
-	int countPoint = 0;
-	PolygonShape shape;
-	shape.shapes.convexPoly = poly;
+	//int countPoint = 0;
+	//PolygonShape shape;
+	//shape.shapes.convexPoly = poly;
 	//shape.type = CONVEX_SHAPE;
 
-	getNumberOfVertices(shape,CONVEX_SHAPE,&countPoint);
+	//getNumberOfVertices(shape,CONVEX_SHAPE,&countPoint);
 
-	printf("The polygon has: %d vertices\n",countPoint);
+	//printf("The polygon has: %d vertices\n",countPoint);
 
 	//test shape 2
-	int countPoint2 = 0;
+	/*int countPoint2 = 0;
 	Triangle triangle;
 	triangle.v1 = (Vector2d){GetRandomValue(-1000,1000) / 10.0f,GetRandomValue(-1000,1000) / 10.0f};
 	triangle.v2 = (Vector2d){GetRandomValue(-1000,1000) / 10.0f,GetRandomValue(-1000,1000) / 10.0f};
@@ -52,7 +61,7 @@ int main()
 
 	printf("The triangle has: %d vertices\n",countPoint2);
 
-	free(poly.points);
+	free(poly.points);*/
 
 
 	return 0;

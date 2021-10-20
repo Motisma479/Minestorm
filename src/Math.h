@@ -126,6 +126,9 @@ bool testCircleRect(Circle c, AABB rect);
 
 
 //Fonctions for the SAT
+Range getPointProjOnVector(Vector2d vector, Vector2d point);
 void getNumberOfVertices(PolygonShape shape,int type,int* nbVertices);
+Range getMinRange(Range r1, Range r2);
+Range getMaxRange(Range r1, Range r2);
 
 void drawShape();
