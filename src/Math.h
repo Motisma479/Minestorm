@@ -4,12 +4,19 @@
 
 #define EPSILON    pow(10,-9)
 
+//For SAT 
+typedef struct Range
+{
+    float min;
+    float max;
+} Range;
+
 //2D vector
 typedef struct Vector2d
 {
     float x;
     float y;
-     
+
 } Vector2d;
 
 //Line segment
@@ -33,6 +40,8 @@ typedef struct AABB
 {
     Vector2d min;
     Vector2d max;
+    //Vector2d position;
+    //Vector2d size;
 
 } AABB;
 
@@ -45,6 +54,14 @@ typedef struct OBB
 
 } OBB;
 
+typedef struct Triangle
+{
+    Vector2d v1;
+    Vector2d v2;
+    Vector2d v3;
+
+} Triangle;
+
 //Convex Polygon
 typedef struct ConvexPolygon
 {
@@ -52,6 +69,33 @@ typedef struct ConvexPolygon
     Vector2d* points;
 
 } ConvexPolygon;
+
+//Union for store all polygon
+typedef union Shapes
+{
+    Vector2d vector;
+    LineSegment segment;
+    AABB rectAB;
+    OBB  rectOB;
+    Triangle triangle;
+    ConvexPolygon convexPoly;
+    //Circle circle;
+
+} Shapes;
+
+
+//Type's of shape
+typedef enum ShapeType{POINT_SHAPE = 1,SEGMENT_SHAPE,AABB_SHAPE,
+	OBB_SHAPE,TRIANGLE_SHAPE,CONVEX_SHAPE} ShapeType;
+
+//Polygon
+typedef struct PolygonShape
+{
+    ShapeType type;
+    Shapes shapes;
+
+} PolygonShape;
+
 
 //2D Vector functions
 Vector2d zeroVector2d();
@@ -79,3 +123,10 @@ bool testPointCircle(Vector2d point,Circle c);
 bool testRect(AABB r1,AABB r2);
 bool testCircle(Circle c1,Circle c2);
 bool testCircleRect(Circle c, AABB rect);
+
+
+//Fonctions for the SAT
+void getNumberOfVertices(PolygonShape shape,int type,int* nbVertices);
+
+void drawShape();
+int satAlgorithm(Vector2d *a, Vector2d *b, int sizeA, int sizeB);

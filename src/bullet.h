@@ -12,4 +12,3 @@ void initBullet(Bullet* bullet,Vector2 position,float angle);
 void updateBullet(Bullet* bullet,float deltaTime);
 void drawBullet(Bullet* bullet, const Texture2D texture, Color color);
 void unloadBulletData(Bullet* bullet);
-

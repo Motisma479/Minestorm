@@ -1,5 +1,6 @@
 #include "Math.h"
-
+#include <raylib.h>
+#include <stdio.h>
 
 Vector2d zeroVector2d()
 {
@@ -54,9 +55,10 @@ float distVector2d(Vector2d a, Vector2d b)
 {
     return lengthVector2d(subsVector2d(a,b));
 }
+
 float dotProduct(Vector2d a,Vector2d b)
 {
-    return (a.x * b.x + a.y + b.y);
+    return (a.x * b.x + a.y * b.y);
 }
 
 float lerp(float a,float b,float t)
@@ -67,7 +69,7 @@ float inverseLerp(float a,float b,float value)
 {
     return (value - a) / (b - a);
 }
- 
+
 
 Vector2d pointOnLineSegment(LineSegment segment, float t)
 {
@@ -81,16 +83,16 @@ bool testPointCircle(Vector2d point,Circle c)
 {
     float distSq =(distVector2d(point, c.center));
     distSq *= distSq;
-    
+
 
     return distSq <= c.radius * c. radius;
 }
 bool testPointRect(Vector2d point, AABB rect)
 {
     bool outside = point.x < rect.min.x ||
-    point.y < rect.min.y ||
-    point.x > rect.max.x ||
-    point.y > rect.max.y;
+		point.y < rect.min.y ||
+		point.x > rect.max.x ||
+		point.y > rect.max.y;
 
     //If none of these are true, they must intersect
     return !outside; 
@@ -98,9 +100,9 @@ bool testPointRect(Vector2d point, AABB rect)
 bool testRect(AABB r1,AABB r2)
 {
     bool collision = r1.max.x < r2.min.x ||
-    r1.max.y < r2.min.y ||
-    r2.max.x < r1.min.x ||
-    r2.max.y < r1.min.y;
+		r1.max.y < r2.min.y ||
+		r2.max.x < r1.min.x ||
+		r2.max.y < r1.min.y;
 
     //If none of these are true, they must intersect
     return !collision;
@@ -131,5 +133,113 @@ bool testCircleRect(Circle c, AABB rect)
     float distSq = lengthSqVector2d((Vector2d){distX,distY});
 
     return distSq <= c.radius * c.radius;
-    
+
+}
+
+
+void drawShape()
+{
+    DrawPolyLines((Vector2){100.0f,200.0f},3,100.0f,0.0f,RED);
+    Vector2d v1 = {2.5f,3.4f};
+    Vector2d v2 = {2.51f,3.4f};
+    printf("%d\n", isEqualToVector2d(v1,v2));
+}
+
+/*int countVertices(PolygonShape)
+{
+
+}
+*/
+
+void getNumberOfVertices(PolygonShape shape,int type,int* nbVertices)
+{
+	//int count;
+	shape.type = type;
+
+    switch (shape.type)
+    {
+        case POINT_SHAPE:
+		*nbVertices = 1;
+		break;
+        case SEGMENT_SHAPE:
+		*nbVertices = 2;
+		break;
+        case TRIANGLE_SHAPE:
+		*nbVertices = 3;
+		break;
+        case AABB_SHAPE:
+		*nbVertices = 4;
+		break;
+        case OBB_SHAPE:
+		*nbVertices = 4;
+		break;
+        case CONVEX_SHAPE:
+		for(int i = 0; i < shape.shapes.convexPoly.nbPoints; i++)
+		{
+			Vector2d* p1 = &shape.shapes.convexPoly.points[i];
+			//Next vertex;
+			Vector2d* p2 = &shape.shapes.convexPoly.points[ i + 1 == shape.shapes.convexPoly.nbPoints ? 0 : i+1 ];
+
+			if(!isEqualToVector2d(*p1,*p2))
+			{
+				*nbVertices += 1;
+			}
+		}
+		break;
+        default:
+		break;
+    }
+}
+
+Vector2d getNormal(Vector2d a, Vector2d b)
+{
+	Vector2d result;
+
+	result.x = (b.y - a.y);
+	result.y = -(b.x - a.x);
+	result = normalizeVector2d(result);
+	return (result);
+}
+
+Vector2d getLocalVector2d(Vector2d a, Vector2d b)
+{
+	Vector2d result = {b.x - a.x, b.y - a.y};
+
+	return (result);
+}
+
+int satAlgorithm(Vector2d *a, Vector2d *b, int sizeA, int sizeB)
+{
+	float infinity = 1.0f / 0.0f;
+	float minusInfinity = log(0);
+
+	for (int i = 0; i < sizeA - 1;i++)
+	{
+		Range range1 = {infinity, minusInfinity};
+		Range range2 = range1;
+
+		Vector2d normal = getNormal(a[i], a[i + 1]);
+
+		for (int j = 0; j < sizeA;j++)
+		{
+			float projection = dotProduct(a[j], normal);
+			if (projection < range1.min)
+				range1.min = projection;
+			if (projection > range1.max)
+				range1.max = projection;
+		}
+
+		for (int j = 0;j < sizeB;j++)
+		{
+			float projection = dotProduct(b[j], normal);
+
+			if (projection < range2.min)
+				range2.min = projection;
+			if (projection > range2.max)
+				range2.max = projection;
+		}
+		if(!(range1.min <= range2.max && range2.min <= range1.max))
+			return 0;
+	}
+	return 1;
 }

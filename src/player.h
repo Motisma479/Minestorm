@@ -1,5 +1,7 @@
 #pragma once
 #include <raylib.h>
+#include "bullet.h"
+#include "common.h"
 
 typedef enum PlayerAction
 {
@@ -12,6 +14,8 @@ typedef enum PlayerAction
 
 typedef struct Player
 {
+	Bullet       bullets[BULLET_CAPACITY];
+	int          bulletCount;
     Vector2      position;
 	Vector2      acceleration;
     float        rotation;
@@ -21,8 +25,8 @@ typedef struct Player
 	Rectangle    textureCoord;
 } Player;
 
-void    initPlayer(Player* player);
-void updatePlayer(Player* player, float deltaTime);
+void    initPlayer(Player* player, Vector2 position);
+void    updatePlayer(Player* player, float deltaTime);
 void    drawPlayer(Player* player, float scale, Color color,
 				   const Texture2D texture);
 Vector2 getPlayerDirection(Player* player);

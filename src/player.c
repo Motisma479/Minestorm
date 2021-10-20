@@ -2,13 +2,11 @@
 #include "common.h"
 #include <math.h>
 
-void initPlayer(Player* player)
+void initPlayer(Player* player, Vector2 position)
 {
-    player->position.x = SCREEN_WIDTH / 2.0f;
-    player->position.y = SCREEN_HEIGHT / 2.0f;
-	player->lives = 3;
+	player->position = position;
+    player->lives = 3;
 	player->rotation = -90.0f;
-	player->textureCoord = (Rectangle){83, 58, 84, 140};
 }
 
 Vector2 getPlayerDirection(Player* player)
@@ -62,18 +60,19 @@ void updatePlayer(Player* player, float deltaTime)
 
 void drawPlayer(Player* player, float scale, Color color, const Texture2D texture)
 {
+	Rectangle textureCoord = (Rectangle){83, 58, 84, 140};
 	Rectangle playerPos =
 	{
 		player->position.x,
 		player->position.y,
-		player->textureCoord.width * scale,
-		player->textureCoord.height * scale
+		textureCoord.width * scale,
+		textureCoord.height * scale
 	};
 	Vector2 origin = {playerPos.width / 2, playerPos.height / 2};
 
 	//DrawRectanglePro(playerPos, origin, player->rotation + 90.0f, BLACK);
 
-	DrawTexturePro(texture, player->textureCoord,
+	DrawTexturePro(texture, textureCoord,
 				   playerPos, origin, player->rotation + 90.0f, color);
 	//DrawCircle(playerPos.x, playerPos.y, 10, WHITE);
 }

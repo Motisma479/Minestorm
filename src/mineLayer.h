@@ -12,5 +12,5 @@ typedef struct MineLayer
 } MineLayer;
 
 void initLayer(MineLayer* layer);
-void updateLayer(MineLayer* layer,float deltaTime);
+int updateLayer(MineLayer* layer, float deltaTime);
 void drawLayer(MineLayer* layer, const Texture2D texture);

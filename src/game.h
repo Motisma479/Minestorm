@@ -17,6 +17,7 @@ typedef enum
 	GS_GAMEOVER,
 	GS_CLOSE,
 } GameState;
+
 typedef struct Game
 {
 	GameState state;
@@ -31,10 +32,8 @@ typedef struct Game
 	MineLayer layer;
 	int enemyCount;
 	Enemy enemies[ENEMY_COUNT];
-
-	// TODO(v.caraulan): Each player has its own bullets
-	int    bulletCount;
-	Bullet bullets[BULLET_CAPACITY];
+	int    level;
+	bool   levelStart;
 } Game;
 
 bool initGame(Game* game);
@@ -42,13 +41,11 @@ void runGameLoop(Game* game);
 void processInput(Game* game);
 void updateGame(Game* game);
 
-void gameStats(Game* game);
-
 int gameEnemyAliveCount(Game* game);
 
-void gameAddBullet(Game* game, Vector2 position, float rotation);
-void gameRemoveBullet(Game* game);
-void gameCollisions(Game* game);
+void gameAddBullet(Player *player);
+void gameRemoveBullet(Player *player);
+void gameCollisions(Game* game, Player *player);
 
 void loadData(Game* game);
 void unloadData(Game* game);

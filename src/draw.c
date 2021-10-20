@@ -1,42 +1,42 @@
 #include "game.h"
 
-static void drawScoreBoard(Game *game)
+static void drawScoreBoard(Game *game, Vector2 offset)
 {
 	float scale = 0.1f;
 	Player player = game->player[0];
 
-	player.position = (Vector2){60, 30};
+	player.position = (Vector2){60 + offset.x, 30 + offset.y};
 	player.rotation = -90.0f;
 
-	DrawText("Player ONE", 45, 0, 20, BLUE);
+	DrawText("Player ONE", 45 + offset.x, 0 + offset.y, 20, BLUE);
 
 	if (player.lives > 0)
 		drawPlayer(&player, scale, BLUE, game->atlas);
-	player.position = (Vector2){80, 30};
+	player.position = (Vector2){80 + offset.x, 30 + offset.y};
 	if (player.lives > 1)
 		drawPlayer(&player, scale, BLUE, game->atlas);
-	player.position = (Vector2){100, 30};
+	player.position = (Vector2){100 + offset.x, 30 + offset.y};
 	if (player.lives > 2)
 		drawPlayer(&player, scale, BLUE, game->atlas);
 
-	DrawText(TextFormat("%d", game->player[0].score), 200, 0, 20, BLUE);
+	DrawText(TextFormat("%d", game->player[0].score), 200 + offset.x, 0 + offset.y, 20, BLUE);
 
 	if (game->state == GS_PLAY2)
 	{
-		DrawText("Player TWO", 470, 0, 20, LIME);
+		DrawText("Player TWO", 470 - offset.x, 0 + offset.y, 20, LIME);
 
 		player = game->player[1];
 		player.rotation = -90.0f;
-		player.position = (Vector2){530, 30};
+		player.position = (Vector2){530 - offset.x, 30 + offset.y};
 		if (player.lives > 0)
 			drawPlayer(&player, scale, LIME, game->atlas);
-		player.position = (Vector2){550, 30};
+		player.position = (Vector2){550 - offset.x, 30 + offset.y};
 		if (player.lives > 1)
 			drawPlayer(&player, scale, LIME, game->atlas);
-		player.position = (Vector2){570, 30};
+		player.position = (Vector2){570 - offset.x, 30 + offset.y};
 		if (player.lives > 2)
 			drawPlayer(&player, scale, LIME, game->atlas);
-		DrawText(TextFormat("%d", game->player[1].score), 370, 0, 20, LIME);
+		DrawText(TextFormat("%d", game->player[1].score), 370 - offset.x, 0 + offset.y, 20, LIME);
 	}
 }
 
@@ -71,7 +71,6 @@ static void drawGameOver(Game *game, int frameCounter)
 		DrawText("Esc",SCREEN_WIDTH/2 - MeasureText("Esc",25) + 125,
 				 SCREEN_HEIGHT / 3,25, RED);
 	}
-	// TODO(v.caraulan): Score
 }
 
 static void drawMenu(Game *game, int frameCounter)
@@ -113,16 +112,25 @@ void drawGame(Game* game, int frameCounter)
 		case GS_PLAY:
 		case GS_PLAY2:
 		{
-			for(int i = 0; i < ENEMY_COUNT; i++)
+			for(int i = 0; i < game->enemyCount; i++)
 				drawEnemy(&game->enemies[i], game->atlas);
-			for(int i = 0; i < game->bulletCount; i++)
+			for(int i = 0; i < game->player[0].bulletCount; i++)
 			{
-				Bullet* bullet = &game->bullets[i];
+				Bullet* bullet = &game->player[0].bullets[i];
 				drawBullet(bullet, game->atlas, SKYBLUE);
 			}
+
+			drawLayer(&game->layer, game->atlas);
 			drawPlayer(&game->player[0], 0.25f, SKYBLUE, game->atlas);
 			if (game->state == GS_PLAY2)
+			{
+				for(int i = 0; i < game->player[1].bulletCount; i++)
+				{
+					Bullet* bullet = &game->player[1].bullets[i];
+					drawBullet(bullet, game->atlas, SKYBLUE);
+				}
 				drawPlayer(&game->player[1], 0.25f, GREEN, game->atlas);
+			}
 		}break;
 		case GS_GAMEOVER:
 		{
@@ -134,6 +142,6 @@ void drawGame(Game* game, int frameCounter)
 		}
 	}
 	DrawTextureEx(game->foreground, (Vector2){0, 0}, 0, 1.0f, WHITE);
-	drawScoreBoard(game);
+	drawScoreBoard(game, (Vector2){400, 20});
 	EndDrawing();
 }

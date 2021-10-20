@@ -3,8 +3,6 @@
 
 int main()
 {
-	printf("OSVALDO LOANDA\n");
-
 	Game game = {0};
 	bool success = initGame(&game);
 	if (success)

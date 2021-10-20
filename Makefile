@@ -1,5 +1,7 @@
 PROGRAM=minestorm
 
+TEST = my_test
+
 # Add your objs to generate in OBJS var
 
 #SD = /home/ISART/v.caraulan/Work/minestorm/src/
@@ -25,16 +27,18 @@ DEPS=$(OBJS:.o=.d)
 
 .PHONY: all clean
 
-all: $(PROGRAM)
+all: $(PROGRAM) $(TEST)
 
 -include $(DEPS)
 
 %.o: %.c
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@
 
-$(PROGRAM): $(OBJS)
+$(PROGRAM): $(OBJS) $(TEST)
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
+$(TEST): ./src/test.o ./src/Math.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o $@
 build.tar.gz: $(PROGRAM) $(wildcard assets/*)
 	tar czf build.tar.gz $(PROGRAM) assets
 
