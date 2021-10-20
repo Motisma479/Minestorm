@@ -1,5 +1,6 @@
 #include "Math.h"
-
+#include <raylib.h>
+#include <stdio.h>
 
 Vector2d zeroVector2d()
 {
@@ -132,4 +133,59 @@ bool testCircleRect(Circle c, AABB rect)
 
     return distSq <= c.radius * c.radius;
     
+}
+
+
+void drawShape()
+{
+    DrawPolyLines((Vector2){100.0f,200.0f},3,100.0f,0.0f,RED);
+    Vector2d v1 = {2.5f,3.4f};
+    Vector2d v2 = {2.51f,3.4f};
+    printf("%d\n", isEqualToVector2d(v1,v2));
+}
+
+/*int countVertices(PolygonShape)
+{
+
+}
+*/
+
+void getNumberOfVertices(PolygonShape shape,int type,int* nbVertices)
+{
+      //int count;
+      shape.type = type;
+
+    switch (shape.type)
+    {
+        case POINT_SHAPE:
+            *nbVertices = 1;
+            break;
+        case SEGMENT_SHAPE:
+            *nbVertices = 2;
+            break;
+        case TRIANGLE_SHAPE:
+            *nbVertices = 3;
+            break;
+        case AABB_SHAPE:
+            *nbVertices = 4;
+            break;
+        case OBB_SHAPE:
+            *nbVertices = 4;
+            break;
+        case CONVEX_SHAPE:
+            for(int i = 0; i < shape.shapes.convexPoly.nbPoints; i++)
+            {
+                Vector2d* p1 = &shape.shapes.convexPoly.points[i];
+                //Next vertex;
+                Vector2d* p2 = &shape.shapes.convexPoly.points[ i + 1 == shape.shapes.convexPoly.nbPoints ? 0 : i+1 ];
+
+                if(!isEqualToVector2d(*p1,*p2))
+                {
+                    *nbVertices += 1;
+                }
+            }
+            break;
+        default:
+            break;
+    }
 }

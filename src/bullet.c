@@ -8,10 +8,10 @@ void initBullet(Bullet* bullet,Vector2 position,float angle)
     bullet->angle = angle;
     bullet->scale = 64.0f;
 
-    bullet->rectComponent.min.x = bullet->position.x - bullet->scale /2.0f;
+    /*bullet->rectComponent.min.x = bullet->position.x - bullet->scale /2.0f;
     bullet->rectComponent.min.y = bullet->position.y - bullet->scale /2.0f;
     bullet->rectComponent.max.x = bullet->position.x + bullet->scale /2.0f;
-    bullet->rectComponent.max.y = bullet->position.y + bullet->scale /2.0f;
+    bullet->rectComponent.max.y = bullet->position.y + bullet->scale /2.0f;*/
 }
 void updateBullet(Bullet* bullet,float deltaTime)
 {

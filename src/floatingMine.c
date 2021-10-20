@@ -15,10 +15,10 @@ void initFloatingMine(FloatingMine* mine)
     //mine->rectComponent.min.y = mine->position.y;
     //mine->rectComponent.max.x = mine->position.x + mine->scale / 2.0f;
     //mine->rectComponent.max.y = mine->position.y + mine->scale /2.0f;
-    mine->rectComponent.position.x = mine->position.x;
+    /*mine->rectComponent.position.x = mine->position.x;
     mine->rectComponent.position.y = mine->position.y;
     mine->rectComponent.size.x = mine->scale;
-    mine->rectComponent.size.y = mine->scale;
+    mine->rectComponent.size.y = mine->scale;*/
 
 }
 
