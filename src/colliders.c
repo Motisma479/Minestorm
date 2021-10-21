@@ -42,6 +42,10 @@ int main(int argc, char** argv)
 	float lambda2 = ((v3.y - v1.y) * (16 - v3.x) + (v1.x - v3.x) * (16 - v3.y)) / ((v2.y - v3.y) * (v1.x - v3.x) + (v3.x - v2.x) * (v1.y - v3.y));
 	float lambda3 = 1 - lambda1 - lambda2;
 
+	//Cartesian coordinates
+	float x = lambda1 * v1.x + lambda2 * v2.x + lambda3 * v3.x;
+	float y = lambda1 * v1.y + lambda2 * v2.y + lambda3 * v3.y;
+
 	while (!WindowShouldClose())
 	{
 
