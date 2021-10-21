@@ -1,7 +1,13 @@
 PROGRAM=minestorm
+TEST_COLLISION = test_collision
 
 # Add your objs to generate in OBJS var
-OBJS=src/main.o src/game.o src/player.o src/mineLayer.o src/floatingMine.o src/bullet.o src/testCollision.o src/Math.o
+OBJS=src/main.o src/game.o src/player.o src/mineLayer.o src/floatingMine.o src/bullet.o src/testCollision.o src/test.o src/Math.o
+
+#SD = /home/ISART/v.caraulan/Work/minestorm/src/
+SD = ./src/
+
+OBJS=$(SD)main.o $(SD)game.o $(SD)player.o $(SD)mineLayer.o $(SD)enemy.o $(SD)bullet.o $(SD)draw.o $(SD)Math.o
 
 CC=gcc
 TARGET=$(shell $(CC) -dumpmachine)
@@ -21,7 +27,7 @@ DEPS=$(OBJS:.o=.d)
 
 .PHONY: all clean
 
-all: $(PROGRAM)
+all: $(PROGRAM)  $(TEST_COLLISION)
 
 -include $(DEPS)
 
@@ -31,8 +37,10 @@ all: $(PROGRAM)
 $(PROGRAM): $(OBJS)
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
+$(TEST_COLLISION): ./src/test.o ./src/Math.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o $@
 build.tar.gz: $(PROGRAM) $(wildcard assets/*)
 	tar czf build.tar.gz $(PROGRAM) assets
 
 clean:
-	rm -f $(OBJS) $(DEPS) build.tar.gz $(PROGRAM)
+	rm -f $(OBJS) $(DEPS) build.tar.gz $(PROGRAM) $(TEST_COLLISION )

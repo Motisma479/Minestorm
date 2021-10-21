@@ -1,40 +1,68 @@
 #pragma once
 #include <raylib.h>
-#include "player.h"
+#include <stdbool.h>
+#include "common.h"
+
 #include "mineLayer.h"
-#include "floatingMine.h"
-#include "commom.h"
+#include "player.h"
+#include "enemy.h"
 #include "bullet.h"
+
+typedef enum
+{
+	GS_MENU,
+	GS_PAUSE,
+	GS_PAUSE2,
+	GS_PLAY,
+	GS_PLAY2,
+	GS_GAMEOVER,
+	GS_GAMEOVER2,
+	GS_CLOSE,
+} GameState;
 
 typedef struct Game
 {
-	bool gameIsRunning;
-	bool gamePaused;
-	bool thisHasCollideWith;
-
-	Texture2D background;
+	GameState state;
+	Texture2D atlas;
 	Texture2D foreground;
-	Texture2D gameTexture;
+	Texture2D background;
 
-	Player player;
+	Rectangle bulletCoord;
+	float ticksCount;
+
+	Player player[2];
 	MineLayer layer;
-
-	FloatingMine enemies[ENEMY_COUNT];
-
-    int bulletCount;
-    Bullet bullets[BULLET_CAPACITY];
+	int enemyCount;
+	Enemy enemies[ENEMY_COUNT];
+	int    level;
+	bool   levelStart;
 } Game;
+
+bool initGame(Game* game);
+void runGameLoop(Game* game);
+void processInput(Game* game);
+void updateGame(Game* game);
+
+int gameEnemyAliveCount(Game* game);
+
+void gameAddBullet(Player *player);
+void gameRemoveBullet(Player *player);
+void gameCollisions(Game* game, Player *player);
+
+void loadData(Game* game);
+void unloadData(Game* game);
+
+void gameIsOver(Game* game);
+void Shutdown(Game* game);
+
 
 bool initGame(Game* game);
 void processInput(Game* game);
 void updateGame(Game* game);
 void runGameLoop(Game* game);
-void drawGame(Game* game);
 void shutdown(Game* game);
 
-//void addEnemyToGame();
-void gameAddBullet(Game* game, Vector2 position);
-void gameRemoveBullet(Game* game);
+void addEnemyToGame();
 
 void pauseGame(Game* game);
 void drawGameBackground(Game* game);

@@ -1,72 +1,38 @@
 #pragma once
 #include <raylib.h>
-#include "game.h"
-
-#define ENEMY_TRANSFORM     Vector2 position; \
-                            float scale;\
-                            float rotation;\
-                            float speed;\
-                            int type;\
-                            int size;\
 
 
-//enemies commom base
-typedef struct EnemyTranform
+typedef enum EnemySize
 {
-    ENEMY_TRANSFORM
-} EnemyTranform;
+	ES_NONE,
+	ES_SMALL,
+	ES_MEDIUM,
+	ES_BIG
+} EnemySize;
 
-//enemy size
-enum {LOW_SIZE = 1,MEDIUM_SIZE,BIG_SIZE};
-
-//enemy identifier
-enum {FLOATING_MINE = 1, FIREBALL_MINE, MAGNETIC_MINE, MAGNETIC_FIREBALL_MINE};
-
-//All enemies objects
-typedef struct FloatingMine
+typedef enum EnemyType
 {
-    ENEMY_TRANSFORM
-} FloatingMine;
+	ET_NONE,
+	ET_FLOATING,
+	ET_FIREBALL,
+	ET_MAGNETIC,
+	ET_MAGNETIC_FIREBALL,
+} EnemyType;
 
-typedef struct FireBallMine
+typedef struct Enemy
 {
-    ENEMY_TRANSFORM
-    bool touched; // to shoot if touched
-} FireBallMine;
-
-typedef struct MagneticMine //pursuit the player
-{
-    ENEMY_TRANSFORM
-    
-} MagneticMine;
-
-
-typedef struct MagneticFireballMine //pursuit the player
-{
-    ENEMY_TRANSFORM
-    bool touched; // to shoot if touched
-} MagneticFireballMine;
-
-//With these struct, we define a union enemy to simulate a OPP
-typedef union Enemy
-{
-    int type;
-    EnemyTranform enemyBase;
-    FloatingMine floatingMine;
-    FireBallMine fireBallMine;
-    MagneticMine magneticMine;
-    MagneticFireballMine magneticFireMine;
-
+	Vector2   position;
+	Vector2   speed;
+	float     rotation;
+	int       life;
+	bool      active;
+	EnemyType type;
+	EnemySize size;
 } Enemy;
 
-
-//enemy Base 
-void initEnemy(Enemy* enemy);
+void initEnemy(Enemy* enemy, Vector2 position, EnemyType type, EnemySize size);
+void makeEnemyType(Enemy* enemy, EnemyType type);
 void updateEnemy(Enemy* enemy,float deltaTime);
-void drawEnemy(Enemy* enemy,const Texture2D texture);
-
-
-
-
-
-
+void drawEnemy(Enemy* enemy, const Texture2D texture);
+void loadEnemyData(Enemy* enemy);
+void unLoadEnemyData(Enemy* enemy);

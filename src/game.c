@@ -1,222 +1,389 @@
 #include "game.h"
-//#include "testCollision.h"
+#include "draw.h"
 #include "Math.h"
 
-static int frameCount = 0;
+//cross->textureCoord[0] = (Rectangle){345, 90, 75, 75};
+//ship->textureCoord[0] = (Rectangle){513, 89, 256, 79};
+
+#include <stdlib.h>
+
+static int framesCounter;
+
+int addEnemy(Game *game, EnemySize size)
+{
+	for (int i = 0; i < game->enemyCount;i++)
+	{
+		Enemy *enemy = &game->enemies[i];
+		if (!enemy->active)
+		{
+			initEnemy(enemy, enemy->position, enemy->type, size);
+			enemy->active = true;
+			return (1);
+		}
+	}
+	return (0);
+}
+
+void initLevel1(Game *game)
+{
+	Vector2 Random;
+
+	game->layer = (MineLayer){0};
+	initLayer(&game->layer);
+
+	game->enemyCount = ENEMY_COUNT;
+	game->level = 1;
+	for(int i = 0; i < game->enemyCount; i++)
+	{
+		Random.x = GetRandomValue(64.0f, (float)SCREEN_WIDTH - 64.0f);
+		Random.y = GetRandomValue(80.0f, SCREEN_HEIGHT - 80.0f);
+		initEnemy(&game->enemies[i], Random, ET_FLOATING, ES_NONE);
+		game->enemies[i].active = false;
+	}
+}
 
 bool initGame(Game* game)
 {
-	InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "[--MATHIEU-VICTOR-OSVALDO--GP1--MINESTORM PROJECT--ISART DIGITAL--]");
+	game->state = GS_MENU;
+	InitWindow(SCREEN_WIDTH,SCREEN_HEIGHT,"VICTOR-MATHIEU-OSVALDO");
+	SetExitKey(KEY_NULL);
 	SetTargetFPS(60);
 
-	game->gamePaused = false;
-	game->gameIsRunning = true;
-	game->bulletCount = 0;
-	
-	//loadGameData(game);
+	initPlayer(&game->player[0], (Vector2){SCREEN_WIDTH / 3.0f, SCREEN_HEIGHT / 2.0f});
+	initPlayer(&game->player[1], (Vector2){SCREEN_WIDTH / 1.5f, SCREEN_HEIGHT / 2.0f});
 
-	/*initPlayer(&game->player);
-	game->player.active = true;*/
+	initLevel1(game);
 
-	    //inti ememies
-    /*for(int i = 0; i < ENEMY_COUNT; i++)
-    {
-        initFloatingMine(&game->enemies[i]);
-    }*/
-
-	if(!game->gameIsRunning)
-		return false;
-
+	loadData(game);
+	game->ticksCount = 0;
 	return true;
-}
-void processInput(Game* game)
-{
-	/*if (IsKeyPressed(KEY_F) && game->gameIsRunning && !game->layer.active)
-	{
-		initLayer(&game->layer);
-		game->layer.active = true;
-	}*/
-
-	if (IsKeyDown(KEY_ESCAPE) && game->gameIsRunning)
-	{
-		game->gameIsRunning = false;
-	}
-
-	if (IsKeyPressed(KEY_SPACE))
-	{
-		game->gamePaused = !game->gamePaused;
-	}
-
-	//add bullet to the game
-    /*if(IsKeyPressed(KEY_F))
-	{
-		gameAddBullet(game,game->player.position);
-	}*/
-        
-
- 	//inputsPlayer(&game->player);
-}
-void updateGame(Game* game)
-{
-	//float deltaTime = GetFrameTime();
-	//if (game->layer.layerEnd && !game->player.active)
-	//{
-		//initPlayer(&game->player);
-		//game->player.active = true;
-	//}
-	if (!game->gamePaused)
-	{
-		//TODO : updating all game objects
-		//update enemies
-        /*for(int i = 0; i < ENEMY_COUNT; i++)
-        {
-            updateFloatingMine(&game->enemies[i],deltaTime);
-        }
-
-		updateLayer(&game->layer,deltaTime);
-		updatePlayer(&game->player, deltaTime);
-		*/
-		//update bullets
-        /*for(int i = 0; i < game->bulletCount; i++)
-        {
-            Bullet* bullet = &game->bullets[i];
-            updateBullet(bullet,deltaTime);
-        }
-		gameRemoveBullet(game);
-		*/
-
-		//test collision
-		//testGameCollisions(game);
-
-	}
-	else
-	{
-		//TODO
-		frameCount++;
-	}
 }
 
 void runGameLoop(Game* game)
 {
-	while (!WindowShouldClose() && game->gameIsRunning) 
+	while (!WindowShouldClose() && game->state != GS_CLOSE)
 	{
+		game->ticksCount = GetFrameTime();
 		processInput(game);
 		updateGame(game);
-		drawGame(game);
+		drawGame(game, framesCounter);
 	}
+
 }
-void drawGame(Game* game)
+
+
+int setInputFlagPressed(KeyboardKey key, PlayerAction *flag, PlayerAction action)
 {
-	BeginDrawing();
-	ClearBackground(RAYWHITE);
-
-	//drawGameBackground(game);
-
-	if (!game->gamePaused)
+	if(IsKeyPressed(key))
 	{
-		//display all game objects
-
-		//draw enemies
-        /*for(int i = 0; i < ENEMY_COUNT; i++)
-        {
-            drawFloatingMine(&game->enemies[i],&game->gameTexture);
-        }
-
-		drawLayer(&game->layer,&game->gameTexture);
-
-		drawPlayer(&game->player,&game->gameTexture);
-		*/
-
-		//draw bullets
-        /*for(int i = 0; i < game->bulletCount; i++)
-        {
-            Bullet* bullet = &game->bullets[i];
-            drawBullet(bullet,&game->gameTexture);
-        }*/
-
-		/*if(game->thisHasCollideWith)
-		{
-			DrawText("COLLISION",SCREEN_WIDTH / 2.0f - MeasureText("COLLISION",50) + 150.0f,
-                SCREEN_HEIGHT / 2.0f,50,RED);
-			game->thisHasCollideWith = false;
-		}*/
+		*flag |= action;
+		return (1);
 	}
 	else
+		*flag &= ~action;
+	return (0);
+}
+
+void setInputFlag(KeyboardKey key, PlayerAction *flag, PlayerAction action)
+{
+	if(IsKeyDown(key))
+		*flag |= action;
+	else
+		*flag &= ~action;
+}
+
+void processInput(Game* game)
+{
+	Player *player1 = &game->player[0];
+	Player *player2 = &game->player[1];
+	if(IsKeyPressed(KEY_SPACE))
 	{
-		//pauseGame(game);
+		static GameState temp = 0;
+
+		if (game->state == GS_PLAY || game->state == GS_PLAY2)
+		{
+			temp = game->state;
+			game->state = GS_PAUSE;
+		}
+		else if (game->state == GS_PAUSE)
+			game->state = temp;
 	}
 
-	EndDrawing();
-}
-void shutdown(Game* game)
-{
-	//unloadGameData(game);
-	//game->gameIsRunning = false;
-	//unloadGameData(game);
-	//CloseWindow();
-	//if (!game->gameIsRunning)
-	//{
-		//game->gameIsRunning = false;
-		//unloadGameData(game);
-		//CloseWindow();
-	//}
+	setInputFlagPressed(KEY_F, &player1->action, PA_SHOOT);
+	if (!setInputFlagPressed(KEY_T, &player1->action, PA_TELEPORT))
+		setInputFlagPressed(KEY_E, &player1->action, PA_TELEPORT);
+	setInputFlag(KEY_D, &player1->action, PA_TURN_LEFT);
+	setInputFlag(KEY_G, &player1->action, PA_TURN_RIGHT);
+	setInputFlag(KEY_R, &player1->action, PA_ACCELERATION);
+
+	if(IsKeyPressed('K') && (game->state == GS_MENU))
+		game->state = GS_PLAY2;
+	if (game->state == GS_PLAY2)
+	{
+		setInputFlagPressed(KEY_K, &player2->action, PA_SHOOT);
+		if (!setInputFlagPressed(KEY_U, &player2->action, PA_TELEPORT))
+			setInputFlagPressed(KEY_O, &player2->action, PA_TELEPORT);
+		setInputFlag(KEY_J, &player2->action, PA_TURN_LEFT);
+		setInputFlag(KEY_L, &player2->action, PA_TURN_RIGHT);
+		setInputFlag(KEY_I, &player2->action, PA_ACCELERATION);
+	}
+	if(IsKeyPressed(KEY_ESCAPE))
+	{
+		if (game->state == GS_MENU)
+			game->state = GS_CLOSE;
+		if (game->state == GS_PAUSE || game->state == GS_GAMEOVER)
+		{
+			game->state = GS_MENU;
+			*player1 = (Player){0};
+			*player2 = (Player){0};
+			initPlayer(player1, (Vector2){SCREEN_WIDTH / 3.0f, SCREEN_HEIGHT / 2.0f});
+			initPlayer(player2, (Vector2){SCREEN_WIDTH / 1.5f, SCREEN_HEIGHT / 2.0f});
+			initLevel1(game);
+			game->levelStart = false;
+		}
+	}
 }
 
-void loadGameData(Game* game)
+void updateGame(Game* game)
 {
-	/*game->background = LoadTexture("assets/background.png");
-	game->foreground =  LoadTexture("assets/foreground.png");
-	game->gameTexture = LoadTexture("assets/mines.png");*/
+	switch(game->state)
+	{
+		case GS_MENU:
+		{
+			if (game->player[1].action & PA_SHOOT)
+			{
+				game->state = GS_PLAY2;
+				game->player[1].action &= ~(PA_SHOOT);
+			}
+			else if (game->player[0].action & PA_SHOOT)
+				game->state = GS_PLAY;
+			game->player[0].action &= ~(PA_SHOOT);
+			framesCounter++;
+		}break;
+		case GS_PLAY:
+		case GS_PLAY2:
+		{
+			if (game->levelStart == false)
+			{
+				if (updateLayer(&game->layer, game->ticksCount))
+				{
+					game->levelStart = true;
+					addEnemy(game, ES_BIG);
+					addEnemy(game, ES_BIG);
+				}
+			}
+			if (game->levelStart)
+			{
+				updatePlayer(&game->player[0], game->ticksCount);
+				if (game->player[0].action & PA_SHOOT)
+				{
+					gameAddBullet(&game->player[0]);
+					game->player[0].action &= ~PA_SHOOT;
+				}
+				if (game->state == GS_PLAY2)
+				{
+					if (game->player[1].action & PA_SHOOT)
+						gameAddBullet(&game->player[1]);
+					updatePlayer(&game->player[1], game->ticksCount);
+				}
+				for(int i = 0; i < game->enemyCount; i++)
+					updateEnemy(&game->enemies[i], game->ticksCount);
+
+				for(int i = 0; i < game->player[0].bulletCount; i++)
+				{
+					Bullet* bullet = &game->player[0].bullets[i];
+					updateBullet(bullet,game->ticksCount);
+				}
+
+				if (game->state == GS_PLAY2)
+				{
+					for(int i = 0; i < game->player[1].bulletCount; i++)
+					{
+						Bullet* bullet = &game->player[1].bullets[i];
+						updateBullet(bullet,game->ticksCount);
+					}
+				}
+
+				gameCollisions(game, &game->player[0]);
+				if (game->state == GS_PLAY2)
+					gameCollisions(game, &game->player[1]);
+				gameRemoveBullet(&game->player[0]);
+				gameRemoveBullet(&game->player[1]);
+				gameIsOver(game);
+			}
+		} break;
+		default:
+		{
+			framesCounter++;
+		}
+	}
 }
-void unloadGameData(Game* game)
+
+
+void gameAddBullet(Player *player)
 {
-	/*UnloadTexture(game->background);
+	Vector2 *position = &player->position;
+	float   rotation = player->rotation;
+	if(player->bulletCount == BULLET_CAPACITY)
+		return;
+
+	Bullet bullet = {0};
+
+	initBullet(&bullet, *position, rotation);
+
+	player->bullets[player->bulletCount] = bullet;
+	player->bulletCount += 1;
+}
+
+void gameRemoveBullet(Player *player)
+{
+
+	for(int i = 0; i < player->bulletCount; i++)
+	{
+		Bullet* bullet = &player->bullets[i];
+
+		if (lengthVector2d((Vector2d){bullet->addPosition.x, bullet->addPosition.y}) > SCREEN_HEIGHT / 2)
+		{
+			player->bullets[i] = player->bullets[player->bulletCount - 1];
+			player->bulletCount -= 1;
+		}
+	}
+}
+
+int gameEnemyAliveCount(Game* game)
+{
+	int count = 0;
+	for(int i = 0; i < game->enemyCount; i++)
+	{
+		//if(game->enemies[i].life > 0)
+		//count++;
+	}
+	return count;
+}
+void loadData(Game* game)
+{
+	game->atlas = LoadTexture("assets/mines.png");
+	game->background = LoadTexture("assets/background.png");
+	game->foreground = LoadTexture("assets/foreground.png");
+}
+
+void unloadData(Game* game)
+{
+	UnloadTexture(game->atlas);
+	UnloadTexture(game->background);
 	UnloadTexture(game->foreground);
-	UnloadTexture(game->gameTexture);*/
 }
 
-void drawGameBackground(Game* game)
+//TODO : Collisions
+
+int collisionEnemyBullet(Game *game, Player *player, Enemy *enemy, Bullet *bullet)
 {
-	/*DrawTexture(game->background, 0, 0, WHITE);
-	DrawTexture(game->foreground, 0, 0, WHITE);*/
+	Rectangle enemyRec = {enemy->position.x, enemy->position.y, 25, 25};
+	Rectangle bulletRec = {bullet->position.x, bullet->position.y, 25 / 4, 25 / 4};
+	if (enemy->active && enemy->type != ET_NONE)
+	{
+		if (CheckCollisionRecs(bulletRec, enemyRec))
+		{
+			switch(enemy->size)
+			{
+				case ES_SMALL:
+				{
+					player->score += 200;
+				}break;
+				case ES_MEDIUM:
+				{
+					addEnemy(game, ES_SMALL);
+					addEnemy(game, ES_SMALL);
+					player->score += 135;
+				}break;
+				case ES_BIG:
+				{
+					addEnemy(game, ES_MEDIUM);
+					addEnemy(game, ES_MEDIUM);
+					player->score += 100;
+				}break;
+				default:
+				break;
+			}
+			enemy->type = ET_NONE;
+			bullet->position.x = -1;
+			bullet->position.y = -1;
+			return (1);
+		}
+	}
+	return (0);
 }
 
-void pauseGame(Game* game)
+void gameCollisions(Game* game, Player *player)
 {
-	if ((frameCount / 30) % 2) DrawText("GAME PAUSED",
-		(int)SCREEN_WIDTH / 2 - MeasureText("GAME PAUSED",50) + 200, (int)SCREEN_HEIGHT/2 -50,50,PURPLE);
+	for(int j = 0; j < game->enemyCount; j++)
+	{
+		Enemy* enemy = &game->enemies[j];
+		Rectangle enemyRec = {enemy->position.x, enemy->position.y, 25, 25};
+		for(int i = 0; i < player->bulletCount; i++)
+		{
+			Bullet* bullet = &player->bullets[i];
+			if (collisionEnemyBullet(game, player, enemy, bullet))
+				break;
+		}
+		Rectangle playerRec =
+		{
+			player->position.x,
+			player->position.y,
+			84 * 0.25f,
+			140 * 0.25f
+		};
+
+		if (enemy->active && enemy->type != ET_NONE &&
+			CheckCollisionRecs(playerRec, enemyRec))
+		{
+			int lives = player->lives - 1;
+			game->levelStart = false;
+			*player = (Player){0};
+			player->position.x = SCREEN_WIDTH / 3.0f;
+			player->position.y = SCREEN_HEIGHT / 2.0f;
+			player->rotation = -90.0f;
+			player->lives = lives;
+			initLevel1(game);
+		}
+	}
 }
 
-
-/*void gameAddBullet(Game* game, Vector2 position)
+void gameIsOver(Game* game)
 {
-    if(game->bulletCount == BULLET_CAPACITY)
-    {
-        return;
-    }
+	if (game->state == GS_PLAY)
+	{
+		if (game->player[0].lives <= 0)
+			game->state = GS_GAMEOVER;
+	}
+	else if (game->state == GS_PLAY2)
+	{
+		if (game->player[0].lives <= 0 &&
+			game->player[1].lives <= 0 )
+			game->state = GS_GAMEOVER;
+	}
 
-    Bullet bullet = {0};
 
-    //inti bullet
-    initBullet(&bullet,position,game->player.rotation);
-    
-    game->bullets[game->bulletCount] = bullet;
-    game->bulletCount += 1;
+
+	for(int i = 0; i < game->enemyCount; i++)
+	{
+		if (game->enemies[i].type != ET_NONE)
+			return;
+	}
+	game->level++;
+	game->levelStart = false;
+	switch(game->level)
+	{
+		case 2: initLevel1(game);break;
+		case 3: initLevel1(game);break;
+		case 4: initLevel1(game);break;
+		case 5: initLevel1(game);break;
+	}
 }
-void gameRemoveBullet(Game* game)
+
+void Shutdown(Game* game)
 {
-    //remove bullets
-    for(int i = 0; i < game->bulletCount; i++)
-    {
-        Bullet* bullet = &game->bullets[i];
-        
-        if(bullet->position.x < 0.0f || bullet->position.x > (float) SCREEN_WIDTH
-        || bullet->position.y < 0.0f || bullet->position.y > (float)SCREEN_HEIGHT)
-        {
-            game->bullets[i] = game->bullets[game->bulletCount - 1];
-            game->bulletCount -= 1;
-
-        }
-    }
+	game->state = GS_CLOSE;
+	unloadData(game);
+	CloseWindow();
 }
-*/

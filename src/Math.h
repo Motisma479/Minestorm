@@ -16,7 +16,7 @@ typedef struct Vector2d
 {
     float x;
     float y;
-     
+
 } Vector2d;
 
 //Line segment
@@ -42,9 +42,7 @@ typedef struct AABB
     Vector2d max;
     //Vector2d position;
     //Vector2d size;
-
 } AABB;
-
 //Oriented box
 typedef struct OBB
 {
@@ -85,16 +83,17 @@ typedef union Shapes
 
 
 //Type's of shape
-typedef enum ShapeType{POINT_SHAPE = 1,SEGMENT_SHAPE,AABB_SHAPE,
-                        OBB_SHAPE,TRIANGLE_SHAPE,CONVEX_SHAPE} ShapeType;
+//typedef enum ShapeType{POINT_SHAPE = 1,SEGMENT_SHAPE,AABB_SHAPE,
+                        //OBB_SHAPE,TRIANGLE_SHAPE,CONVEX_SHAPE} ShapeType;
+	//OBB_SHAPE,TRIANGLE_SHAPE,CONVEX_SHAPE} ShapeType;
 
 //Polygon
-typedef struct PolygonShape
-{
-    ShapeType type;
-    Shapes shapes;
+//typedef struct PolygonShape
+//{
+    //ShapeType type;
+    //Shapes shapes;
 
-} PolygonShape;
+//} PolygonShape;
 
 
 //2D Vector functions
@@ -128,11 +127,13 @@ bool testCircleRect(Circle c, AABB rect);
 
 //Fonctions for the SAT
 Range getPointProjOnVector(Vector2d vector, Vector2d point);
-void getNumberOfVertices(PolygonShape shape,int type,int* nbVertices);
+//void getNumberOfVertices(PolygonShape shape,int type,int* nbVertices);
 Range getMinRange(Range r1, Range r2);
 Range getMaxRange(Range r1, Range r2);
 bool rangeOverlapRange(Range r1, Range r2);
 
 
-bool intersect(PolygonShape shape1,int type1,PolygonShape shape2,int type2);
+//bool intersect(PolygonShape shape1,int type1,PolygonShape shape2,int type2);
+//void getNumberOfVertices(PolygonShape shape,int type,int* nbVertices);
+
 int satAlgorithm(Vector2d *a, Vector2d *b, int sizeA, int sizeB);

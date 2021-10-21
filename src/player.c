@@ -1,134 +1,84 @@
 #include "player.h"
-#include "commom.h"
+#include "common.h"
 #include <math.h>
 
-void initPlayer(Player* player)
+void initPlayer(Player* player, Vector2 position)
 {
-	player->position = (Vector2){SCREEN_WIDTH /2.0f,SCREEN_HEIGHT /2.0f};
-	player->rotation = 0.0f;
-	player->speed = 200.0f;
-	player->active = false;
-	player->moving = false;
-	player->turnLeft = false;
-	player->turnRight = false;
+	player->position = position;
+    player->lives = 3;
+	player->rotation = -90.0f;
 }
 
-void inputsPlayer(Player* player)
+Vector2 getPlayerDirection(Player* player)
 {
-	//turn left
-	if (IsKeyDown(KEY_D))
-	{
-		player->turnLeft = true;
-	}
-	else
-	{
-		player->turnLeft = false;
-	}
-
-	//turn right
-	if (IsKeyDown(KEY_G))
-	{
-		player->turnRight = true;
-	}
-	else
-	{
-		player->turnRight = false;
-	}
-
-	//moving
-	if (IsKeyDown(KEY_R))
-	{
-		player->moving = true;
-	}
-	else
-	{
-		player->moving = false;
-	}
-
-	//shoot
-	if (IsKeyDown(KEY_F))
-	{
-
-	}
-
-	//Teleport
-	if (IsKeyDown(KEY_T))
-	{
-		player->teleportation = true;
-	}
-	else
-	{
-		player->teleportation = false;
-	}
+    return (Vector2){cosf(player->rotation*DEG2RAD),sinf(player->rotation*DEG2RAD)};
 }
-void updatePlayer(Player* player,float deltaTime)
+
+void updatePlayer(Player* player, float deltaTime)
 {
-	float rotation = 0.0f;
-	if (player->turnLeft)
+	//Rotation
+	if (player->action & PA_TURN_LEFT)
 	{
-		rotation -= PLAYER_ANGULAR_SPEED * deltaTime;
-		rotation += (float)ANGULAR_FRICTION * deltaTime;
+		player->rotation -= PLAYER_ANGULAR_SPEED * deltaTime;
+		player->rotation += (float)ANGULAR_FRICTION * deltaTime;
 	}
 
-	if (player->turnRight)
+	if (player->action & PA_TURN_RIGHT)
 	{
-		rotation += PLAYER_ANGULAR_SPEED * deltaTime;
-		rotation -= (float)ANGULAR_FRICTION * deltaTime;
+		player->rotation += PLAYER_ANGULAR_SPEED * deltaTime;
+		player->rotation -= (float)ANGULAR_FRICTION * deltaTime;
 	}
 
-	player->rotation += rotation;
-	
-
-	if (player->teleportation)
+	if (player->action & PA_TELEPORT)
 	{
 		teleportingPlayer(player);
 	}
 
-	if (player->moving)
-	{
-		Vector2 position = player->position;
+	//Movement
+    if(player->action & PA_ACCELERATION)
+    {
+		Vector2 direction = getPlayerDirection(player);
 
-		position.x += getPlayerDirection(player).x * player->speed * deltaTime;
-		position.y += getPlayerDirection(player).y * player->speed * deltaTime;
-
-		if (position.x < 64.0f) { position.x = (float)SCREEN_WIDTH - 64.0f; }
-		else if (position.x > (float)SCREEN_WIDTH - 64.0f) { position.x = 64.0f; }
-
-		if (position.y < 80.0f) { position.y = (float)SCREEN_HEIGHT - 80.0f; }
-		else if (position.y > (float)SCREEN_HEIGHT - 80.0f) { position.y = 80.0f; }
-
-		player->position = position;
+		player->acceleration.x += direction.x * PLAYER_SPEED;
+		player->acceleration.y += direction.y * PLAYER_SPEED;
 	}
+	player->position.x += player->acceleration.x * deltaTime;
+	player->position.y += player->acceleration.y * deltaTime;
+
+	// Wraparound
+	if (player->position.x < 64.0f) { player->position.x = (float)SCREEN_WIDTH - 64.0f; }
+	else if (player->position.x > (float)SCREEN_WIDTH - 64.0f) { player->position.x = 64.0f; }
+
+	if (player->position.y < 80.0f) { player->position.y = (float)SCREEN_HEIGHT - 80.0f; }
+	else if (player->position.y > (float)SCREEN_HEIGHT - 80.0f) { player->position.y = 80.0f; }
+
+	float friction = 20.0f;
+	//deacceleration
+	player->acceleration.x -= player->acceleration.x / friction;
+	player->acceleration.y -= player->acceleration.y / friction;
 }
-void drawPlayer(Player* player, const Texture2D* texture)
+
+void drawPlayer(Player* player, float scale, Color color, const Texture2D texture)
 {
-	Rectangle rect = { 0.0f,0.0f,texture->width / 4.0f,texture->height / 2.0f };
-	Rectangle position = { player->position.x,player->position.y,64.0f,64.0f };
-	Vector2 center = { 32.0f,32.0f };
-	//if (!player->teleportation && player->active)
-	//{
-		//DrawTexturePro(texture, rect, position, center, player->rotation, SKYBLUE);
-	//}
-	//Vector2 points = {100.0f,100.0f};
-	//Vector2 textCoords = {player->position.x,player->position.y};
-	if (player->active)
+	Rectangle textureCoord = (Rectangle){83, 58, 84, 140};
+	Rectangle playerPos =
 	{
-		if (!player->teleportation)
-		{
-			DrawTexturePro(*texture, rect, position, center, player->rotation, SKYBLUE);
-			//DrawTexturePoly(texture,center,&points,&textCoords,100,GREEN);
-		}
-	}
+		player->position.x,
+		player->position.y,
+		textureCoord.width * scale,
+		textureCoord.height * scale
+	};
+	Vector2 origin = {playerPos.width / 2, playerPos.height / 2};
 
+	//DrawRectanglePro(playerPos, origin, player->rotation + 90.0f, BLACK);
+
+	DrawTexturePro(texture, textureCoord,
+				   playerPos, origin, player->rotation + 90.0f, color);
+	//DrawCircle(playerPos.x, playerPos.y, 10, WHITE);
 }
+
 void teleportingPlayer(Player* player)
 {
-	Vector2 position = { (float)GetRandomValue(64,SCREEN_WIDTH - 64),
-		(float)GetRandomValue(80,SCREEN_HEIGHT - 80) };
-
-	player->position = position;
-}
-Vector2 getPlayerDirection(Player* player)
-{
-	return (Vector2){cosf(player->rotation*DEG2RAD - PI / 2.0f),sinf(player->rotation * DEG2RAD - PI / 2.0f)};
+	player->position = (Vector2) {(float)GetRandomValue(64,SCREEN_WIDTH - 64),
+		(float)GetRandomValue(80,SCREEN_HEIGHT - 80)};
 }

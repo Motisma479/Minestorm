@@ -7,7 +7,7 @@
 
 int main(void)
 {
-	Game game;
+	Game game = {0};
 	bool success = initGame(&game);
 	if (success)
 	{

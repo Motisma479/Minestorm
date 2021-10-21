@@ -1,24 +1,19 @@
 #include "Math.h"
-#include <stdio.h>
-#include <math.h>
-
 #include <raylib.h>
+#include <stdio.h>
 
 Vector2d zeroVector2d()
 {
     return (Vector2d){0.0f,0.0f};
 }
-
 Vector2d addVector2d(Vector2d a,Vector2d b)
 {
     return (Vector2d){a.x + b.x, a.y + b.y};
 }
-
 Vector2d subsVector2d(Vector2d a,Vector2d b)
 {
     return (Vector2d){a.x - b.x, a.y - b.y};
 }
-
 bool isEqualToVector2d(Vector2d a,Vector2d b)
 {
     bool test = (a.x - b.x) >= -EPSILON  && (a.x - b.x) <= EPSILON && 
@@ -56,21 +51,10 @@ Vector2d scaleVector2d(Vector2d v,float scalar)
 {
     return (Vector2d){v.x * scalar, v.y * scalar};
 }
-
 float distVector2d(Vector2d a, Vector2d b)
 {
     return lengthVector2d(subsVector2d(a,b));
 }
-
-Vector2d getNormal(Vector2d a, Vector2d b)
-{
-	Vector2d result;
-
-	result.x = -(b.y - a.y);
-	result.y = (b.x - a.x);
-	return (result);
-}
-
 
 float dotProduct(Vector2d a,Vector2d b)
 {
@@ -81,12 +65,12 @@ float lerp(float a,float b,float t)
 {
     return (1.0f - t) * a + b * t;
 }
-
 float inverseLerp(float a,float b,float value)
 {
     return (value - a) / (b - a);
 }
- 
+
+
 Vector2d pointOnLineSegment(LineSegment segment, float t)
 {
     Vector2d seg;
@@ -99,16 +83,16 @@ bool testPointCircle(Vector2d point,Circle c)
 {
     float distSq =(distVector2d(point, c.center));
     distSq *= distSq;
-    
+
 
     return distSq <= c.radius * c. radius;
 }
 bool testPointRect(Vector2d point, AABB rect)
 {
     bool outside = point.x < rect.min.x ||
-    point.y < rect.min.y ||
-    point.x > rect.max.x ||
-    point.y > rect.max.y;
+		point.y < rect.min.y ||
+		point.x > rect.max.x ||
+		point.y > rect.max.y;
 
     //If none of these are true, they must intersect
     return !outside; 
@@ -116,9 +100,9 @@ bool testPointRect(Vector2d point, AABB rect)
 bool testRect(AABB r1,AABB r2)
 {
     bool collision = r1.max.x < r2.min.x ||
-    r1.max.y < r2.min.y ||
-    r2.max.x < r1.min.x ||
-    r2.max.y < r1.min.y;
+		r1.max.y < r2.min.y ||
+		r2.max.x < r1.min.x ||
+		r2.max.y < r1.min.y;
 
     //If none of these are true, they must intersect
     return !collision;
@@ -149,195 +133,71 @@ bool testCircleRect(Circle c, AABB rect)
     float distSq = lengthSqVector2d((Vector2d){distX,distY});
 
     return distSq <= c.radius * c.radius;
-    
+
 }
 
-
-
-void getNumberOfVertices(PolygonShape shape,int type,int* nbVertices)
+/*int countVertices(PolygonShape)
 {
-      shape.type = type;
+
+}
+*/
+
+/*void getNumberOfVertices(PolygonShape shape,int type,int* nbVertices)
+{
+	//int count;
+	shape.type = type;
 
     switch (shape.type)
     {
         case POINT_SHAPE:
-            *nbVertices = 1;
-            break;
+		*nbVertices = 1;
+		break;
         case SEGMENT_SHAPE:
-            *nbVertices = 2;
-            break;
+		*nbVertices = 2;
+		break;
         case TRIANGLE_SHAPE:
-            *nbVertices = 3;
-            break;
+		*nbVertices = 3;
+		break;
         case AABB_SHAPE:
-            *nbVertices = 4;
-            break;
+		*nbVertices = 4;
+		break;
         case OBB_SHAPE:
-            *nbVertices = 4;
-            break;
+		*nbVertices = 4;
+		break;
         case CONVEX_SHAPE:
-            for(int i = 0; i < shape.shapes.convexPoly.nbPoints; i++)
-            {
-                Vector2d* p1 = &shape.shapes.convexPoly.points[i];
-                //Next vertex;
-                Vector2d* p2 = &shape.shapes.convexPoly.points[ i + 1 == shape.shapes.convexPoly.nbPoints ? 0 : i+1 ];
+		for(int i = 0; i < shape.shapes.convexPoly.nbPoints; i++)
+		{
+			Vector2d* p1 = &shape.shapes.convexPoly.points[i];
+			//Next vertex;
+			Vector2d* p2 = &shape.shapes.convexPoly.points[ i + 1 == shape.shapes.convexPoly.nbPoints ? 0 : i+1 ];
 
-                if(!isEqualToVector2d(*p1,*p2))
-                {
-                    *nbVertices += 1;
-                }
-            }
-            break;
+			if(!isEqualToVector2d(*p1,*p2))
+			{
+				*nbVertices += 1;
+			}
+		}
+		break;
         default:
-            break;
+		break;
     }
 }
-
-Range getMinRange(Range r1, Range r2)
+*/
+Vector2d getNormal(Vector2d a, Vector2d b)
 {
-    Range r = {0.0f,0.0f};
-    r = (fabs(r1.max - r1.min) > fabs(r2.max - r2.min)) ? r2 : r1;
+	Vector2d result;
 
-    return r; 
+	result.x = -(b.y - a.y);
+	result.y = (b.x - a.x);
+	//result = normalizeVector2d(result);
+	return (result);
 }
 
-Range getMaxRange(Range r1, Range r2)
+Vector2d getLocalVector2d(Vector2d a, Vector2d b)
 {
-    Range r = {0.0f,0.0f};
-    r = (fabs(r1.max - r1.min) > fabs(r2.max - r2.min)) ? r1 : r2;
-    
-    return r; 
+	Vector2d result = {b.x - a.x, b.y - a.y};
+
+	return (result);
 }
-
-Range getPointProjOnVector(Vector2d vector, Vector2d point)
-{
-    Range r = {0.0f,0.0f};
-    r.min = r.max = dotProduct(vector,point);
-
-    return r;
-}
-
-bool rangeOverlapRange(Range r1, Range r2)
-{
-    return (r1.min <= r2.max ) && (r2.min <= r1.max);
-}
-
-bool intersect(PolygonShape shape1,int type1,PolygonShape shape2,int type2)
-{
-    //to taste
-    shape1.type = type1;//TRIANGLE_SHAPE;
-    shape2.type = type2;//TRIANGLE_SHAPE;
-
-    //To store the nomber of axis of shapes
-    int nbAxis1 = 0;
-    int nbAxis2 = 0;
-
-    //Get the nomber of vertices, and put it in nbAxis1 and nbAxis2
-    getNumberOfVertices(shape1,shape1.type,&nbAxis1);
-    getNumberOfVertices(shape2,shape2.type,&nbAxis2);
-
-    //Axis
-    Vector2d axis1[nbAxis1];
-    Vector2d axis2[nbAxis2];
-
-    //Store the vertices of shapes
-    Vector2d vertices1[nbAxis1];
-    Vector2d vertices2[nbAxis2];
-
-    //axis1
-    Vector2d p11 = shape1.shapes.triangle.v1;
-    Vector2d p12 = shape1.shapes.triangle.v2;
-    Vector2d p13 = shape1.shapes.triangle.v3;
-
-    vertices1[0] = p11;
-    vertices1[1] = p11;
-    vertices1[2] = p11;
-
-    for(int i = 1; i < nbAxis1 - 1; i++)
-    {
-        Vector2d p1 = vertices1[i];
-        Vector2d p2 = vertices1[i+1 == nbAxis1 ? 0 : i + 1];
-
-        Vector2d edge = subsVector2d(p1,p2);
-
-        Vector2d normal = {edge.y,-edge.x};
-
-        Vector2d normalNormalized = normalizeVector2d(normal);
-
-        axis1[i] = normalNormalized;
-    }
-
-
-
-
-    //axis2
-    Vector2d p21 = shape2.shapes.triangle.v1;
-    Vector2d p22 = shape2.shapes.triangle.v2;
-    Vector2d p23 = shape2.shapes.triangle.v3;
-
-    vertices2[0] = p21;
-    vertices2[1] = p21;
-    vertices2[2] = p23;
-
-
-    for(int i = 0; i < nbAxis2; i++)
-    {
-        Vector2d p1 = vertices2[i];
-        Vector2d p2 = vertices2[i+1 == nbAxis2 ? 0 : i + 1];
-
-        Vector2d edge = subsVector2d(p1,p2);
-
-        Vector2d normal = {edge.y,-edge.x};
-
-        Vector2d normalNormalized = normalizeVector2d(normal);
-
-        axis2[i] = normalNormalized;
-    }
-
-
-    //Loop over axis1
-    //float min = dotProduct(axis1[0],vertices1[0]); //project vertex1 of shape1 onto axi1 of axis1
-    //float max = min;
-    for(int i = 0; i < nbAxis1; i++)
-    {
-        Vector2d axes = axis1[i];
-
-        //project shape1 and shape2 onto axis1
-        Range proj1 = getPointProjOnVector(axes,vertices1[i]);
-        Range proj2 = getPointProjOnVector(axes,vertices1[i]);
-    
-
-        //TODO : test if projej1 don't overlap proj2 return false;
-        if(!rangeOverlapRange(proj1,proj2))
-        {
-            return false;
-        }
-    }
-
-    //Loop over axis2
-    for(int i = 0; i < nbAxis2; i++)
-    {
-        Vector2d axes = axis2[i];
-
-        //project shape1 and shape2 onto axis1
-        //float proj1 = dotProduct(axes,vertices2[i]);
-        //float proj2 = dotProduct(axes,vertices2[i]);
-        Range proj1 = getPointProjOnVector(axes,vertices1[i]);
-        Range proj2 = getPointProjOnVector(axes,vertices1[i]);
-
-        //TODO : test if projej1 don't overlap proj2 return false;
-        if(!rangeOverlapRange(proj1,proj2))
-        {
-            return false;
-        }
-
-    }
-
-    return true;
-
-}
-
-
 
 int satAlgorithm(Vector2d *a, Vector2d *b, int sizeA, int sizeB)
 {
@@ -359,7 +219,7 @@ int satAlgorithm(Vector2d *a, Vector2d *b, int sizeA, int sizeB)
 			absNormal.y = -absNormal.y;
 		absNormal.x += a[i].x;
 		absNormal.y += a[i].y;
-		DrawLine(absNormal.x, absNormal.y, absNormal.x + (10*normalized.x), absNormal.y + (10*normalized.y),RED);
+		DrawLine(absNormal.x, absNormal.y, absNormal.x + (10*normalized.x), absNormal.y + (10*normalized.y), WHITE);
 		for (int j = 0; j < sizeA;j++)
 		{
 			float projection = dotProduct(a[j], normal);
