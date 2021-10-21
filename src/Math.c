@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <math.h>
 
+#include <raylib.h>
+
 Vector2d zeroVector2d()
 {
     return (Vector2d){0.0f,0.0f};
@@ -59,6 +61,16 @@ float distVector2d(Vector2d a, Vector2d b)
 {
     return lengthVector2d(subsVector2d(a,b));
 }
+
+Vector2d getNormal(Vector2d a, Vector2d b)
+{
+	Vector2d result;
+
+	result.x = -(b.y - a.y);
+	result.y = (b.x - a.x);
+	return (result);
+}
+
 
 float dotProduct(Vector2d a,Vector2d b)
 {
@@ -323,4 +335,51 @@ bool intersect(PolygonShape shape1,int type1,PolygonShape shape2,int type2)
 
     return true;
 
+}
+
+
+
+int satAlgorithm(Vector2d *a, Vector2d *b, int sizeA, int sizeB)
+{
+	float infinity = 1.0f / 0.0f;
+	float minusInfinity = log(0);
+
+	for (int i = 0; i < sizeA - 1;i++)
+	{
+		Range range1 = {infinity, minusInfinity};
+		Range range2 = range1;
+
+		Vector2d normal = getNormal(a[i], a[i + 1]);
+		printf("normal x.%f y.%f x.%f y.%f %f %f\n",a[i].x, a[i].y, a[i+1].x, a[i+1].y, normal.x, normal.y);
+		Vector2d absNormal = normal;
+		Vector2d normalized = absNormal;
+		if (absNormal.x < 0)
+			absNormal.x = -absNormal.x;
+		if (absNormal.y < 0)
+			absNormal.y = -absNormal.y;
+		absNormal.x += a[i].x;
+		absNormal.y += a[i].y;
+		DrawLine(absNormal.x, absNormal.y, absNormal.x + (10*normalized.x), absNormal.y + (10*normalized.y),RED);
+		for (int j = 0; j < sizeA;j++)
+		{
+			float projection = dotProduct(a[j], normal);
+			if (projection < range1.min)
+				range1.min = projection;
+			if (projection > range1.max)
+				range1.max = projection;
+		}
+
+		for (int j = 0;j < sizeB;j++)
+		{
+			float projection = dotProduct(b[j], normal);
+
+			if (projection < range2.min)
+				range2.min = projection;
+			if (projection > range2.max)
+				range2.max = projection;
+		}
+		if(!(range1.min <= range2.max && range2.min <= range1.max))
+			return 0;
+	}
+	return 1;
 }

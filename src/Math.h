@@ -107,6 +107,7 @@ Vector2d negateVector2d(Vector2d v);
 
 float lengthSqVector2d(Vector2d v);
 float lengthVector2d(Vector2d v);
+Vector2d getNormal(Vector2d a, Vector2d b);
 
 Vector2d scaleVector2d(Vector2d v,float scalar);
 float distVector2d(Vector2d a, Vector2d b);
@@ -134,3 +135,4 @@ bool rangeOverlapRange(Range r1, Range r2);
 
 
 bool intersect(PolygonShape shape1,int type1,PolygonShape shape2,int type2);
+int satAlgorithm(Vector2d *a, Vector2d *b, int sizeA, int sizeB);

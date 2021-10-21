@@ -6,7 +6,7 @@
 
 
 
-int main()
+int main(void)
 {
 	printf("MINE_STORM GAME\n");
 
@@ -27,9 +27,12 @@ int main()
 	v13 = (Vector2){triangle1.v3.x,triangle1.v3.y};
 
 	Triangle triangle2;
-	triangle2.v1 = (Vector2d){10.0f,10.0f};
-	triangle2.v2 = (Vector2d){10.0f,20.0f};
-	triangle2.v3 = (Vector2d){30.0f,5.0f};
+	//triangle2.v1 = (Vector2d){10.0f,10.0f};
+	//triangle2.v2 = (Vector2d){10.0f,20.0f};
+	//triangle2.v3 = (Vector2d){30.0f,5.0f};
+	triangle2.v1 = (Vector2d){10.0f,600.0f};
+	triangle2.v2 = (Vector2d){10.0f,700.0f};
+	triangle2.v3 = (Vector2d){15.0f,650.0f};
 
 	Vector2 v21 = {0};
 	Vector2 v22 = {0};
@@ -45,7 +48,11 @@ int main()
 	tr2.type = TRIANGLE_SHAPE;
 	tr2.shapes.triangle = triangle2;
 
-	bool isColliding = intersect(tr1,tr1.type,tr2,tr2.type);
+	Vector2d a[3] = {triangle1.v1,triangle1.v2,triangle1.v3};
+	Vector2d b[3] = {triangle2.v1,triangle2.v2,triangle2.v3};
+	
+
+	int isColliding = satAlgorithm(a,b,3,3);
 
 	printf("IsCollinding = %d\n",isColliding);
 
