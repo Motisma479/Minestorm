@@ -1,8 +1,8 @@
 PROGRAM=minestorm
-TEST_COLLISION = test_collision
+TEST_COLLISION = test_collision test
 
 # Add your objs to generate in OBJS var
-OBJS=src/main.o src/game.o src/player.o src/mineLayer.o src/floatingMine.o src/bullet.o src/testCollision.o src/test.o src/Math.o
+#OBJS=src/main.o src/game.o src/player.o src/mineLayer.o src/floatingMine.o src/bullet.o src/testCollision.o src/test.o src/Math.o
 
 #SD = /home/ISART/v.caraulan/Work/minestorm/src/
 SD = ./src/
@@ -43,4 +43,4 @@ build.tar.gz: $(PROGRAM) $(wildcard assets/*)
 	tar czf build.tar.gz $(PROGRAM) assets
 
 clean:
-	rm -f $(OBJS) $(DEPS) build.tar.gz $(PROGRAM) $(TEST_COLLISION )
+	rm -f $(OBJS) $(DEPS) build.tar.gz $(PROGRAM) $(TEST_COLLISION ) src/test.d src/test.o test.d test_collision test_collision.d test

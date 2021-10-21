@@ -56,7 +56,7 @@ typedef struct Player
 void    initPlayer(Player* player, Vector2 position);
 void    updatePlayer(Player* player, float deltaTime);
 void    drawPlayer(Player* player, float scale, Color color,
-				   const Texture2D texture);
+				   const Texture2D* texture);
 Vector2 getPlayerDirection(Player* player);
 void    loadPlayerData(Player* player);
 void    unloadPlayerdata(Player* player);

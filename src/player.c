@@ -58,7 +58,7 @@ void updatePlayer(Player* player, float deltaTime)
 	player->acceleration.y -= player->acceleration.y / friction;
 }
 
-void drawPlayer(Player* player, float scale, Color color, const Texture2D texture)
+void drawPlayer(Player* player, float scale, Color color, const Texture2D* texture)
 {
 	Rectangle textureCoord = (Rectangle){83, 58, 84, 140};
 	Rectangle playerPos =
@@ -72,7 +72,7 @@ void drawPlayer(Player* player, float scale, Color color, const Texture2D textur
 
 	//DrawRectanglePro(playerPos, origin, player->rotation + 90.0f, BLACK);
 
-	DrawTexturePro(texture, textureCoord,
+	DrawTexturePro(*texture, textureCoord,
 				   playerPos, origin, player->rotation + 90.0f, color);
 	//DrawCircle(playerPos.x, playerPos.y, 10, WHITE);
 }

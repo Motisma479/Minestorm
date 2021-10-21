@@ -62,7 +62,6 @@ void updateGame(Game* game);
 void runGameLoop(Game* game);
 void shutdown(Game* game);
 
-void addEnemyToGame();
 
 void pauseGame(Game* game);
 void drawGameBackground(Game* game);

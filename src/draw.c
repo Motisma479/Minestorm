@@ -11,13 +11,13 @@ static void drawScoreBoard(Game *game, Vector2 offset)
 	DrawText("Player ONE", 45 + offset.x, 0 + offset.y, 20, BLUE);
 
 	if (player.lives > 0)
-		drawPlayer(&player, scale, BLUE, game->atlas);
+		drawPlayer(&player, scale, BLUE, &game->atlas);
 	player.position = (Vector2){80 + offset.x, 30 + offset.y};
 	if (player.lives > 1)
-		drawPlayer(&player, scale, BLUE, game->atlas);
+		drawPlayer(&player, scale, BLUE, &game->atlas);
 	player.position = (Vector2){100 + offset.x, 30 + offset.y};
 	if (player.lives > 2)
-		drawPlayer(&player, scale, BLUE, game->atlas);
+		drawPlayer(&player, scale, BLUE, &game->atlas);
 
 	DrawText(TextFormat("%d", game->player[0].score), 240 + offset.x, 0 + offset.y, 20, BLUE);
 
@@ -29,13 +29,13 @@ static void drawScoreBoard(Game *game, Vector2 offset)
 		player.rotation = -90.0f;
 		player.position = (Vector2){530 - offset.x, 30 + offset.y};
 		if (player.lives > 0)
-			drawPlayer(&player, scale, LIME, game->atlas);
+			drawPlayer(&player, scale, LIME, &game->atlas);
 		player.position = (Vector2){550 - offset.x, 30 + offset.y};
 		if (player.lives > 1)
-			drawPlayer(&player, scale, LIME, game->atlas);
+			drawPlayer(&player, scale, LIME, &game->atlas);
 		player.position = (Vector2){570 - offset.x, 30 + offset.y};
 		if (player.lives > 2)
-			drawPlayer(&player, scale, LIME, game->atlas);
+			drawPlayer(&player, scale, LIME, &game->atlas);
 		DrawText(TextFormat("%d", game->player[1].score), 370 - offset.x, 0 + offset.y, 20, LIME);
 	}
 }
@@ -121,7 +121,7 @@ void drawGame(Game* game, int frameCounter)
 			}
 
 			drawLayer(&game->layer, &game->atlas);
-			drawPlayer(&game->player[0], 0.25f, SKYBLUE, game->atlas);
+			drawPlayer(&game->player[0], 0.25f, SKYBLUE, &game->atlas);
 			if (game->state == GS_PLAY2)
 			{
 				for(int i = 0; i < game->player[1].bulletCount; i++)
@@ -129,7 +129,7 @@ void drawGame(Game* game, int frameCounter)
 					Bullet* bullet = &game->player[1].bullets[i];
 					drawBullet(bullet, game->atlas, SKYBLUE);
 				}
-				drawPlayer(&game->player[1], 0.25f, GREEN, game->atlas);
+				drawPlayer(&game->player[1], 0.25f, GREEN, &game->atlas);
 			}
 		}break;
 		case GS_GAMEOVER:
