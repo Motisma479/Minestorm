@@ -37,24 +37,47 @@ void initEnemy(Enemy* enemy, Vector2 position, int enemy_ran)
 	enemy->rotation = (float)GetRandomValue(0,360);
 }
 
-void updateEnemy(Enemy* enemy,float deltaTime)
+void updateEnemy(Enemy* enemy,float deltaTime, Player* playerI, Player* playerII )
 {
 	if(enemy->life <= 0.0f){ //if enemy is dead, we do not update his position
 		return;
     }
+
+	Vector2d toTargetI = subsVector2d((Vector2d){playerI->position.x,playerI->position.y},(Vector2d){enemy->position.x,enemy->position.y});
+	Vector2d toTargetII = subsVector2d((Vector2d){playerII->position.x,playerII->position.y},(Vector2d){enemy->position.x,enemy->position.y});
+	float distI = lengthVector2d(toTargetI);
+	float distII = lengthVector2d(toTargetII);
 	Vector2 *position = &enemy->position;
-    Vector2 direction = {cosf(enemy->rotation*DEG2RAD),sinf(enemy->rotation*DEG2RAD)};
+	Vector2 direction = {cosf(enemy->rotation*DEG2RAD),sinf(enemy->rotation*DEG2RAD)};//base 
+
 	if (enemy->active)
 	{
-		position->x += (enemy->speed.x * direction.x ) * deltaTime;
-		position->y += (enemy->speed.y * direction.y ) * deltaTime;
-	}
-
-	if (position->x < 64.0f) { position->x = (float)SCREEN_WIDTH - 64.0f; }
+		if (enemy->type == ET_MAGNETIC || enemy->type == ET_MAGNETIC_FIREBALL)
+		{
+			if (distI <200 || distII <200)
+			{
+				if (distI <= distII)
+				{
+					enemy->position.x += (enemy->speed.x * (toTargetI.x /distI)) * deltaTime;
+					enemy->position.y += (enemy->speed.y * (toTargetI.y /distI)) * deltaTime;
+				}else{
+					enemy->position.x += (enemy->speed.x * (toTargetII.x /distII)) * deltaTime;
+					enemy->position.y += (enemy->speed.y * (toTargetII.y /distII)) * deltaTime;
+				}
+				
+				
+			}
+		}else{
+			position->x += (enemy->speed.x * direction.x ) * deltaTime;
+			position->y += (enemy->speed.y * direction.y ) * deltaTime;
+		}
+	} 
+	
+ 	if (position->x < 64.0f) { position->x = (float)SCREEN_WIDTH - 64.0f; }
 	else if (position->x > (float)SCREEN_WIDTH - 64.0f) { position->x = 64.0f; }
 
 	if (position->y < 80.0f) { position->y = (float)SCREEN_HEIGHT - 80.0f; }
-	else if (position->y > (float)SCREEN_HEIGHT - 80.0f) { position->y = 80.0f; }
+	else if (position->y > (float)SCREEN_HEIGHT - 80.0f) { position->y = 80.0f; } 
 
 }
 

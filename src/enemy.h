@@ -1,5 +1,6 @@
 #pragma once
 #include "Math.h"
+#include "player.h"
 #include <raylib.h>
 
 
@@ -38,7 +39,7 @@ typedef struct Enemy
 
 void initEnemy(Enemy* enemy, Vector2 position, int enemy_ran);
 void makeEnemyType(Enemy* enemy, EnemyType type);
-void updateEnemy(Enemy* enemy,float deltaTime);
+void updateEnemy(Enemy* enemy,float deltaTime, Player* playerI, Player* playerII);
 void drawEnemy(Enemy* enemy, const Texture2D texture);
 void loadEnemyData(Enemy* enemy);
 void unLoadEnemyData(Enemy* enemy);

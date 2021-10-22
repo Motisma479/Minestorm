@@ -187,7 +187,7 @@ void updateGame(Game* game)
 					updatePlayer(&game->player[1], game->ticksCount);
 				}
 				for(int i = 0; i < game->enemyCount; i++)
-					updateEnemy(&game->enemies[i], game->ticksCount);
+					updateEnemy(&game->enemies[i], game->ticksCount, &game->player[0], &game->player[1]);
 
 				for(int i = 0; i < game->player[0].bulletCount; i++)
 				{
