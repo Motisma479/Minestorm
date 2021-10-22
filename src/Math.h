@@ -137,3 +137,4 @@ bool rangeOverlapRange(Range r1, Range r2);
 //void getNumberOfVertices(PolygonShape shape,int type,int* nbVertices);
 
 int satAlgorithm(Vector2d *a, Vector2d *b, int sizeA, int sizeB);
+int satAlgorithmPolygonCircle(Vector2d* v,int vSize,Circle* circle);
