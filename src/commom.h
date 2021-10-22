@@ -10,6 +10,7 @@
 #define BULLET_CAPACITY 64
 #define ENEMY_COUNT 20
 
+
 /*
 DestRect : Magnetic Mine
 Rectangle rect = { texture->width/2.0f,texture->width /4.0f,texture->width/4.0f,texture->height/2.0f};

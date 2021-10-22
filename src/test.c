@@ -38,11 +38,11 @@ int main()
 	//PolygonShape poly;
 
 	//poly.type = CONVEX_SHAPE;
-	int sizeA = 8;
-	int sizeB = 6;
-	Vector2d a[8];
-	float    rotation = 0.01f;
-
+	//int sizeA = 8;
+	//int sizeB = 6;
+	//Vector2d a[8];
+	//float    rotation = 0.01f;
+/* 
 	a[0] = (Vector2d){110, 130};
 	a[1] = (Vector2d){94, 130};
 	a[2] = (Vector2d){83, 178};
@@ -50,27 +50,27 @@ int main()
 	a[4] = (Vector2d){156, 197};
 	a[5] = (Vector2d){166, 178};
 	a[6] = (Vector2d){150, 130};
-	a[7] = (Vector2d){110, 130};
+	a[7] = (Vector2d){110, 130}; */
 
-	Vector2d b[6];
+/* 	Vector2d b[6];
 
 	b[0] = (Vector2d){123, 58};
 	b[1] = (Vector2d){106, 99};
 	b[2] = (Vector2d){110, 130};
 	b[3] = (Vector2d){139, 130};
 	b[4] = (Vector2d){143, 99};
-	b[5] = (Vector2d){126, 58};
+	b[5] = (Vector2d){126, 58}; */
 
 	//poly.shapes.convexPoly.nbPoints = 4;
 	//poly.shapes.convexPoly.points = (Vector2d *)&a[0];
 	while (!WindowShouldClose())
 	{
-		Vector2d center = getCenter(a, 8);
-		Vector2d center2 = getCenter(b, 6);
-		printf("%f, %f\n", center.x, center.y);
+		//Vector2d center = getCenter(a, 8);
+		//Vector2d center2 = getCenter(b, 6);
+		//printf("%f, %f\n", center.x, center.y);
 		BeginDrawing();
 		ClearBackground(BLACK);
-		int i;
+		/* int i;
 
 		for (i = 0; i < sizeA - 1;i++){
 			DrawLine(a[i].x, a[i].y, a[i + 1].x, a[i + 1].y, WHITE);
@@ -164,7 +164,7 @@ int main()
 			DrawLine(b[i].x, b[i].y, b[i + 1].x, b[i + 1].y, color);
 		DrawLine(b[i].x, b[i].y, b[0].x, b[0].y, color);
 
-		printf("\e[1;1H\e[2J");
+		printf("\e[1;1H\e[2J"); */
 		EndDrawing();
 	}
 

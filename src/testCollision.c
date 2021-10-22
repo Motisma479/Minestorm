@@ -1,9 +1,13 @@
 #include "testCollision.h"
+#include "Math.h"
 #include <raylib.h>
+#include <stdio.h>
 
-void testGameCollisions(Game* game)
+
+
+int main()
 {
+    printf("COLLISION");
 
+    return 0;
 }
-
-

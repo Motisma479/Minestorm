@@ -230,12 +230,12 @@ int satAlgorithm(Vector2d *a, Vector2d *b, int sizeA, int sizeB)
 		printf("normal x.%f y.%f x.%f y.%f %f %f\n",a[i].x, a[i].y, a[i+1].x, a[i+1].y, normal.x, normal.y);
 		Vector2d absNormal = normal;
 		Vector2d normalized = absNormal;
-		//if (absNormal.x < 0)
-			//absNormal.x = -absNormal.x;
-		//if (absNormal.y < 0)
-			//absNormal.y = -absNormal.y;
-		//absNormal.x += a[i].x;
-		//absNormal.y += a[i].y;
+		if (absNormal.x < 0)
+			absNormal.x = -absNormal.x;
+		if (absNormal.y < 0)
+			absNormal.y = -absNormal.y;
+		absNormal.x += a[i].x;
+		absNormal.y += a[i].y;
 		//DrawLine(absNormal.x, absNormal.y, absNormal.x + (10*normalized.x), absNormal.y + (10*normalized.y), WHITE);
 		for (int j = 0; j < sizeA;j++)
 		{
@@ -265,10 +265,17 @@ int satAlgorithm(Vector2d *a, Vector2d *b, int sizeA, int sizeB)
 int satAlgorithmPolygonCircle(Vector2d* v,int vSize,Circle* circle)
 {
 	Vector2d closestVertex;
-	float mindist = circle->radius;
+	float mindist = -1.0f / 0.0f;
 	
 	Range circleRange;
 	Range polyRange;
+
+	//Get the normalized axis of the polygon
+	Vector2d axis[vSize];
+	for(int k = 0; k < vSize; k++)
+	{
+		axis[k] = normalizeVector2d(getNormal(v[k],v[k + 1 == vSize ? 0 : k+1]));
+	}
 
 	//Circle
 	for(int i = 0; i < vSize; i++)
@@ -277,31 +284,61 @@ int satAlgorithmPolygonCircle(Vector2d* v,int vSize,Circle* circle)
 		Vector2d delta = subsVector2d(v[i],circle->center);
 		float dist = lengthSqVector2d(delta);
 
-		if(dist < mindist*mindist)
+		if(dist > mindist*mindist)
 		{
 			mindist = dist;
 			closestVertex = delta;
 		}
+
+		Vector2d closestNormalized = normalizeVector2d(closestVertex);
+
+		//Project the center onto the closest vertex of the polygon
+		float projCircle = dotProduct(closestNormalized,circle->center);
+		
+		circleRange.min = projCircle - circle->radius;
+		circleRange.max = projCircle + circle->radius;
+
+
+		//Loop over the polygon
+		polyRange.min =polyRange.max = dotProduct(axis[0],v[0]);
+		for(int j = 1; j < vSize - 1; j++)
+		{
+			float proj = dotProduct(axis[j],v[j]);
+			if(proj < polyRange.min)
+			{
+				polyRange.min = proj;
+			}
+			if(proj > polyRange.max)
+			{
+				polyRange.max = proj;
+			}
+		}
+
+		if(!rangeOverlapRange(polyRange,circleRange))
+		{
+			return 0;
+		}
+
 	}
 
-	Vector2d closestNormalized = normalizeVector2d(closestVertex);
+	//Vector2d closestNormalized = normalizeVector2d(closestVertex);
 
 	//Project the center onto the closest vertex of the polygon
-	float projCircle = dotProduct(closestNormalized,circle->center);
-	Range circleRange;
+/* 	float projCircle = dotProduct(closestNormalized,circle->center);
+	
 	circleRange.min = projCircle - circle->radius;
 	circleRange.max = projCircle + circle->radius;
+ */
 
-
-	//Get the normalized axis of the poygon
+/* 	//Get the normalized axis of the poygon
 	Vector2d axis[vSize];
 	for(int i = 0; i < vSize; i++)
 	{
 		axis[i] = normalizeVector2d(getNormal(v[i],v[i + 1 == vSize ? 0 : i+1]));
-	}
+	} */
 
 	/*loop over polygon*/
-	polyRange.min =polyRange.max = dotProduct(axis[0],v[0]);
+/* 	polyRange.min =polyRange.max = dotProduct(axis[0],v[0]);
 	for(int i = 1; i < vSize - 1; i++)
 	{
 		float proj = dotProduct(axis[i],v[i]);
@@ -313,11 +350,11 @@ int satAlgorithmPolygonCircle(Vector2d* v,int vSize,Circle* circle)
 		{
 			polyRange.max = proj;
 		}
-	}
-	if(!rangeOverlapRange(polyRange,circleRange))
+	} */
+/* 	if(!rangeOverlapRange(polyRange,circleRange))
 	{
 		return 0;
-	}
+	} */
 
 	return 1;
 }
