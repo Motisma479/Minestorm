@@ -265,6 +265,7 @@ int satAlgorithm(Vector2d *a, Vector2d *b, int sizeA, int sizeB)
 int satAlgorithmPolygonCircle(Vector2d* v,int vSize,Circle* circle)
 {
 	Vector2d closestVertex;
+	Vector2d closestNormalized;
 	float mindist = -1.0f / 0.0f;
 	
 	Range circleRange;
@@ -288,15 +289,22 @@ int satAlgorithmPolygonCircle(Vector2d* v,int vSize,Circle* circle)
 		{
 			mindist = dist;
 			closestVertex = delta;
+
+			closestNormalized = normalizeVector2d(closestVertex);
+
+			float projCircle = dotProduct(closestNormalized,circle->center);
+			
+			circleRange.min = projCircle - circle->radius;
+			circleRange.max = projCircle + circle->radius;
 		}
 
-		Vector2d closestNormalized = normalizeVector2d(closestVertex);
+		//Vector2d closestNormalized = normalizeVector2d(closestVertex);
 
 		//Project the center onto the closest vertex of the polygon
-		float projCircle = dotProduct(closestNormalized,circle->center);
+/* 		float projCircle = dotProduct(closestNormalized,circle->center);
 		
 		circleRange.min = projCircle - circle->radius;
-		circleRange.max = projCircle + circle->radius;
+		circleRange.max = projCircle + circle->radius; */
 
 
 		//Loop over the polygon
