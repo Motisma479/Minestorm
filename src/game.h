@@ -28,14 +28,15 @@ typedef struct Game
 	Texture2D background;
 
 	Rectangle bulletCoord;
-	float ticksCount;
+	float     ticksCount;
 
-	Player player[2];
+	Player    player[2];
 	MineLayer layer;
-	int enemyCount;
-	Enemy enemies[ENEMY_COUNT];
-	int    level;
-	bool   levelStart;
+	int       enemyCount;
+	Enemy     enemies[ENEMY_COUNT];
+	int       level;
+	bool      levelStart;
+	int       framesCounter;
 } Game;
 
 bool initGame(Game* game);

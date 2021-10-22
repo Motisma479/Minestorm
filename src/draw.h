@@ -3,5 +3,5 @@
 #ifndef DRAW_H
 #define DRAW_H
 
-void drawGame(Game* game, int frameCounter);
+void drawGame(Game* game);
 #endif //DRAW_H

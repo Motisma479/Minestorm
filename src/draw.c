@@ -1,100 +1,98 @@
 #include "game.h"
 
-static void drawScoreBoard(Game *game, Vector2 offset)
+static void drawLives(Game *game, Player *player, Vector2 offset, Color color)
 {
 	float scale = 0.1f;
-	Player player = game->player[0];
+	if (player->lives > 0)
+		drawPlayer(player, scale, color, game->atlas);
+	player->position = (Vector2){80+offset.x, 30+offset.y};
+	if (player->lives > 1)
+		drawPlayer(player, scale, color, game->atlas);
+	player->position = (Vector2){100+offset.x, 30+offset.y};
+	if (player->lives > 2)
+		drawPlayer(player, scale, color, game->atlas);
+}
 
+static void drawLives2(Game *game, Player *player, Vector2 offset, Color color)
+{
+	float scale = 0.1f;
+	player->rotation = -90.0f;
+	player->position = (Vector2){530-offset.x, 30+offset.y};
+	if (player->lives > 0)
+		drawPlayer(player, scale, color, game->atlas);
+	player->position = (Vector2){550-offset.x, 30+offset.y};
+	if (player->lives > 1)
+		drawPlayer(player, scale, color, game->atlas);
+	player->position = (Vector2){570-offset.x, 30+offset.y};
+	if (player->lives > 2)
+		drawPlayer(player, scale, color, game->atlas);
+}
+
+static void drawScoreBoard(Game *game, Vector2 offset)
+{
+	Player player = game->player[0];
 	player.position = (Vector2){60 + offset.x, 30 + offset.y};
 	player.rotation = -90.0f;
 
-	DrawText("Player ONE", 45 + offset.x, 0 + offset.y, 20, BLUE);
+	DrawRectangle(40+offset.x, 0+offset.y, 240, 40, SKYBLUE);
+	DrawText("Player ONE", 45+offset.x, 0+offset.y, 20, BLUE);
 
-	if (player.lives > 0)
-		drawPlayer(&player, scale, BLUE, game->atlas);
-	player.position = (Vector2){80 + offset.x, 30 + offset.y};
-	if (player.lives > 1)
-		drawPlayer(&player, scale, BLUE, game->atlas);
-	player.position = (Vector2){100 + offset.x, 30 + offset.y};
-	if (player.lives > 2)
-		drawPlayer(&player, scale, BLUE, game->atlas);
+	drawLives(game, &player, offset, BLUE);
 
-	DrawText(TextFormat("%d", game->player[0].score), 240 + offset.x, 0 + offset.y, 20, BLUE);
+	DrawText(TextFormat("%d", game->player[0].score), 240+offset.x,
+			 0+offset.y, 20, BLUE);
 
-	if (game->state == GS_PLAY2)
+	if (game->state == GS_PLAY2  || game->state == GS_PAUSE2 ||
+		game->state == GS_GAMEOVER2)
 	{
-		DrawText("Player TWO", 470 - offset.x, 0 + offset.y, 20, LIME);
+		DrawRectangle(364-offset.x, 0+offset.y, 230, 40, GREEN);
+		DrawText("Player TWO", 470-offset.x, 0+offset.y, 20, LIME);
 
 		player = game->player[1];
-		player.rotation = -90.0f;
-		player.position = (Vector2){530 - offset.x, 30 + offset.y};
-		if (player.lives > 0)
-			drawPlayer(&player, scale, LIME, game->atlas);
-		player.position = (Vector2){550 - offset.x, 30 + offset.y};
-		if (player.lives > 1)
-			drawPlayer(&player, scale, LIME, game->atlas);
-		player.position = (Vector2){570 - offset.x, 30 + offset.y};
-		if (player.lives > 2)
-			drawPlayer(&player, scale, LIME, game->atlas);
-		DrawText(TextFormat("%d", game->player[1].score), 370 - offset.x, 0 + offset.y, 20, LIME);
+		drawLives2(game, &player, offset, LIME);
+		DrawText(TextFormat("%d", game->player[1].score), 370 - offset.x,
+				 0 + offset.y, 20, LIME);
 	}
 }
 
-static void drawPauseMenu(Game *game, int frameCounter)
+static void drawPauseMenu(Game *game)
 {
-	DrawText("Resume" , SCREEN_WIDTH / 3 - MeasureText("Resume",25),
-			 SCREEN_HEIGHT / 4,25, BLUE);
-	DrawText("Main Menu" , SCREEN_WIDTH / 3 - MeasureText("Resume",25),
-			 SCREEN_HEIGHT / 3,25, RED);
-	if((frameCounter / 30) % 2)
-	{
-		DrawText("PAUSE" , SCREEN_WIDTH / 2 - MeasureText("PAUSE",25) + 67,
-				 SCREEN_HEIGHT / 8,25, WHITE);
-	}
+	DrawText("Resume" , 126, 200,25, BLUE);
+	DrawText("Main Menu" , 126, 266,25, RED);
+	if((game->framesCounter / 30) % 2)
+		DrawText("PAUSE" , 304, 100, 25, WHITE);
 	else
 	{
-		DrawText("SPACE",SCREEN_WIDTH/2 - MeasureText("SPACE",25) + 125,
-				 SCREEN_HEIGHT / 4,25, BLUE);
-		DrawText("Esc",SCREEN_WIDTH/2 - MeasureText("Esc",25) + 125,
-				 SCREEN_HEIGHT / 3,25, RED);
+		DrawText("SPACE", 362, 200,25, BLUE);
+		DrawText("Esc", 401, 266, 25, RED);
 	}
 }
 
-static void drawGameOver(Game *game, int frameCounter)
+static void drawGameOver(Game *game)
 {
-	DrawText("Game Over" , SCREEN_WIDTH / 2 - MeasureText("Game Over",25) + 67,
-			 SCREEN_HEIGHT / 8,25, WHITE);
-	DrawText("Main Menu" , SCREEN_WIDTH / 3 - MeasureText("Resume",25),
-			 SCREEN_HEIGHT / 3,25, RED);
-	if((frameCounter / 30) % 2)
+	DrawText("Game Over" , 259, 100,25, WHITE);
+	DrawText("Main Menu" , 126, 266,25, RED);
+	if((game->framesCounter / 30) % 2)
 	{
-		DrawText("Esc",SCREEN_WIDTH/2 - MeasureText("Esc",25) + 125,
-				 SCREEN_HEIGHT / 3,25, RED);
+		DrawText("Esc", 401, 266,25, RED);
 	}
 }
 
-static void drawMenu(Game *game, int frameCounter)
+static void drawMenu(Game *game)
 {
-	DrawText("MENU" , SCREEN_WIDTH / 2 - MeasureText("MENU",25) + 67,
-			 SCREEN_HEIGHT / 8,25, WHITE);
-	DrawText("Single Player" , SCREEN_WIDTH / 2 - MeasureText("Single Player",25),
-			 SCREEN_HEIGHT / 4,25, BLUE);
-	DrawText("2 Players" , SCREEN_WIDTH / 2 - MeasureText("Single Player",25),
-			 SCREEN_HEIGHT / 3,25, GREEN);
-	DrawText("QUIT" , SCREEN_WIDTH / 2 - MeasureText("Single Player",25),
-			 SCREEN_HEIGHT / 2,25, RED);
-	if((frameCounter / 30) % 2)
+	DrawText("MENU"          , 319, 100, 25, WHITE);
+	DrawText("Single Player" , 159, 200, 25, BLUE);
+	DrawText("2 Players"     , 159, 266, 25, GREEN);
+	DrawText("QUIT"          , 159, 400, 25, RED);
+	if((game->framesCounter / 30) % 2)
 	{
-		DrawText("\'F\'", SCREEN_WIDTH /2 - MeasureText("'F'",25) + 125,
-				 SCREEN_HEIGHT / 4,25, BLUE);
-		DrawText("\'K\'", SCREEN_WIDTH /2 - MeasureText("'F'",25) + 125,
-				 SCREEN_HEIGHT / 3,25, GREEN);
-		DrawText("Escape", SCREEN_WIDTH /2 - MeasureText("Escape",25) + 125,
-				 SCREEN_HEIGHT / 2,25, RED);
+		DrawText("\'F\'" , 416, 200,25, BLUE);
+		DrawText("\'K\'" , 416, 266,25, GREEN);
+		DrawText("Escape", 358, 400,25, RED);
 	}
 }
 
-void drawGame(Game* game, int frameCounter)
+void drawGame(Game* game)
 {
 	BeginDrawing();
 
@@ -103,11 +101,12 @@ void drawGame(Game* game, int frameCounter)
 	{
 		case GS_MENU:
 		{
-			drawMenu(game, frameCounter);
+			drawMenu(game);
 		}break;
 		case GS_PAUSE:
+		case GS_PAUSE2:
 		{
-			drawPauseMenu(game, frameCounter);
+			drawPauseMenu(game);
 		}break;
 		case GS_PLAY:
 		case GS_PLAY2:
@@ -127,14 +126,10 @@ void drawGame(Game* game, int frameCounter)
 				for(int i = 0; i < game->player[1].bulletCount; i++)
 				{
 					Bullet* bullet = &game->player[1].bullets[i];
-					drawBullet(bullet, game->atlas, SKYBLUE);
+					drawBullet(bullet, game->atlas, GREEN);
 				}
 				drawPlayer(&game->player[1], 0.25f, GREEN, game->atlas);
 			}
-		}break;
-		case GS_GAMEOVER:
-		{
-			drawGameOver(game, frameCounter);
 		}break;
 		default:
 		{
@@ -143,45 +138,10 @@ void drawGame(Game* game, int frameCounter)
 	}
 	DrawTextureEx(game->foreground, (Vector2){0, 0}, 0, 1.0f, WHITE);
 	drawScoreBoard(game, (Vector2){0, 0});
-#if 0
-	if (game->state == GS_PAUSE)
+	if (game->state == GS_GAMEOVER  || game->state == GS_GAMEOVER2)
 	{
-		DrawRectangle(70, 400, 245, 40, SKYBLUE);
-		DrawRectangle(315, 400, 255, 40, GREEN);
 		drawScoreBoard(game, (Vector2){30, 400});
+		drawGameOver(game);
 	}
-#endif
-
-
-#if 0
-
-	// TODO(v.caraulan): What I started doing here.
-	// I want to take the segments of the collision polygons
-	// from the image automatically.
-	// We could also do it manualy with an image processor, or something like that;
-
-	typedef struct Image {
-		void *data;             // Image raw data
-		int  width;              // Image base width
-		int  height;             // Image base height
-		int  mipmaps;            // Mipmap levels, 1 by default
-		int  format;             // Data format (PixelFormat type)
-	} Image;
-
-	Image image = LoadImage("./assets/mines.png");
-	printf("image format = %d\n", image.format);
-	unsigned char *m = image.data;
-
-	for (int i = 0; i < image.width;i++)
-	{
-		for (int j = 0; j < image.height; j++)
-		{
-
-			if (m[i * image.width + j] != 0)
-				ImageDrawPixel(&image, j, i, RED);
-		}
-	}
-	UnloadImage(image);
-#endif
 	EndDrawing();
 }

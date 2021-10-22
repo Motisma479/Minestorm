@@ -2,13 +2,6 @@
 #include "draw.h"
 #include "Math.h"
 
-//cross->textureCoord[0] = (Rectangle){345, 90, 75, 75};
-//ship->textureCoord[0] = (Rectangle){513, 89, 256, 79};
-
-#include <stdlib.h>
-
-static int framesCounter;
-
 int addEnemy(Game *game, EnemySize size)
 {
 	for (int i = 0; i < game->enemyCount;i++)
@@ -49,8 +42,10 @@ bool initGame(Game* game)
 	SetExitKey(KEY_NULL);
 	SetTargetFPS(60);
 
-	initPlayer(&game->player[0], (Vector2){SCREEN_WIDTH / 3.0f, SCREEN_HEIGHT / 2.0f});
-	initPlayer(&game->player[1], (Vector2){SCREEN_WIDTH / 1.5f, SCREEN_HEIGHT / 2.0f});
+	initPlayer(&game->player[0], (Vector2){SCREEN_WIDTH / 3.0f,
+				   SCREEN_HEIGHT / 2.0f});
+	initPlayer(&game->player[1], (Vector2){SCREEN_WIDTH / 1.5f,
+				   SCREEN_HEIGHT / 2.0f});
 
 	initLevel1(game);
 
@@ -66,11 +61,10 @@ void runGameLoop(Game* game)
 		game->ticksCount = GetFrameTime();
 		processInput(game);
 		updateGame(game);
-		drawGame(game, framesCounter);
+		drawGame(game);
 	}
 
 }
-
 
 int setInputFlagPressed(KeyboardKey key, PlayerAction *flag, PlayerAction action)
 {
@@ -98,15 +92,14 @@ void processInput(Game* game)
 	Player *player2 = &game->player[1];
 	if(IsKeyPressed(KEY_SPACE))
 	{
-		static GameState temp = 0;
-
-		if (game->state == GS_PLAY || game->state == GS_PLAY2)
-		{
-			temp = game->state;
+		if (game->state == GS_PLAY)
 			game->state = GS_PAUSE;
-		}
+		else if (game->state == GS_PLAY2)
+			game->state = GS_PAUSE2;
 		else if (game->state == GS_PAUSE)
-			game->state = temp;
+			game->state = GS_PLAY;
+		else if (game->state == GS_PAUSE2)
+			game->state = GS_PLAY2;
 	}
 
 	setInputFlagPressed(KEY_F, &player1->action, PA_SHOOT);
@@ -131,13 +124,18 @@ void processInput(Game* game)
 	{
 		if (game->state == GS_MENU)
 			game->state = GS_CLOSE;
-		if (game->state == GS_PAUSE || game->state == GS_GAMEOVER)
+		if (game->state == GS_PAUSE  ||
+			game->state == GS_PAUSE2 ||
+			game->state == GS_GAMEOVER ||
+			game->state == GS_GAMEOVER2)
 		{
 			game->state = GS_MENU;
 			*player1 = (Player){0};
 			*player2 = (Player){0};
-			initPlayer(player1, (Vector2){SCREEN_WIDTH / 3.0f, SCREEN_HEIGHT / 2.0f});
-			initPlayer(player2, (Vector2){SCREEN_WIDTH / 1.5f, SCREEN_HEIGHT / 2.0f});
+			initPlayer(player1, (Vector2){SCREEN_WIDTH / 3.0f,
+						   SCREEN_HEIGHT / 2.0f});
+			initPlayer(player2, (Vector2){SCREEN_WIDTH / 1.5f,
+						   SCREEN_HEIGHT / 2.0f});
 			initLevel1(game);
 			game->levelStart = false;
 		}
@@ -158,7 +156,7 @@ void updateGame(Game* game)
 			else if (game->player[0].action & PA_SHOOT)
 				game->state = GS_PLAY;
 			game->player[0].action &= ~(PA_SHOOT);
-			framesCounter++;
+			game->framesCounter++;
 		}break;
 		case GS_PLAY:
 		case GS_PLAY2:
@@ -180,23 +178,16 @@ void updateGame(Game* game)
 					gameAddBullet(&game->player[0]);
 					game->player[0].action &= ~PA_SHOOT;
 				}
-				if (game->state == GS_PLAY2)
-				{
-					if (game->player[1].action & PA_SHOOT)
-						gameAddBullet(&game->player[1]);
-					updatePlayer(&game->player[1], game->ticksCount);
-				}
-				for(int i = 0; i < game->enemyCount; i++)
-					updateEnemy(&game->enemies[i], game->ticksCount);
-
 				for(int i = 0; i < game->player[0].bulletCount; i++)
 				{
 					Bullet* bullet = &game->player[0].bullets[i];
 					updateBullet(bullet,game->ticksCount);
 				}
-
 				if (game->state == GS_PLAY2)
 				{
+					updatePlayer(&game->player[1], game->ticksCount);
+					if (game->player[1].action & PA_SHOOT)
+						gameAddBullet(&game->player[1]);
 					for(int i = 0; i < game->player[1].bulletCount; i++)
 					{
 						Bullet* bullet = &game->player[1].bullets[i];
@@ -204,6 +195,8 @@ void updateGame(Game* game)
 					}
 				}
 
+				for(int i = 0; i < game->enemyCount; i++)
+					updateEnemy(&game->enemies[i], game->ticksCount);
 				gameCollisions(game, &game->player[0]);
 				if (game->state == GS_PLAY2)
 					gameCollisions(game, &game->player[1]);
@@ -214,7 +207,7 @@ void updateGame(Game* game)
 		} break;
 		default:
 		{
-			framesCounter++;
+			game->framesCounter++;
 		}
 	}
 }
@@ -282,6 +275,8 @@ int collisionEnemyBullet(Game *game, Player *player, Enemy *enemy, Bullet *bulle
 	Rectangle bulletRec = {bullet->position.x, bullet->position.y, 25 / 4, 25 / 4};
 	if (enemy->active && enemy->type != ET_NONE)
 	{
+
+		// TODO(v.caraulan): Replace with our functions
 		if (CheckCollisionRecs(bulletRec, enemyRec))
 		{
 			switch(enemy->size)
@@ -335,11 +330,14 @@ void gameCollisions(Game* game, Player *player)
 		};
 
 		if (enemy->active && enemy->type != ET_NONE &&
+			// TODO(v.caraulan): replace with our functions
 			CheckCollisionRecs(playerRec, enemyRec))
 		{
+			int score = player->score;
 			int lives = player->lives - 1;
 			game->levelStart = false;
 			*player = (Player){0};
+			player->score = score;
 			player->position.x = SCREEN_WIDTH / 3.0f;
 			player->position.y = SCREEN_HEIGHT / 2.0f;
 			player->rotation = -90.0f;
@@ -360,7 +358,7 @@ void gameIsOver(Game* game)
 	{
 		if (game->player[0].lives <= 0 &&
 			game->player[1].lives <= 0 )
-			game->state = GS_GAMEOVER;
+			game->state = GS_GAMEOVER2;
 	}
 
 

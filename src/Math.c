@@ -136,22 +136,13 @@ bool testCircleRect(Circle c, AABB rect)
 
 }
 
-
-void drawShape()
-{
-    DrawPolyLines((Vector2){100.0f,200.0f},3,100.0f,0.0f,RED);
-    Vector2d v1 = {2.5f,3.4f};
-    Vector2d v2 = {2.51f,3.4f};
-    printf("%d\n", isEqualToVector2d(v1,v2));
-}
-
 /*int countVertices(PolygonShape)
 {
 
 }
 */
 
-void getNumberOfVertices(PolygonShape shape,int type,int* nbVertices)
+/*void getNumberOfVertices(PolygonShape shape,int type,int* nbVertices)
 {
 	//int count;
 	shape.type = type;
@@ -190,7 +181,24 @@ void getNumberOfVertices(PolygonShape shape,int type,int* nbVertices)
 		break;
     }
 }
+*/
 
+Range getMinRange(Range r1, Range r2)
+{
+	Range r = {0};
+	r = (fabs(r1.max - r1.min) > fabs(r2.max - r2.min)) ? r2 : r1;
+	return r;
+}
+Range getMaxRange(Range r1, Range r2)
+{
+	Range r = {0};
+	r = (fabs(r1.max - r1.min) > fabs(r2.max - r2.min)) ? r1 : r2;
+	return r;
+}
+bool rangeOverlapRange(Range r1, Range r2)
+{
+	return (r1.min <= r2.max) && (r2.min <= r1.max);
+}
 Vector2d getNormal(Vector2d a, Vector2d b)
 {
 	Vector2d result;
@@ -208,6 +216,27 @@ Vector2d getLocalVector2d(Vector2d a, Vector2d b)
 	return (result);
 }
 
+Vector2d getCenterConvexPoly(Vector2d *v, int size)
+{
+	Vector2d result = {0};
+	int i = 0;
+	float areaSum = 0.0f;
+	float area = 0.0f;
+	for (i = 0;i < size - 1;i++){
+
+		area = v[i].x*v[i+1].y - v[i+1].x*v[i].y;
+		areaSum += area;
+		result.x += (v[i].x + v[i+1].x) * area;
+		result.y += (v[i].y + v[i+1].y) * area;
+	}
+	area = v[i].x*v[0].y - v[i].x*v[0].y;
+	areaSum += area;
+	areaSum *= 0.5;
+	result.x = result.x / (areaSum*6.0f);
+	result.y = result.y / (areaSum*6.0f);
+	return (result);
+}
+
 int satAlgorithm(Vector2d *a, Vector2d *b, int sizeA, int sizeB)
 {
 	float infinity = 1.0f / 0.0f;
@@ -219,16 +248,6 @@ int satAlgorithm(Vector2d *a, Vector2d *b, int sizeA, int sizeB)
 		Range range2 = range1;
 
 		Vector2d normal = getNormal(a[i], a[i + 1]);
-		printf("normal x.%f y.%f x.%f y.%f %f %f\n",a[i].x, a[i].y, a[i+1].x, a[i+1].y, normal.x, normal.y);
-		Vector2d absNormal = normal;
-		Vector2d normalized = absNormal;
-		if (absNormal.x < 0)
-			absNormal.x = -absNormal.x;
-		if (absNormal.y < 0)
-			absNormal.y = -absNormal.y;
-		absNormal.x += a[i].x;
-		absNormal.y += a[i].y;
-		DrawLine(absNormal.x, absNormal.y, absNormal.x + (10*normalized.x), absNormal.y + (10*normalized.y), WHITE);
 		for (int j = 0; j < sizeA;j++)
 		{
 			float projection = dotProduct(a[j], normal);
@@ -247,8 +266,68 @@ int satAlgorithm(Vector2d *a, Vector2d *b, int sizeA, int sizeB)
 			if (projection > range2.max)
 				range2.max = projection;
 		}
-		if(!(range1.min <= range2.max && range2.min <= range1.max))
+		if(!rangeOverlapRange(range1,range2))
 			return 0;
 	}
+	return 1;
+}
+
+int satAlgorithmPolygonCircle(Vector2d* v,int vSize,Circle* circle)
+{
+	Vector2d closestVertex;
+	float mindist = circle->radius;
+
+	Range circleRange;
+	Range polyRange;
+
+	//Circle
+	for(int i = 0; i < vSize; i++)
+	{
+		//delta between the circle position and the current vertex of the polygon
+		Vector2d delta = subsVector2d(v[i],circle->center);
+		float dist = lengthSqVector2d(delta);
+
+		if(dist < mindist*mindist)
+		{
+			mindist = dist;
+			closestVertex = delta;
+		}
+	}
+
+	Vector2d closestNormalized = normalizeVector2d(closestVertex);
+
+	//Project the center onto the closest vertex of the polygon
+	float projCircle = dotProduct(closestNormalized,circle->center);
+	//Range circleRange;
+	circleRange.min = projCircle - circle->radius;
+	circleRange.max = projCircle + circle->radius;
+
+
+	//Get the normalized axis of the poygon
+	Vector2d axis[vSize];
+	for(int i = 0; i < vSize; i++)
+	{
+		axis[i] = normalizeVector2d(getNormal(v[i],v[i + 1 == vSize ? 0 : i+1]));
+	}
+
+	/*loop over polygon*/
+	polyRange.min =polyRange.max = dotProduct(axis[0],v[0]);
+	for(int i = 1; i < vSize - 1; i++)
+	{
+		float proj = dotProduct(axis[i],v[i]);
+		if(proj < polyRange.min)
+		{
+			polyRange.min = proj;
+		}
+		if(proj > polyRange.max)
+		{
+			polyRange.max = proj;
+		}
+	}
+	if(!rangeOverlapRange(polyRange,circleRange))
+	{
+		return 0;
+	}
+
 	return 1;
 }
