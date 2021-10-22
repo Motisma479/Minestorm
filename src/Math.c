@@ -182,6 +182,23 @@ bool testCircleRect(Circle c, AABB rect)
     }
 }
 */
+
+Range getMinRange(Range r1, Range r2)
+{
+	Range r = {0};
+	r = (fabs(r1.max - r1.min) > fabs(r2.max - r2.min)) ? r2 : r1;
+	return r;
+}
+Range getMaxRange(Range r1, Range r2)
+{
+	Range r = {0};
+	r = (fabs(r1.max - r1.min) > fabs(r2.max - r2.min)) ? r1 : r2;
+	return r;
+}
+bool rangeOverlapRange(Range r1, Range r2)
+{
+	return (r1.min <= r2.max) && (r2.min <= r1.max);
+}
 Vector2d getNormal(Vector2d a, Vector2d b)
 {
 	Vector2d result;
@@ -238,7 +255,7 @@ int satAlgorithm(Vector2d *a, Vector2d *b, int sizeA, int sizeB)
 			if (projection > range2.max)
 				range2.max = projection;
 		}
-		if(!(range1.min <= range2.max && range2.min <= range1.max))
+		if(!rangeOverlapRange(range1,range2))
 			return 0;
 	}
 	return 1;
