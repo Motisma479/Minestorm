@@ -108,6 +108,7 @@ float lengthSqVector2d(Vector2d v);
 float lengthVector2d(Vector2d v);
 Vector2d getNormal(Vector2d a, Vector2d b);
 
+Vector2d rotateAndTranslate(Vector2d vector, float rotation, Vector2d position);
 Vector2d scaleVector2d(Vector2d v,float scalar);
 float distVector2d(Vector2d a, Vector2d b);
 float dotProduct(Vector2d a,Vector2d b);

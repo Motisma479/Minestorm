@@ -1,6 +1,7 @@
 #include "game.h"
 #include "draw.h"
 #include "Math.h"
+#include "collision.h"
 
 int addEnemy(Game *game, EnemySize size)
 {
@@ -60,6 +61,8 @@ void runGameLoop(Game* game)
 	{
 		game->ticksCount = GetFrameTime();
 		processInput(game);
+		BeginDrawing();
+		DrawTextureEx(game->background, (Vector2){0, 0}, 0, 1.0f, WHITE);
 		updateGame(game);
 		drawGame(game);
 	}
@@ -120,6 +123,16 @@ void processInput(Game* game)
 		setInputFlag(KEY_L, &player2->action, PA_TURN_RIGHT);
 		setInputFlag(KEY_I, &player2->action, PA_ACCELERATION);
 	}
+	if (IsKeyPressed('C'))
+	{
+		if (game->drawCollisions == 0)
+			game->drawCollisions = 1;
+		else if (game->drawCollisions == 1)
+			game->drawCollisions = 2;
+		else
+			game->drawCollisions = 0;
+	}
+
 	if(IsKeyPressed(KEY_ESCAPE))
 	{
 		if (game->state == GS_MENU)
@@ -314,35 +327,65 @@ void gameCollisions(Game* game, Player *player)
 	for(int j = 0; j < game->enemyCount; j++)
 	{
 		Enemy* enemy = &game->enemies[j];
-		Rectangle enemyRec = {enemy->position.x, enemy->position.y, 25, 25};
 		for(int i = 0; i < player->bulletCount; i++)
 		{
 			Bullet* bullet = &player->bullets[i];
 			if (collisionEnemyBullet(game, player, enemy, bullet))
 				break;
 		}
-		Rectangle playerRec =
+		if (enemy->active)
 		{
-			player->position.x,
-			player->position.y,
-			84 * 0.25f,
-			140 * 0.25f
-		};
+			Vector2d enemyPosition = (Vector2d){enemy->position.x, enemy->position.y};
+			bool intersect = 0;
+			switch(enemy->type)
+			{
+				case ET_FLOATING:
+				{
+					FloatingCollisionBox floating =
+						getFloatingCollisionBox(0, enemyPosition, enemy->scale);
+					intersect = checkCollisionPlayerFloat(*player,floating, game->drawCollisions);
+				}
+				break;
+				case ET_MAGNETIC:
+				{
+					MagneticCollisionBox magnetic =
+						getMagneticCollisionBox(0, enemyPosition, enemy->scale);
 
-		if (enemy->active && enemy->type != ET_NONE &&
-			// TODO(v.caraulan): replace with our functions
-			CheckCollisionRecs(playerRec, enemyRec))
-		{
-			int score = player->score;
-			int lives = player->lives - 1;
-			game->levelStart = false;
-			*player = (Player){0};
-			player->score = score;
-			player->position.x = SCREEN_WIDTH / 3.0f;
-			player->position.y = SCREEN_HEIGHT / 2.0f;
-			player->rotation = -90.0f;
-			player->lives = lives;
-			initLevel1(game);
+					intersect = checkCollisionPlayerMagnetic(*player, magnetic, game->drawCollisions);
+				}
+				break;
+				case ET_FIREBALL:
+				{
+					FireBallCollisionBox fireball =
+						getFireBallCollisionBox(0, enemyPosition, enemy->scale);
+					intersect = checkCollisionPlayerFireBall(*player, fireball, game->drawCollisions);
+				}
+				break;
+				case ET_MAGNETIC_FIREBALL:
+				{
+					MagneticFireBallCollisionBox fireball =
+						getMagneticFireballCollisionBox(0,enemyPosition, enemy->scale);
+					intersect = checkCollisionPlayerMagneticFireBall(*player,
+																	 fireball,
+																	 game->drawCollisions);
+				}
+				break;
+				default:
+				;
+			}
+			if (intersect)
+			{
+				int score = player->score;
+				int lives = player->lives - 1;
+				game->levelStart = false;
+				*player = (Player){0};
+				player->score = score;
+				player->position.x = SCREEN_WIDTH / 3.0f;
+				player->position.y = SCREEN_HEIGHT / 2.0f;
+				player->rotation = -90.0f;
+				player->lives = lives;
+				initLevel1(game);
+			}
 		}
 	}
 }
