@@ -36,6 +36,7 @@ typedef struct Game
 	Enemy     enemies[ENEMY_COUNT];
 	int       level;
 	bool      levelStart;
+	char      drawCollisions;
 	int       framesCounter;
 } Game;
 

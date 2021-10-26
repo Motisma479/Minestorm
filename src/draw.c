@@ -34,7 +34,7 @@ static void drawScoreBoard(Game *game, Vector2 offset)
 	player.position = (Vector2){60 + offset.x, 30 + offset.y};
 	player.rotation = -90.0f;
 
-	DrawRectangle(40+offset.x, 0+offset.y, 240, 40, SKYBLUE);
+	DrawRectangle(40+offset.x, 0+offset.y, 244, 40, SKYBLUE);
 	DrawText("Player ONE", 45+offset.x, 0+offset.y, 20, BLUE);
 
 	drawLives(game, &player, offset, BLUE);
@@ -94,9 +94,6 @@ static void drawMenu(Game *game)
 
 void drawGame(Game* game)
 {
-	BeginDrawing();
-
-	DrawTextureEx(game->background, (Vector2){0, 0}, 0, 1.0f, WHITE);
 	switch(game->state)
 	{
 		case GS_MENU:
@@ -111,30 +108,30 @@ void drawGame(Game* game)
 		case GS_PLAY:
 		case GS_PLAY2:
 		{
-			for(int i = 0; i < game->enemyCount; i++)
-				drawEnemy(&game->enemies[i], game->atlas);
-			for(int i = 0; i < game->player[0].bulletCount; i++)
+			if (game->drawCollisions != 2)
 			{
-				Bullet* bullet = &game->player[0].bullets[i];
-				drawBullet(bullet, game->atlas, SKYBLUE);
-			}
-
-			drawLayer(&game->layer, game->atlas);
-			drawPlayer(&game->player[0], 0.25f, SKYBLUE, game->atlas);
-			if (game->state == GS_PLAY2)
-			{
-				for(int i = 0; i < game->player[1].bulletCount; i++)
+				for(int i = 0; i < game->enemyCount; i++)
+					drawEnemy(&game->enemies[i], game->atlas);
+				for(int i = 0; i < game->player[0].bulletCount; i++)
 				{
-					Bullet* bullet = &game->player[1].bullets[i];
-					drawBullet(bullet, game->atlas, GREEN);
+					Bullet* bullet = &game->player[0].bullets[i];
+					drawBullet(bullet, game->atlas, SKYBLUE);
 				}
-				drawPlayer(&game->player[1], 0.25f, GREEN, game->atlas);
+
+				//drawLayer(&game->layer, game->atlas);
+				drawPlayer(&game->player[0], 0.25f, SKYBLUE, game->atlas);
+				if (game->state == GS_PLAY2)
+				{
+					for(int i = 0; i < game->player[1].bulletCount; i++)
+					{
+						Bullet* bullet = &game->player[1].bullets[i];
+						drawBullet(bullet, game->atlas, GREEN);
+					}
+					drawPlayer(&game->player[1], 0.25f, GREEN, game->atlas);
+				}
 			}
 		}break;
-		default:
-		{
-
-		}
+		default:;
 	}
 	DrawTextureEx(game->foreground, (Vector2){0, 0}, 0, 1.0f, WHITE);
 	drawScoreBoard(game, (Vector2){0, 0});

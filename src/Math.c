@@ -17,7 +17,7 @@ Vector2d subsVector2d(Vector2d a,Vector2d b)
 bool isEqualToVector2d(Vector2d a,Vector2d b)
 {
     bool test = (a.x - b.x) >= -EPSILON  && (a.x - b.x) <= EPSILON && 
-    (a.y - b.y) >= -EPSILON  && (a.y - b.y) <= EPSILON;
+		(a.y - b.y) >= -EPSILON  && (a.y - b.y) <= EPSILON;
 
     return test;
 }
@@ -125,10 +125,10 @@ bool testCircleRect(Circle c, AABB rect)
     float distY;
 
     if(c.center.x < rect.min.x) distX = rect.min.x;
-    else if(c.center.x > rect.max.x) distX = rect.max.x;
+    else distX = rect.max.x;
 
-    if(c.center.y < rect.min.y) distX = rect.min.y;
-    else if(c.center.y > rect.max.y) distY = rect.max.y;
+    if(c.center.y < rect.min.y) distY = rect.min.y;
+    else distY = rect.max.y;
 
     float distSq = lengthSqVector2d((Vector2d){distX,distY});
 
@@ -216,6 +216,14 @@ Vector2d getLocalVector2d(Vector2d a, Vector2d b)
 	return (result);
 }
 
+Vector2d rotateAndTranslate(Vector2d vector, float rotation, Vector2d position)
+{
+	Vector2d result = {
+		.x = (vector.x * cosf(rotation) - vector.y*sinf(rotation)) + position.x,
+		.y = (vector.x * sinf(rotation) + vector.y*cosf(rotation)) + position.y};
+	return (result);
+}
+
 Vector2d getCenterConvexPoly(Vector2d *v, int size)
 {
 	Vector2d result = {0};
@@ -291,7 +299,9 @@ int satAlgorithmPolygonCircle(Vector2d* v,int vSize,Circle* circle)
 		{
 			mindist = dist;
 			closestVertex = delta;
+			return (1);
 		}
+		return (0);
 	}
 
 	Vector2d closestNormalized = normalizeVector2d(closestVertex);

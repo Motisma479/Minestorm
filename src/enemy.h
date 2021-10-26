@@ -28,6 +28,7 @@ typedef struct Enemy
 	bool      active;
 	EnemyType type;
 	EnemySize size;
+	float     scale;
 } Enemy;
 
 void initEnemy(Enemy* enemy, Vector2 position, EnemyType type, EnemySize size);

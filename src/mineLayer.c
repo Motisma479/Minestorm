@@ -16,7 +16,7 @@ int updateLayer(MineLayer* layer, float deltaTime)
 {
 	if (layer->active && layer->scale >= 32.0f)
 		layer->scale -= layer->scale*1000.0f / 1024.0f*deltaTime;
-
+	return (1);
 	if(layer->scale <= 32.0f)
 	{
 		layer->scale = 0.0f;

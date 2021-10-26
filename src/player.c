@@ -71,13 +71,10 @@ void drawPlayer(Player* player, float scale, Color color, const Texture2D textur
 			textureCoord.width * scale,
 			textureCoord.height * scale
 		};
-		Vector2 origin = {playerPos.width / 2, playerPos.height / 2};
-
-		//DrawRectanglePro(playerPos, origin, player->rotation + 90.0f, BLACK);
+		Vector2 origin = {playerPos.width / 2, (playerPos.height / 2) + 5};
 
 		DrawTexturePro(texture, textureCoord,
 					   playerPos, origin, player->rotation + 90.0f, color);
-		//DrawCircle(playerPos.x, playerPos.y, 10, WHITE);
 	}
 }
 
