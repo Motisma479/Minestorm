@@ -2,23 +2,41 @@
 #include <raylib.h>
 #include <stdbool.h>
 #include "common.h"
-
 #include "mineLayer.h"
-#include "player.h"
 #include "enemy.h"
 #include "bullet.h"
+#include "Math.h"
 
 typedef enum
 {
 	GS_MENU,
 	GS_PAUSE,
-	GS_PAUSE2,
 	GS_PLAY,
-	GS_PLAY2,
 	GS_GAMEOVER,
-	GS_GAMEOVER2,
 	GS_CLOSE,
 } GameState;
+
+typedef enum PlayerAction
+{
+	PA_ACCELERATION = 1UL,
+	PA_TURN_LEFT    = 1UL << 1,
+	PA_TURN_RIGHT   = 1UL << 2,
+	PA_TELEPORT     = 1UL << 3,
+	PA_SHOOT        = 1UL << 4,
+} PlayerAction;
+
+typedef struct Player
+{
+	Bullet       bullets[BULLET_CAPACITY];
+	int          bulletCount;
+    Vector2      position;
+	Vector2      acceleration;
+    float        rotation;
+	int          lives;
+	int          score;
+	PlayerAction action;
+	Rectangle    textureCoord;
+} Player;
 
 typedef struct Game
 {
@@ -38,6 +56,7 @@ typedef struct Game
 	bool      levelStart;
 	char      drawCollisions;
 	int       framesCounter;
+	bool      twoPlayers;
 } Game;
 
 bool initGame(Game* game);

@@ -13,12 +13,12 @@ int main()
 	player.position = (Vector2){200, 200};
 	player.rotation = 0.0f;
 
-	//Circle circle = {{300, 300}, 20};
+	Circle circle = {{300, 300}, 20};
 	Texture2D texture = LoadTexture("./assets/mines.png");
 	Rectangle textureCoord = (Rectangle){83, 58, 84, 140};
 
 	//FloatingCollisionBox floating = getFloatingCollisionBox(0, (Vector2d){0, 0}, 1.0f);
-	MagneticFireBallCollisionBox fireball = getMagneticFireballCollisionBox(0, (Vector2d){0, 0}, 1.0f);
+	MagneticFireCollisionBox fireball = getMagneticFireCollisionBox(0, (Vector2d){0, 0}, 1.0f);
 
 	//Vector2d center = getCenterConvexPoly(floating.body, sizeof(floating.body) / sizeof(Vector2d));
 	Rectangle enemyCoord = (Rectangle){567, 308, 149, 153};
@@ -160,14 +160,15 @@ int main()
 		if (IsKeyDown(KEY_Q))
 			player.rotation -= 0.1f;
 
+		PlayerCollisionBox pCol = 
+			getPlayerCollisionBox(player.rotation*DEG2RAD, (Vector2d) {player.position.x, player.position.y},
+								  0.25f);
 
-		DrawTexturePro(texture, enemyCoord, enemyCoord, (Vector2){0, 0}, 0, RED);
-		DrawTexturePro(texture, textureCoord, playerPos, origin, player.rotation*RAD2DEG, WHITE);
+		//DrawTexturePro(texture, enemyCoord, enemyCoord, (Vector2){0, 0}, 0, RED);
+		DrawTexturePro(texture, textureCoord, playerPos, origin, player.rotation + 90.0f, WHITE);
 		checkCollisionPlayerFloat(player, getFloatingCollisionBox(0, (Vector2d){0, 0}, 1.0f), 1);
 		checkCollisionPlayerMagnetic(player,  getMagneticCollisionBox(0, (Vector2d){0, 0}, 1.0f), 1);
-		//checkCollisionPlayerFireBall(player, fireball, 1);
-		checkCollisionPlayerMagneticFireBall(player,  fireball, 1);
-		//sizeof(fireball.poly) / sizeof(Vector2d)
+		checkCollisionPlayerMagneticFire(player,  fireball, 1);
 #if 0
 		drawShape(fireball.poly, sizeof(fireball.poly) / sizeof(Vector2d), WHITE);
 		drawShape(fireball.triangle1, sizeof(fireball.triangle1) / sizeof(Vector2d), WHITE);
@@ -176,15 +177,21 @@ int main()
 		drawShape(fireball.triangle4, sizeof(fireball.triangle1) / sizeof(Vector2d), WHITE);
 #endif
 
-		//drawShape(fireball.triangle1, sizeof(fireball.triangle1) / sizeof(Vector2d), WHITE);
-		//drawShape(fireball.triangle2, sizeof(fireball.triangle2) / sizeof(Vector2d), WHITE);
+		Vector2d *head = pCol.head;
+		Vector2d *tail = pCol.tail;
 
+		int sizeHead = sizeof(pCol.head) / sizeof(Vector2d);
+		int sizeTail = sizeof(pCol.tail) / sizeof(Vector2d);
 		DrawFPS(400, 100);
-#if 0
+
+		Color inter1 = GREEN;
+
+		int intersection1 = satAlgorithmPolygonCircle(head, sizeHead, &circle) || 
+			satAlgorithmPolygonCircle(tail, sizeTail, &circle);
 		if (intersection1)
 			inter1 = RED;
 		DrawCircle(circle.center.x, circle.center.y, circle.radius, inter1);
-#endif
+
 		EndDrawing();
 	}
 

@@ -1,4 +1,6 @@
 #include "game.h"
+#include "draw.h"
+#include "player.h"
 
 static void drawLives(Game *game, Player *player, Vector2 offset, Color color)
 {
@@ -42,8 +44,7 @@ static void drawScoreBoard(Game *game, Vector2 offset)
 	DrawText(TextFormat("%d", game->player[0].score), 240+offset.x,
 			 0+offset.y, 20, BLUE);
 
-	if (game->state == GS_PLAY2  || game->state == GS_PAUSE2 ||
-		game->state == GS_GAMEOVER2)
+	if (game->twoPlayers)
 	{
 		DrawRectangle(364-offset.x, 0+offset.y, 230, 40, GREEN);
 		DrawText("Player TWO", 470-offset.x, 0+offset.y, 20, LIME);
@@ -96,17 +97,9 @@ void drawGame(Game* game)
 {
 	switch(game->state)
 	{
-		case GS_MENU:
-		{
-			drawMenu(game);
-		}break;
-		case GS_PAUSE:
-		case GS_PAUSE2:
-		{
-			drawPauseMenu(game);
-		}break;
+		case GS_MENU: drawMenu(game);break;
+		case GS_PAUSE: drawPauseMenu(game);break;
 		case GS_PLAY:
-		case GS_PLAY2:
 		{
 			if (game->drawCollisions != 2)
 			{
@@ -120,7 +113,7 @@ void drawGame(Game* game)
 
 				//drawLayer(&game->layer, game->atlas);
 				drawPlayer(&game->player[0], 0.25f, SKYBLUE, game->atlas);
-				if (game->state == GS_PLAY2)
+				if (game->twoPlayers)
 				{
 					for(int i = 0; i < game->player[1].bulletCount; i++)
 					{
@@ -135,7 +128,7 @@ void drawGame(Game* game)
 	}
 	DrawTextureEx(game->foreground, (Vector2){0, 0}, 0, 1.0f, WHITE);
 	drawScoreBoard(game, (Vector2){0, 0});
-	if (game->state == GS_GAMEOVER  || game->state == GS_GAMEOVER2)
+	if (game->state == GS_GAMEOVER)
 	{
 		drawScoreBoard(game, (Vector2){30, 400});
 		drawGameOver(game);

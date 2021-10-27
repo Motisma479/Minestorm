@@ -1,29 +1,33 @@
 #include "enemy.h"
 #include "common.h"
+#include "Math.h"
 
 void initEnemy(Enemy* enemy, Vector2 position, EnemyType type, EnemySize size)
 {
-	enemy->life = MAX_ENEMY_LIFE;
 	enemy->position = position;
+
+	enemy->speed.x = GetRandomValue(-100, 100);
+	enemy->speed.y = GetRandomValue(-100, 100);
+	Vector2 normalized = normalizeVector2(enemy->speed);
 
 	switch(size)
 	{
 		case ES_SMALL:
 		{
-			enemy->speed.x = 60;
-			enemy->speed.y = 60;
+			enemy->speed.x = normalized.x * 60;
+			enemy->speed.y = normalized.y * 60;
 			enemy->scale = 0.125f;
 		}break;
 		case ES_MEDIUM:
 		{
-			enemy->speed.x = 40;
-			enemy->speed.y = 40;
+			enemy->speed.x = normalized.x * 40;
+			enemy->speed.y = normalized.y * 40;
 			enemy->scale = 0.25f;
 		}break;
 		case ES_BIG:
 		{
-			enemy->speed.x = 20;
-			enemy->speed.y = 20;
+			enemy->speed.x = normalized.x * 20;
+			enemy->speed.y = normalized.y * 20;
 			enemy->scale = 0.5f;
 		}break;
 		default:
@@ -39,9 +43,6 @@ void initEnemy(Enemy* enemy, Vector2 position, EnemyType type, EnemySize size)
 
 void updateEnemy(Enemy* enemy,float deltaTime)
 {
-	if(enemy->life <= 0.0f) //if enemy is dead, we do not update his position
-		return;
-
 	Vector2 *position = &enemy->position;
 
 	if (enemy->active)

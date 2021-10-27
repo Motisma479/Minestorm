@@ -16,7 +16,7 @@ Vector2 getPlayerDirection(Player* player)
 
 void updatePlayer(Player* player, float deltaTime)
 {
-	if (player->lives > 0)
+	if (1)//if (player->lives > 0)
 	{
 		//Rotation
 		if (player->action & PA_TURN_LEFT)

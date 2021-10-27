@@ -1,3 +1,4 @@
+#include <raylib.h>
 #include "bullet.h"
 #include <math.h>
 #include "common.h"
@@ -11,15 +12,12 @@ void initBullet(Bullet* bullet,Vector2 position,float angle)
 void updateBullet(Bullet* bullet,float deltaTime)
 {
 	Vector2 *position = &bullet->position;
-	Vector2 *addPosition = &bullet->addPosition;
 
 	float xDeplacement = bullet->speed * cosf(bullet->angle*DEG2RAD) * deltaTime;
 	float yDeplacement = bullet->speed * sinf(bullet->angle*DEG2RAD) * deltaTime;
 	position->x += xDeplacement;
 	position->y += yDeplacement;
-	addPosition->x += xDeplacement;
-	addPosition->y += yDeplacement;
-
+	bullet->lifeTime += 1.0f * deltaTime;
 	if (position->x < 64.0f) { position->x = (float)SCREEN_WIDTH - 64.0f; }
 	else if (position->x > (float)SCREEN_WIDTH - 64.0f) { position->x = 64.0f; }
 

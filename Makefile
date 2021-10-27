@@ -5,7 +5,7 @@ TEST_COLLISION = test_collision
 
 SD = ./src/
 
-OBJS=$(SD)main.o $(SD)game.o $(SD)player.o $(SD)mineLayer.o $(SD)enemy.o $(SD)bullet.o $(SD)draw.o $(SD)Math.o $(SD)collision.o
+OBJS=$(SD)main.o $(SD)game.o $(SD)player.o $(SD)mineLayer.o $(SD)enemy.o $(SD)bullet.o $(SD)draw.o $(SD)Math.o $(SD)collision.o $(SD)levels.o
 
 CC=gcc
 TARGET=$(shell $(CC) -dumpmachine)
@@ -17,8 +17,8 @@ LDLIBS=-lraylib
 
 ifeq ($(TARGET),x86_64-linux-gnu)
 LDLIBS+=-ldl -lpthread -lm
-else ifeq ($(TARGET),x86_64-pc-cygwin)
-LDLIBS+=-lgdi32
+#else ifeq ($(TARGET),x86_64-pc-cygwin)
+LDLIBS+=-lgdi32 -lWinmm -lWs2_32
 endif
 
 DEPS=$(OBJS:.o=.d)

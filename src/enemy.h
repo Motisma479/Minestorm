@@ -24,7 +24,6 @@ typedef struct Enemy
 	Vector2   position;
 	Vector2   speed;
 	float     rotation;
-	int       life;
 	bool      active;
 	EnemyType type;
 	EnemySize size;

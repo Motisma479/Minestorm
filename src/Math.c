@@ -1,62 +1,61 @@
 #include "Math.h"
-#include <raylib.h>
 #include <stdio.h>
 
-Vector2d zeroVector2d()
+Vector2 zeroVector2()
 {
-    return (Vector2d){0.0f,0.0f};
+    return (Vector2){0.0f,0.0f};
 }
-Vector2d addVector2d(Vector2d a,Vector2d b)
+Vector2 addVector2(Vector2 a,Vector2 b)
 {
-    return (Vector2d){a.x + b.x, a.y + b.y};
+    return (Vector2){a.x + b.x, a.y + b.y};
 }
-Vector2d subsVector2d(Vector2d a,Vector2d b)
+Vector2 subsVector2(Vector2 a,Vector2 b)
 {
-    return (Vector2d){a.x - b.x, a.y - b.y};
+    return (Vector2){a.x - b.x, a.y - b.y};
 }
-bool isEqualToVector2d(Vector2d a,Vector2d b)
+bool isEqualToVector2(Vector2 a,Vector2 b)
 {
     bool test = (a.x - b.x) >= -EPSILON  && (a.x - b.x) <= EPSILON && 
 		(a.y - b.y) >= -EPSILON  && (a.y - b.y) <= EPSILON;
 
     return test;
 }
-Vector2d normalizeVector2d(Vector2d v)
+Vector2 normalizeVector2(Vector2 v)
 {
-    float length = lengthVector2d(v);
+    float length = lengthVector2(v);
     if(length == 0.0f)
-        return zeroVector2d();
+        return zeroVector2();
 
-    Vector2d vector;
+    Vector2 vector;
     vector.x = v.x / length;
     vector.y = v.y / length;
 
     return vector;
 }
-Vector2d negateVector2d(Vector2d v)
+Vector2 negateVector2(Vector2 v)
 {
-    return (Vector2d){-v.x,-v.y};
+    return (Vector2){-v.x,-v.y};
 }
 
-float lengthSqVector2d(Vector2d v)
+float lengthSqVector2(Vector2 v)
 {
     return (v.x*v.x + v.y*v.y);
 }
-float lengthVector2d(Vector2d v)
+float lengthVector2(Vector2 v)
 {
-    return sqrtf(lengthSqVector2d(v));
+    return sqrtf(lengthSqVector2(v));
 }
 
-Vector2d scaleVector2d(Vector2d v,float scalar)
+Vector2 scaleVector2(Vector2 v,float scalar)
 {
-    return (Vector2d){v.x * scalar, v.y * scalar};
+    return (Vector2){v.x * scalar, v.y * scalar};
 }
-float distVector2d(Vector2d a, Vector2d b)
+float distVector2(Vector2 a, Vector2 b)
 {
-    return lengthVector2d(subsVector2d(a,b));
+    return lengthVector2(subsVector2(a,b));
 }
 
-float dotProduct(Vector2d a,Vector2d b)
+float dotProduct(Vector2 a,Vector2 b)
 {
     return (a.x * b.x + a.y * b.y);
 }
@@ -71,23 +70,23 @@ float inverseLerp(float a,float b,float value)
 }
 
 
-Vector2d pointOnLineSegment(LineSegment segment, float t)
+Vector2 pointOnLineSegment(LineSegment segment, float t)
 {
-    Vector2d seg;
-    seg.x = segment.start.x + subsVector2d(segment.start,segment.end).x * t;
-    seg.y = segment.start.y + subsVector2d(segment.start,segment.end).y * t;
+    Vector2 seg;
+    seg.x = segment.start.x + subsVector2(segment.start,segment.end).x * t;
+    seg.y = segment.start.y + subsVector2(segment.start,segment.end).y * t;
 
     return seg;
 }
-bool testPointCircle(Vector2d point,Circle c)
+bool testPointCircle(Vector2 point,Circle c)
 {
-    float distSq =(distVector2d(point, c.center));
+    float distSq =(distVector2(point, c.center));
     distSq *= distSq;
 
 
     return distSq <= c.radius * c. radius;
 }
-bool testPointRect(Vector2d point, AABB rect)
+bool testPointRect(Vector2 point, AABB rect)
 {
     bool outside = point.x < rect.min.x ||
 		point.y < rect.min.y ||
@@ -110,7 +109,7 @@ bool testRect(AABB r1,AABB r2)
 
 bool testCircle(Circle c1,Circle c2)
 {
-    float distSq = distVector2d(c1.center,c2.center);
+    float distSq = distVector2(c1.center,c2.center);
     distSq *= distSq;
 
     float radiSq = c1.radius + c2.radius;
@@ -130,7 +129,7 @@ bool testCircleRect(Circle c, AABB rect)
     if(c.center.y < rect.min.y) distY = rect.min.y;
     else distY = rect.max.y;
 
-    float distSq = lengthSqVector2d((Vector2d){distX,distY});
+    float distSq = lengthSqVector2((Vector2){distX,distY});
 
     return distSq <= c.radius * c.radius;
 
@@ -167,11 +166,11 @@ bool testCircleRect(Circle c, AABB rect)
         case CONVEX_SHAPE:
 		for(int i = 0; i < shape.shapes.convexPoly.nbPoints; i++)
 		{
-			Vector2d* p1 = &shape.shapes.convexPoly.points[i];
+			Vector2* p1 = &shape.shapes.convexPoly.points[i];
 			//Next vertex;
-			Vector2d* p2 = &shape.shapes.convexPoly.points[ i + 1 == shape.shapes.convexPoly.nbPoints ? 0 : i+1 ];
+			Vector2* p2 = &shape.shapes.convexPoly.points[ i + 1 == shape.shapes.convexPoly.nbPoints ? 0 : i+1 ];
 
-			if(!isEqualToVector2d(*p1,*p2))
+			if(!isEqualToVector2(*p1,*p2))
 			{
 				*nbVertices += 1;
 			}
@@ -199,34 +198,34 @@ bool rangeOverlapRange(Range r1, Range r2)
 {
 	return (r1.min <= r2.max) && (r2.min <= r1.max);
 }
-Vector2d getNormal(Vector2d a, Vector2d b)
+Vector2 getNormal(Vector2 a, Vector2 b)
 {
-	Vector2d result;
+	Vector2 result;
 
 	result.x = -(b.y - a.y);
 	result.y = (b.x - a.x);
-	//result = normalizeVector2d(result);
+	//result = normalizeVector2(result);
 	return (result);
 }
 
-Vector2d getLocalVector2d(Vector2d a, Vector2d b)
+Vector2 getLocalVector2(Vector2 a, Vector2 b)
 {
-	Vector2d result = {b.x - a.x, b.y - a.y};
+	Vector2 result = {b.x - a.x, b.y - a.y};
 
 	return (result);
 }
 
-Vector2d rotateAndTranslate(Vector2d vector, float rotation, Vector2d position)
+Vector2 rotateAndTranslate(Vector2 vector, float rotation, Vector2 position)
 {
-	Vector2d result = {
+	Vector2 result = {
 		.x = (vector.x * cosf(rotation) - vector.y*sinf(rotation)) + position.x,
 		.y = (vector.x * sinf(rotation) + vector.y*cosf(rotation)) + position.y};
 	return (result);
 }
 
-Vector2d getCenterConvexPoly(Vector2d *v, int size)
+Vector2 getCenterConvexPoly(Vector2 *v, int size)
 {
-	Vector2d result = {0};
+	Vector2 result = {0};
 	int i = 0;
 	float areaSum = 0.0f;
 	float area = 0.0f;
@@ -245,7 +244,7 @@ Vector2d getCenterConvexPoly(Vector2d *v, int size)
 	return (result);
 }
 
-int satAlgorithm(Vector2d *a, Vector2d *b, int sizeA, int sizeB)
+int satAlgorithm(Vector2 *a, Vector2 *b, int sizeA, int sizeB)
 {
 	float infinity = 1.0f / 0.0f;
 	float minusInfinity = log(0);
@@ -255,7 +254,7 @@ int satAlgorithm(Vector2d *a, Vector2d *b, int sizeA, int sizeB)
 		Range range1 = {infinity, minusInfinity};
 		Range range2 = range1;
 
-		Vector2d normal = getNormal(a[i], a[i + 1]);
+		Vector2 normal = getNormal(a[i], a[i + 1]);
 		for (int j = 0; j < sizeA;j++)
 		{
 			float projection = dotProduct(a[j], normal);
@@ -280,64 +279,45 @@ int satAlgorithm(Vector2d *a, Vector2d *b, int sizeA, int sizeB)
 	return 1;
 }
 
-int satAlgorithmPolygonCircle(Vector2d* v,int vSize,Circle* circle)
+int satAlgorithmPolygonCircle(Vector2* v,int vSize,Circle *circle)
 {
-	Vector2d closestVertex;
-	float mindist = circle->radius;
+	float infinity = 1.0f / 0.0f;
+	float minusInfinity = log(0);
 
-	Range circleRange;
-	Range polyRange;
-
-	//Circle
-	for(int i = 0; i < vSize; i++)
+	for (int i = 0; i < vSize - 1;i++)
 	{
-		//delta between the circle position and the current vertex of the polygon
-		Vector2d delta = subsVector2d(v[i],circle->center);
-		float dist = lengthSqVector2d(delta);
+		Range range1 = {infinity, minusInfinity};
+		Range range2 = range1;
 
-		if(dist < mindist*mindist)
+		Vector2 normal = getNormal(v[i], v[i + 1]);
+		for (int j = 0; j < vSize;j++)
 		{
-			mindist = dist;
-			closestVertex = delta;
-			return (1);
+			float projection = dotProduct(v[j], normal);
+			if (projection < range1.min)
+				range1.min = projection;
+			if (projection > range1.max)
+				range1.max = projection;
 		}
-		return (0);
-	}
 
-	Vector2d closestNormalized = normalizeVector2d(closestVertex);
-
-	//Project the center onto the closest vertex of the polygon
-	float projCircle = dotProduct(closestNormalized,circle->center);
-	//Range circleRange;
-	circleRange.min = projCircle - circle->radius;
-	circleRange.max = projCircle + circle->radius;
-
-
-	//Get the normalized axis of the poygon
-	Vector2d axis[vSize];
-	for(int i = 0; i < vSize; i++)
-	{
-		axis[i] = normalizeVector2d(getNormal(v[i],v[i + 1 == vSize ? 0 : i+1]));
-	}
-
-	/*loop over polygon*/
-	polyRange.min =polyRange.max = dotProduct(axis[0],v[0]);
-	for(int i = 1; i < vSize - 1; i++)
-	{
-		float proj = dotProduct(axis[i],v[i]);
-		if(proj < polyRange.min)
+		for (int j = 0;j < vSize;j++)
 		{
-			polyRange.min = proj;
-		}
-		if(proj > polyRange.max)
-		{
-			polyRange.max = proj;
-		}
-	}
-	if(!rangeOverlapRange(polyRange,circleRange))
-	{
-		return 0;
-	}
+			Vector2 normalized = normalizeVector2(normal);
 
+
+			float projection1 = dotProduct((Vector2){circle->center.x + (normalized.x * circle->radius), circle->center.y + (normalized.y * circle->radius)}, normal);
+			float projection2 = dotProduct((Vector2){circle->center.x - (normalized.x * circle->radius), circle->center.y - (normalized.y * circle->radius)}, normal);
+
+			if (projection1 < range2.min)
+				range2.min = projection1;
+			if (projection1 > range2.max)
+				range2.max = projection1;
+			if (projection2 < range2.min)
+				range2.min = projection2;
+			if (projection2 > range2.max)
+				range2.max = projection2;
+		}
+		if(!rangeOverlapRange(range1,range2))
+			return 0;
+	}
 	return 1;
 }
