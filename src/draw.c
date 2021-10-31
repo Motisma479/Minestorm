@@ -2,41 +2,41 @@
 #include "draw.h"
 #include "player.h"
 
-static void drawLives(Game *game, Player *player, Vector2 offset, Color color)
+static void drawLives(Game *game, Player *player, Vector2d offset, Color color)
 {
 	float scale = 0.1f;
 	if (player->lives > 0)
 		drawPlayer(player, scale, color, game->atlas);
-	player->position = (Vector2){80+offset.x, 30+offset.y};
+	player->position = (Vector2d){80+offset.x, 30+offset.y};
 	if (player->lives > 1)
 		drawPlayer(player, scale, color, game->atlas);
-	player->position = (Vector2){100+offset.x, 30+offset.y};
+	player->position = (Vector2d){100+offset.x, 30+offset.y};
 	if (player->lives > 2)
 		drawPlayer(player, scale, color, game->atlas);
 }
 
-static void drawLives2(Game *game, Player *player, Vector2 offset, Color color)
+static void drawLives2(Game *game, Player *player, Vector2d offset, Color color)
 {
 	float scale = 0.1f;
 	player->rotation = -90.0f;
-	player->position = (Vector2){530-offset.x, 30+offset.y};
+	player->position = (Vector2d){530-offset.x, 30+offset.y};
 	if (player->lives > 0)
 		drawPlayer(player, scale, color, game->atlas);
-	player->position = (Vector2){550-offset.x, 30+offset.y};
+	player->position = (Vector2d){550-offset.x, 30+offset.y};
 	if (player->lives > 1)
 		drawPlayer(player, scale, color, game->atlas);
-	player->position = (Vector2){570-offset.x, 30+offset.y};
+	player->position = (Vector2d){570-offset.x, 30+offset.y};
 	if (player->lives > 2)
 		drawPlayer(player, scale, color, game->atlas);
 }
 
-static void drawScoreBoard(Game *game, Vector2 offset)
+static void drawScoreBoard(Game *game, Vector2d offset)
 {
 	Player player = game->player[0];
-	player.position = (Vector2){60 + offset.x, 30 + offset.y};
+	player.position = (Vector2d){60 + offset.x, 30 + offset.y};
 	player.rotation = -90.0f;
 
-	DrawRectangle(40+offset.x, 0+offset.y, 244, 40, SKYBLUE);
+	DrawRectangle(40+offset.x, 0+offset.y, 250, 40, SKYBLUE);
 	DrawText("Player ONE", 45+offset.x, 0+offset.y, 20, BLUE);
 
 	drawLives(game, &player, offset, BLUE);
@@ -101,37 +101,37 @@ void drawGame(Game* game)
 		case GS_PAUSE: drawPauseMenu(game);break;
 		case GS_PLAY:
 		{
-			if (game->drawCollisions != 2)
+			if (game->draw != DS_COLLISIONS)
 			{
 				for(int i = 0; i < game->enemyCount; i++)
 					drawEnemy(&game->enemies[i], game->atlas);
-				for(int i = 0; i < game->player[0].bulletCount; i++)
+				for(int i = 0; i < game->bulletCount; i++)
 				{
-					Bullet* bullet = &game->player[0].bullets[i];
-					drawBullet(bullet, game->atlas, SKYBLUE);
+					Bullet* bullet = &game->bullets[i];
+					if (bullet->source == BS_PLAYER1)
+						drawBullet(bullet, game->atlas, SKYBLUE);
+					else if (bullet->source == BS_PLAYER2)
+						drawBullet(bullet, game->atlas, GREEN);
+					else if (bullet->source == BS_ENEMY)
+						drawBullet(bullet, game->atlas, RED);
+
 				}
 
-				//drawLayer(&game->layer, game->atlas);
+				drawLayer(&game->layer, game->atlas);
 				drawPlayer(&game->player[0], 0.25f, SKYBLUE, game->atlas);
 				if (game->twoPlayers)
-				{
-					for(int i = 0; i < game->player[1].bulletCount; i++)
-					{
-						Bullet* bullet = &game->player[1].bullets[i];
-						drawBullet(bullet, game->atlas, GREEN);
-					}
 					drawPlayer(&game->player[1], 0.25f, GREEN, game->atlas);
-				}
 			}
 		}break;
 		default:;
 	}
 	DrawTextureEx(game->foreground, (Vector2){0, 0}, 0, 1.0f, WHITE);
-	drawScoreBoard(game, (Vector2){0, 0});
+	drawScoreBoard(game, (Vector2d){0, 0});
 	if (game->state == GS_GAMEOVER)
 	{
-		drawScoreBoard(game, (Vector2){30, 400});
+		drawScoreBoard(game, (Vector2d){30, 400});
 		drawGameOver(game);
 	}
+	DrawFPS(0, 0);
 	EndDrawing();
 }

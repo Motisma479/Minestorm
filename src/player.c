@@ -1,22 +1,18 @@
 #include "player.h"
 #include "common.h"
 #include <math.h>
+#include <raylib.h>
 
-void initPlayer(Player* player, Vector2 position)
+void initPlayer(Player* player, Vector2d position)
 {
 	player->position = position;
     player->lives = 3;
 	player->rotation = -90.0f;
 }
 
-Vector2 getPlayerDirection(Player* player)
-{
-    return (Vector2){cosf(player->rotation*DEG2RAD),sinf(player->rotation*DEG2RAD)};
-}
-
 void updatePlayer(Player* player, float deltaTime)
 {
-	if (1)//if (player->lives > 0)
+	if (player->lives > 0)
 	{
 		//Rotation
 		if (player->action & PA_TURN_LEFT)
@@ -37,7 +33,7 @@ void updatePlayer(Player* player, float deltaTime)
 		//Movement
 		if(player->action & PA_ACCELERATION)
 		{
-			Vector2 direction = getPlayerDirection(player);
+			Vector2d direction = getDirection(player->rotation);
 
 			player->acceleration.x += direction.x * PLAYER_SPEED;
 			player->acceleration.y += direction.y * PLAYER_SPEED;
@@ -53,6 +49,7 @@ void updatePlayer(Player* player, float deltaTime)
 		else if (player->position.y > (float)SCREEN_HEIGHT - 80.0f) { player->position.y = 80.0f; }
 
 		float friction = 20.0f;
+
 		//deacceleration
 		player->acceleration.x -= player->acceleration.x / friction;
 		player->acceleration.y -= player->acceleration.y / friction;
@@ -80,6 +77,6 @@ void drawPlayer(Player* player, float scale, Color color, const Texture2D textur
 
 void teleportingPlayer(Player* player)
 {
-	player->position = (Vector2) {(float)GetRandomValue(64,SCREEN_WIDTH - 64),
+	player->position = (Vector2d) {(float)GetRandomValue(64,SCREEN_WIDTH - 64),
 		(float)GetRandomValue(80,SCREEN_HEIGHT - 80)};
 }

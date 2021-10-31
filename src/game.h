@@ -3,9 +3,9 @@
 #include <stdbool.h>
 #include "common.h"
 #include "mineLayer.h"
-#include "enemy.h"
 #include "bullet.h"
 #include "Math.h"
+#include "enemy.h"
 
 typedef enum
 {
@@ -25,12 +25,18 @@ typedef enum PlayerAction
 	PA_SHOOT        = 1UL << 4,
 } PlayerAction;
 
+typedef enum DrawState
+{
+	DS_DEFAULT,
+	DS_EVERYTHING,
+	DS_COLLISIONS,
+} DrawState;
+
 typedef struct Player
 {
-	Bullet       bullets[BULLET_CAPACITY];
-	int          bulletCount;
-    Vector2      position;
-	Vector2      acceleration;
+	Vector2d     position;
+	Vector2d     speed;
+	Vector2d     acceleration;
     float        rotation;
 	int          lives;
 	int          score;
@@ -45,30 +51,33 @@ typedef struct Game
 	Texture2D foreground;
 	Texture2D background;
 
-	Rectangle bulletCoord;
-	float     ticksCount;
-
 	Player    player[2];
 	MineLayer layer;
 	int       enemyCount;
+	int       bulletCount;
+	Bullet    bullets[BULLET_CAPACITY];
 	Enemy     enemies[ENEMY_COUNT];
 	int       level;
-	bool      levelStart;
-	char      drawCollisions;
 	int       framesCounter;
+	float     ticksCount;
 	bool      twoPlayers;
+	bool      levelStart;
+	DrawState draw;
+	bool      mineLayerSpawned;
+
 } Game;
 
 bool initGame(Game* game);
 void runGameLoop(Game* game);
 void processInput(Game* game);
 void updateGame(Game* game);
+void updateEnemy(Game *game, Enemy* enemy,float deltaTime, Player *player1, Player *player2);
 
 int gameEnemyAliveCount(Game* game);
 
-void gameAddBullet(Player *player);
-void gameRemoveBullet(Player *player);
-void gameCollisions(Game* game, Player *player);
+void gameAddBullet(Game *game, BulletSource source, Enemy *enemy);
+void gameRemoveBullet(Game *game);
+void gameCollisions(Game* game);
 
 void loadData(Game* game);
 void unloadData(Game* game);

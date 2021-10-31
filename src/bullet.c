@@ -3,15 +3,16 @@
 #include <math.h>
 #include "common.h"
 
-void initBullet(Bullet* bullet,Vector2 position,float angle)
+void initBullet(Bullet* bullet,Vector2d position,float angle, BulletSource source, float speed)
 {
 	bullet->position = position;
-	bullet->speed    = 700.0f;
+	bullet->speed    = speed;
 	bullet->angle    = angle;
+	bullet->source   = source;
 }
 void updateBullet(Bullet* bullet,float deltaTime)
 {
-	Vector2 *position = &bullet->position;
+	Vector2d *position = &bullet->position;
 
 	float xDeplacement = bullet->speed * cosf(bullet->angle*DEG2RAD) * deltaTime;
 	float yDeplacement = bullet->speed * sinf(bullet->angle*DEG2RAD) * deltaTime;

@@ -1,6 +1,6 @@
 #pragma once
+#include "Math.h"
 #include <raylib.h>
-
 
 typedef enum EnemySize
 {
@@ -17,22 +17,24 @@ typedef enum EnemyType
 	ET_FIREBALL,
 	ET_MAGNETIC,
 	ET_MAGNETIC_FIREBALL,
+	ET_MINE_LAYER,
 } EnemyType;
 
 typedef struct Enemy
 {
-	Vector2   position;
-	Vector2   speed;
+	Vector2d  position;
+	Vector2d  speed;
 	float     rotation;
 	bool      active;
+	bool      hit;
 	EnemyType type;
 	EnemySize size;
 	float     scale;
+	float     lastShot;
 } Enemy;
 
-void initEnemy(Enemy* enemy, Vector2 position, EnemyType type, EnemySize size);
+void initEnemy(Enemy* enemy, Vector2d position, EnemyType type, EnemySize size);
 void makeEnemyType(Enemy* enemy, EnemyType type);
-void updateEnemy(Enemy* enemy,float deltaTime);
 void drawEnemy(Enemy* enemy, const Texture2D texture);
 void loadEnemyData(Enemy* enemy);
 void unLoadEnemyData(Enemy* enemy);

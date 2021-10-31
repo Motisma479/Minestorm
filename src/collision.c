@@ -1,6 +1,6 @@
 #include "collision.h"
 
-void drawShape(Vector2 *v, int size,Color color)
+void drawShape(const Vector2d *v, int size,Color color)
 {
 	int i = 0;
 	for (i = 0;i < size - 1;i++)
@@ -8,7 +8,31 @@ void drawShape(Vector2 *v, int size,Color color)
 	DrawLine(v[i].x, v[i].y, v[0].x, v[0].y, color);
 }
 
-FloatingCollisionBox getFloatingCollisionBox(float rotation, Vector2 position, float scale)
+MineLayerCollisionBox getMineLayerCollisionBox(float rotation, Vector2d position, float scale)
+{
+	MineLayerCollisionBox result = {
+		.poly = {{(-107.5 * scale) + position.x, (-14 * scale) + position.y}, 
+			{(-107 * scale) + position.x, (14 * scale) + position.y}, 
+			{(107 * scale) + position.x, (14 * scale) + position.y}, 
+			{(107 * scale) + position.x, (-14 * scale) + position.y},
+		},
+		.triangle1 = {{(-107.5 * scale) + position.x, (-14 * scale) + position.y}, 
+			{(-127.5 * scale) + position.x, (37 * scale) + position.y}, 
+			{(-107.5 * scale) + position.x, (14 * scale) + position.y}, 
+		},
+		.triangle2 = {{(107.5 * scale) + position.x, (14 * scale) + position.y}, 
+			{(127.5 * scale) + position.x, (37 * scale) + position.y}, 
+			{(107.5 * scale) + position.x, (-14 * scale) + position.y}, 
+		},
+		.triangle3 = {{(-0.5 * scale) + position.x, (-41 * scale) + position.y}, 
+			{(-34.5 * scale) + position.x, (-14 * scale) + position.y}, 
+			{(34.5 * scale) + position.x, (-14 * scale) + position.y}, 
+		}
+	};
+	return (result);
+}
+
+FloatingCollisionBox getFloatingCollisionBox(float rotation, Vector2d position, float scale)
 {
 	FloatingCollisionBox result = {
 		.rombus = {
@@ -28,7 +52,7 @@ FloatingCollisionBox getFloatingCollisionBox(float rotation, Vector2 position, f
 	return (result);
 }
 
-MagneticCollisionBox getMagneticCollisionBox(float rotation, Vector2 position, float scale)
+MagneticCollisionBox getMagneticCollisionBox(float rotation, Vector2d position, float scale)
 {
 
 	MagneticCollisionBox result = {
@@ -56,7 +80,7 @@ MagneticCollisionBox getMagneticCollisionBox(float rotation, Vector2 position, f
 	return (result);
 }
 
-FireBallCollisionBox getFireBallCollisionBox(float rotation, Vector2 position, float scale)
+FireBallCollisionBox getFireBallCollisionBox(float rotation, Vector2d position, float scale)
 {
 	FireBallCollisionBox result = {
 		.poly = {
@@ -80,7 +104,7 @@ FireBallCollisionBox getFireBallCollisionBox(float rotation, Vector2 position, f
 }
 
 MagneticFireCollisionBox getMagneticFireCollisionBox(float rotation,
-													 Vector2 position,
+													 Vector2d position,
 													 float scale)
 {
 	MagneticFireCollisionBox result = {
@@ -114,7 +138,7 @@ MagneticFireCollisionBox getMagneticFireCollisionBox(float rotation,
 	return (result);
 }
 
-PlayerCollisionBox getPlayerCollisionBox(float rotation, Vector2 position, float scale)
+PlayerCollisionBox getPlayerCollisionBox(float rotation, Vector2d position, float scale)
 {
 	rotation += 90.0f;
 	rotation *= DEG2RAD;
@@ -137,11 +161,11 @@ PlayerCollisionBox getPlayerCollisionBox(float rotation, Vector2 position, float
 			{(15.628891  * scale), (-15.404861 * scale)}}
 	};
 
-	Vector2 *head = result.head;
-	Vector2 *tail = result.tail;
+	Vector2d *head = result.head;
+	Vector2d *tail = result.tail;
 
-	int sizeHead = sizeof(result.head) / sizeof(Vector2);
-	int sizeTail = sizeof(result.tail) / sizeof(Vector2);
+	int sizeHead = ARRAY_SIZE(result.head);
+	int sizeTail = ARRAY_SIZE(result.tail);
 
 	for (int i = 0; i < sizeHead;i++)
 		head[i] = rotateAndTranslate(head[i], rotation, position);
@@ -150,69 +174,113 @@ PlayerCollisionBox getPlayerCollisionBox(float rotation, Vector2 position, float
 	return (result);
 }
 
-bool checkCollisionPlayerFloat(Player player,  FloatingCollisionBox floating, char draw)
+
+bool checkCollisionPlayerMineLayer(const PlayerCollisionBox colBox,
+								   MineLayerCollisionBox magneticFire, char draw)
 {
-	PlayerCollisionBox playerCol = getPlayerCollisionBox(player.rotation, (Vector2){player.position.x, player.position.y}, 0.25f);
+	int sizeHead = ARRAY_SIZE(colBox.head);
+	int sizeTail = ARRAY_SIZE(colBox.tail);
 
-	int sizeHead = sizeof(playerCol.head)     / sizeof(Vector2);
-	int sizeTail = sizeof(playerCol.tail)     / sizeof(Vector2);
-	int size1    = sizeof(floating.rombus)    / sizeof(Vector2);
-	int size2    = sizeof(floating.triangle1) / sizeof(Vector2);
-	int size3    = sizeof(floating.triangle2) / sizeof(Vector2);
+	const Vector2d *head = colBox.head;
+	const Vector2d *tail = colBox.tail;
 
-	Vector2 *head      = playerCol.head;
-	Vector2 *tail      = playerCol.tail;
-	Vector2 *rombus    = floating.rombus;
-	Vector2 *triangle1 = floating.triangle1;
-	Vector2 *triangle2 = floating.triangle2;
+	int size1 = ARRAY_SIZE(magneticFire.poly);
+	int size2 = ARRAY_SIZE(magneticFire.triangle1);
+	int size3 = ARRAY_SIZE(magneticFire.triangle2);
+	int size4 = ARRAY_SIZE(magneticFire.triangle3);
+
+	const Vector2d *poly      = magneticFire.poly;
+	const Vector2d *triangle1 = magneticFire.triangle1;
+	const Vector2d *triangle2 = magneticFire.triangle2;
+	const Vector2d *triangle3 = magneticFire.triangle3;
 
 	int intersection1 =
-		(satAlgorithm(head, rombus, sizeHead, size1) ||
-		 satAlgorithm(tail, rombus, sizeTail, size1)) &&
-		(satAlgorithm(rombus, head, size1, sizeHead) ||
-		 satAlgorithm(rombus, tail, size1, sizeTail));
-
+		(satAlgorithm(head, poly, sizeHead, size1) ||
+		 satAlgorithm(tail, poly, sizeTail, size1)) &&
+		(satAlgorithm(poly, head, size1, sizeHead) ||
+		 satAlgorithm(poly, tail, size1, sizeTail));
 
 	int intersection2 =
-		satAlgorithm(head, triangle1, sizeHead, size2) ||
-		satAlgorithm(tail, triangle1, sizeTail, size2);
+		(satAlgorithm(head, triangle1, sizeHead, size2) ||
+		 satAlgorithm(tail, triangle1, sizeTail, size2)) &&
+		(satAlgorithm(triangle1, head, size2, sizeHead) ||
+		 satAlgorithm(triangle1, tail, size2, sizeTail));
 
 	int intersection3 =
+		(satAlgorithm(head, triangle2, sizeHead, size3) ||
+		 satAlgorithm(tail, triangle2, sizeTail, size3)) &&
+		(satAlgorithm(triangle2, head, size3, sizeHead) ||
+		 satAlgorithm(triangle2, tail, size3, sizeTail));
+
+	int intersection4 =
+		(satAlgorithm(head, triangle3, sizeHead, size4) ||
+		 satAlgorithm(tail, triangle3, sizeTail, size4)) &&
+		(satAlgorithm(triangle3, head, size4, sizeHead) ||
+		 satAlgorithm(triangle3, tail, size4, sizeTail));
+
+	if (draw)
+	{
+		Color inter;
+
+		drawShape(head, sizeHead, GREEN);
+		drawShape(tail, sizeTail, GREEN);
+
+		inter = intersection1 ? RED : GREEN;
+		drawShape(poly, size1, inter);
+		inter = intersection2 ? RED : GREEN;
+		drawShape(triangle1, size2, inter);
+		inter = intersection3 ? RED : GREEN;
+		drawShape(triangle2, size3, inter);
+		inter = intersection4 ? RED : GREEN;
+		drawShape(triangle3, size4, inter);
+	}
+	return (intersection1 || intersection2 || intersection3 ||
+			intersection4);
+}
+
+bool checkCollisionPlayerFloat(const PlayerCollisionBox playerCol,  FloatingCollisionBox floating)
+{
+
+	int sizeHead = ARRAY_SIZE(playerCol.head);
+	int sizeTail = ARRAY_SIZE(playerCol.tail);
+	int size1    = ARRAY_SIZE(floating.rombus);
+	int size2    = ARRAY_SIZE(floating.triangle1);
+	int size3    = ARRAY_SIZE(floating.triangle2);
+
+	const Vector2d *head      = playerCol.head;
+	const Vector2d *tail      = playerCol.tail;
+	const Vector2d *rombus    = floating.rombus;
+	const Vector2d *triangle1 = floating.triangle1;
+	const Vector2d *triangle2 = floating.triangle2;
+
+	int intersection =
+		((satAlgorithm(head, rombus, sizeHead, size1) ||
+		  satAlgorithm(tail, rombus, sizeTail, size1)) &&
+		 (satAlgorithm(rombus, head, size1, sizeHead) ||
+		  satAlgorithm(rombus, tail, size1, sizeTail))) || 
+		satAlgorithm(head, triangle1, sizeHead, size2) ||
+		satAlgorithm(tail, triangle1, sizeTail, size2) || 
 		satAlgorithm(head, triangle2, sizeHead, size3) ||
 		satAlgorithm(tail, triangle2, sizeTail, size3);
 
-	if (draw)
-	{
-		drawShape(head, sizeHead, GREEN);
-		drawShape(tail, sizeTail, GREEN);
-
-		Color inter = intersection2 ? RED : GREEN;
-		drawShape(triangle1, size2, inter);
-		inter = intersection3 ? RED : GREEN;
-		drawShape(triangle2, size3, inter);
-		inter = intersection1 ? RED : GREEN;
-		drawShape(rombus, size1, inter);
-	}
-	return (intersection1 || intersection2 || intersection3);
+	return (intersection);
 }
 
-bool checkCollisionPlayerFireBall(Player player,  FireBallCollisionBox fireBall, char draw)
+bool checkCollisionPlayerFireBall(const PlayerCollisionBox colBox,  FireBallCollisionBox fireBall, char draw)
 {
-	PlayerCollisionBox colBox = getPlayerCollisionBox(player.rotation, (Vector2){player.position.x, player.position.y}, 0.25f);
+	int sizeHead = ARRAY_SIZE(colBox.head);
+	int sizeTail = ARRAY_SIZE(colBox.tail);
 
-	int sizeHead = sizeof(colBox.head) / sizeof(Vector2);
-	int sizeTail = sizeof(colBox.tail) / sizeof(Vector2);
+	const Vector2d *head = colBox.head;
+	const Vector2d *tail = colBox.tail;
 
-	Vector2 *head = colBox.head;
-	Vector2 *tail = colBox.tail;
+	int size1 = ARRAY_SIZE(fireBall.poly);
+	int size2 = ARRAY_SIZE(fireBall.triangle1);
+	int size3 = ARRAY_SIZE(fireBall.triangle2);
 
-	int size1 = sizeof(fireBall.poly)    / sizeof(Vector2);
-	int size2 = sizeof(fireBall.triangle1) / sizeof(Vector2);
-	int size3 = sizeof(fireBall.triangle2) / sizeof(Vector2);
-
-	Vector2 *poly    = fireBall.poly;
-	Vector2 *triangle1 = fireBall.triangle1;
-	Vector2 *triangle2 = fireBall.triangle2;
+	const Vector2d *poly    = fireBall.poly;
+	const Vector2d *triangle1 = fireBall.triangle1;
+	const Vector2d *triangle2 = fireBall.triangle2;
 
 	int intersection1 =
 		(satAlgorithm(head, poly, sizeHead, size1) ||
@@ -249,23 +317,21 @@ bool checkCollisionPlayerFireBall(Player player,  FireBallCollisionBox fireBall,
 	return (intersection1 || intersection2 || intersection3);
 }
 
-bool checkCollisionPlayerMagnetic(Player player,  MagneticCollisionBox magnetic, char draw)
+bool checkCollisionPlayerMagnetic(const PlayerCollisionBox colBox,  MagneticCollisionBox magnetic, char draw)
 {
-	PlayerCollisionBox colBox = getPlayerCollisionBox(player.rotation, (Vector2){player.position.x, player.position.y}, 0.25f);
+	int sizeHead = ARRAY_SIZE(colBox.head);
+	int sizeTail = ARRAY_SIZE(colBox.tail);
 
-	int sizeHead = sizeof(colBox.head) / sizeof(Vector2);
-	int sizeTail = sizeof(colBox.tail) / sizeof(Vector2);
+	const Vector2d *head = colBox.head;
+	const Vector2d *tail = colBox.tail;
 
-	Vector2 *head = colBox.head;
-	Vector2 *tail = colBox.tail;
+	int size1 = ARRAY_SIZE(magnetic.poly);
+	int size2 = ARRAY_SIZE(magnetic.triangle1);
+	int size3 = ARRAY_SIZE(magnetic.triangle2);
 
-	int size1 = sizeof(magnetic.poly)    / sizeof(Vector2);
-	int size2 = sizeof(magnetic.triangle1) / sizeof(Vector2);
-	int size3 = sizeof(magnetic.triangle2) / sizeof(Vector2);
-
-	Vector2 *poly    = magnetic.poly;
-	Vector2 *triangle1 = magnetic.triangle1;
-	Vector2 *triangle2 = magnetic.triangle2;
+	const Vector2d *poly    = magnetic.poly;
+	const Vector2d *triangle1 = magnetic.triangle1;
+	const Vector2d *triangle2 = magnetic.triangle2;
 
 	int intersection1 =
 		(satAlgorithm(head, poly, sizeHead, size1) ||
@@ -303,27 +369,25 @@ bool checkCollisionPlayerMagnetic(Player player,  MagneticCollisionBox magnetic,
 	return (intersection1 || intersection2 || intersection3);
 }
 
-bool checkCollisionPlayerMagneticFire(Player player,  MagneticFireCollisionBox magneticFire, char draw)
+bool checkCollisionPlayerMagneticFire(const PlayerCollisionBox colBox,  MagneticFireCollisionBox magneticFire, char draw)
 {
-	PlayerCollisionBox colBox = getPlayerCollisionBox(player.rotation, (Vector2){player.position.x, player.position.y}, 0.25f);
+	int sizeHead = ARRAY_SIZE(colBox.head);
+	int sizeTail = ARRAY_SIZE(colBox.tail);
 
-	int sizeHead = sizeof(colBox.head) / sizeof(Vector2);
-	int sizeTail = sizeof(colBox.tail) / sizeof(Vector2);
+	const Vector2d *head = colBox.head;
+	const Vector2d *tail = colBox.tail;
 
-	Vector2 *head = colBox.head;
-	Vector2 *tail = colBox.tail;
+	int size1 = ARRAY_SIZE(magneticFire.poly);
+	int size2 = ARRAY_SIZE(magneticFire.triangle1);
+	int size3 = ARRAY_SIZE(magneticFire.triangle2);
+	int size4 = ARRAY_SIZE(magneticFire.triangle3);
+	int size5 = ARRAY_SIZE(magneticFire.triangle4);
 
-	int size1 = sizeof(magneticFire.poly)      / sizeof(Vector2);
-	int size2 = sizeof(magneticFire.triangle1) / sizeof(Vector2);
-	int size3 = sizeof(magneticFire.triangle2) / sizeof(Vector2);
-	int size4 = sizeof(magneticFire.triangle3) / sizeof(Vector2);
-	int size5 = sizeof(magneticFire.triangle4) / sizeof(Vector2);
-
-	Vector2 *poly      = magneticFire.poly;
-	Vector2 *triangle1 = magneticFire.triangle1;
-	Vector2 *triangle2 = magneticFire.triangle2;
-	Vector2 *triangle3 = magneticFire.triangle3;
-	Vector2 *triangle4 = magneticFire.triangle4;
+	const Vector2d *poly      = magneticFire.poly;
+	const Vector2d *triangle1 = magneticFire.triangle1;
+	const Vector2d *triangle2 = magneticFire.triangle2;
+	const Vector2d *triangle3 = magneticFire.triangle3;
+	const Vector2d *triangle4 = magneticFire.triangle4;
 
 	int intersection1 =
 		(satAlgorithm(head, poly, sizeHead, size1) ||
@@ -378,15 +442,45 @@ bool checkCollisionPlayerMagneticFire(Player player,  MagneticFireCollisionBox m
 			intersection4 || intersection5);
 }
 
-bool checkCollisionPlayerBullet(Player player,  Bullet bullet, char draw)
+bool checkCollisionMineLayerBullet(MineLayerCollisionBox colBox,  Bullet bullet, char draw)
 {
-	PlayerCollisionBox colBox = getPlayerCollisionBox(player.rotation, (Vector2){player.position.x, player.position.y}, 0.25f);
-	Circle circle = {{bullet.position.x, bullet.position.y}, 10.0f};
-	int sizeHead = sizeof(colBox.head) / sizeof(Vector2);
-	int sizeTail = sizeof(colBox.tail) / sizeof(Vector2);
+	Circle circle = {{bullet.position.x, bullet.position.y}, 6.25f / 2};
+	int sizePoly = ARRAY_SIZE(colBox.poly);
+	int size1 = ARRAY_SIZE(colBox.triangle1);
+	int size2 = ARRAY_SIZE(colBox.triangle2);
+	int size3 = ARRAY_SIZE(colBox.triangle3);
 
-	Vector2 *head = colBox.head;
-	Vector2 *tail = colBox.tail;
+	const Vector2d *poly = colBox.poly;
+	const Vector2d *triangle1 = colBox.triangle1;
+	const Vector2d *triangle2 = colBox.triangle2;
+	const Vector2d *triangle3 = colBox.triangle3;
+
+	int intersection = satAlgorithmPolygonCircle(poly, size1, &circle) ||
+		satAlgorithmPolygonCircle(triangle1, size2, &circle) ||
+		satAlgorithmPolygonCircle(triangle2, size3, &circle);
+
+	if (draw)
+	{
+		Color inter;
+
+		inter = intersection ? RED : GREEN;
+		drawShape(poly, sizePoly, inter);
+		drawShape(triangle1, size1, inter);
+		drawShape(triangle2, size2, inter);
+		drawShape(triangle3, size3, inter);
+		DrawCircle(circle.center.x, circle.center.y, circle.radius, WHITE);
+	}
+	return (intersection);
+}
+
+bool checkCollisionPlayerBullet(const PlayerCollisionBox colBox,  Bullet bullet, char draw)
+{
+	Circle circle = {{bullet.position.x, bullet.position.y}, 6.25f / 2};
+	int sizeHead = ARRAY_SIZE(colBox.head);
+	int sizeTail = ARRAY_SIZE(colBox.tail);
+
+	const Vector2d *head = colBox.head;
+	const Vector2d *tail = colBox.tail;
 
 	int intersection = satAlgorithmPolygonCircle(head, sizeHead, &circle) ||
 		satAlgorithmPolygonCircle(tail, sizeTail, &circle);
@@ -405,13 +499,13 @@ bool checkCollisionPlayerBullet(Player player,  Bullet bullet, char draw)
 bool checkCollisionFloatBullet(FloatingCollisionBox floating,  Bullet *bullet, char draw)
 {
 	Circle circle = {{bullet->position.x, bullet->position.y}, 6.25f / 2};
-	int size1    = sizeof(floating.rombus)    / sizeof(Vector2);
-	int size2    = sizeof(floating.triangle1) / sizeof(Vector2);
-	int size3    = sizeof(floating.triangle2) / sizeof(Vector2);
+	int size1    = ARRAY_SIZE(floating.rombus);
+	int size2    = ARRAY_SIZE(floating.triangle1);
+	int size3    = ARRAY_SIZE(floating.triangle2);
 
-	Vector2 *rombus    = floating.rombus;
-	Vector2 *triangle1 = floating.triangle1;
-	Vector2 *triangle2 = floating.triangle2;
+	const Vector2d *rombus    = floating.rombus;
+	const Vector2d *triangle1 = floating.triangle1;
+	const Vector2d *triangle2 = floating.triangle2;
 
 	int intersection = satAlgorithmPolygonCircle(rombus, size1, &circle) ||
 		satAlgorithmPolygonCircle(triangle1, size2, &circle) || satAlgorithmPolygonCircle(triangle2, size3, &circle);
@@ -431,13 +525,13 @@ bool checkCollisionFloatBullet(FloatingCollisionBox floating,  Bullet *bullet, c
 bool checkCollisionFireBallBullet(FireBallCollisionBox fireball, Bullet *bullet, char draw)
 {
 	Circle circle = {{bullet->position.x, bullet->position.y}, 6.25f / 2};
-	int size1    = sizeof(fireball.poly)    / sizeof(Vector2);
-	int size2    = sizeof(fireball.triangle1) / sizeof(Vector2);
-	int size3    = sizeof(fireball.triangle2) / sizeof(Vector2);
+	int size1    = ARRAY_SIZE(fireball.poly);
+	int size2    = ARRAY_SIZE(fireball.triangle1);
+	int size3    = ARRAY_SIZE(fireball.triangle2);
 
-	Vector2 *rombus    = fireball.poly;
-	Vector2 *triangle1 = fireball.triangle1;
-	Vector2 *triangle2 = fireball.triangle2;
+	const Vector2d *rombus    = fireball.poly;
+	const Vector2d *triangle1 = fireball.triangle1;
+	const Vector2d *triangle2 = fireball.triangle2;
 
 	int intersection = satAlgorithmPolygonCircle(rombus, size1, &circle) ||
 		satAlgorithmPolygonCircle(triangle1, size2, &circle) || satAlgorithmPolygonCircle(triangle2, size3, &circle);
@@ -457,13 +551,13 @@ bool checkCollisionFireBallBullet(FireBallCollisionBox fireball, Bullet *bullet,
 bool checkCollisionMagneticBullet(MagneticCollisionBox magnetic, Bullet *bullet, char draw)
 {
 	Circle circle = {{bullet->position.x, bullet->position.y}, 6.25f / 2};
-	int size1    = sizeof(magnetic.poly)    / sizeof(Vector2);
-	int size2    = sizeof(magnetic.triangle1) / sizeof(Vector2);
-	int size3    = sizeof(magnetic.triangle2) / sizeof(Vector2);
+	int size1    = ARRAY_SIZE(magnetic.poly);
+	int size2    = ARRAY_SIZE(magnetic.triangle1);
+	int size3    = ARRAY_SIZE(magnetic.triangle2);
 
-	Vector2 *rombus    = magnetic.poly;
-	Vector2 *triangle1 = magnetic.triangle1;
-	Vector2 *triangle2 = magnetic.triangle2;
+	const Vector2d *rombus    = magnetic.poly;
+	const Vector2d *triangle1 = magnetic.triangle1;
+	const Vector2d *triangle2 = magnetic.triangle2;
 
 	int intersection = satAlgorithmPolygonCircle(rombus, size1, &circle) ||
 		satAlgorithmPolygonCircle(triangle1, size2, &circle) || satAlgorithmPolygonCircle(triangle2, size3, &circle);
@@ -483,13 +577,13 @@ bool checkCollisionMagneticBullet(MagneticCollisionBox magnetic, Bullet *bullet,
 bool checkCollisionMagneticFireBullet(MagneticFireCollisionBox magnetic, Bullet *bullet, char draw)
 {
 	Circle circle = {{bullet->position.x, bullet->position.y}, 6.25f / 2};
-	int size1    = sizeof(magnetic.poly)    / sizeof(Vector2);
-	int size2    = sizeof(magnetic.triangle1) / sizeof(Vector2);
-	int size3    = sizeof(magnetic.triangle2) / sizeof(Vector2);
+	int size1    = ARRAY_SIZE(magnetic.poly);
+	int size2    = ARRAY_SIZE(magnetic.triangle1);
+	int size3    = ARRAY_SIZE(magnetic.triangle2);
 
-	Vector2 *rombus    = magnetic.poly;
-	Vector2 *triangle1 = magnetic.triangle1;
-	Vector2 *triangle2 = magnetic.triangle2;
+	const Vector2d *rombus    = magnetic.poly;
+	const Vector2d *triangle1 = magnetic.triangle1;
+	const Vector2d *triangle2 = magnetic.triangle2;
 
 	int intersection = satAlgorithmPolygonCircle(rombus, size1, &circle) ||
 		satAlgorithmPolygonCircle(triangle1, size2, &circle) || satAlgorithmPolygonCircle(triangle2, size3, &circle);
