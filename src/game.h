@@ -92,7 +92,7 @@ void updateGame(Game* game);
 void runGameLoop(Game* game);
 void shutdown(Game* game);
 
-void addEnemyToGame();
+int addEnemy(Game *game, EnemySize size, EnemyType type);
 
 void pauseGame(Game* game);
 void drawGameBackground(Game* game);

@@ -34,13 +34,18 @@ void updatePlayer(Player* player, float deltaTime)
 		if(player->action & PA_ACCELERATION)
 		{
 			Vector2d direction = getDirection(player->rotation);
-
-			player->acceleration.x += direction.x * PLAYER_SPEED;
-			player->acceleration.y += direction.y * PLAYER_SPEED;
+			player->acceleration.x += direction.x * PLAYER_SPEED * (deltaTime * deltaTime);
+			player->acceleration.y += direction.y * PLAYER_SPEED * (deltaTime * deltaTime);
 		}
-		player->position.x += player->acceleration.x * deltaTime;
-		player->position.y += player->acceleration.y * deltaTime;
 
+		float frictionRatio = 3.0f;
+		//deacceleration
+		player->acceleration.x -= player->acceleration.x * (deltaTime * frictionRatio);
+		player->acceleration.y -= player->acceleration.y * (deltaTime * frictionRatio); 
+
+		//Update position
+		player->position.x += player->acceleration.x;
+		player->position.y += player->acceleration.y;
 		// Wraparound
 		if (player->position.x < 64.0f) { player->position.x = (float)SCREEN_WIDTH - 64.0f; }
 		else if (player->position.x > (float)SCREEN_WIDTH - 64.0f) { player->position.x = 64.0f; }
@@ -48,11 +53,6 @@ void updatePlayer(Player* player, float deltaTime)
 		if (player->position.y < 80.0f) { player->position.y = (float)SCREEN_HEIGHT - 80.0f; }
 		else if (player->position.y > (float)SCREEN_HEIGHT - 80.0f) { player->position.y = 80.0f; }
 
-		float friction = 20.0f;
-
-		//deacceleration
-		player->acceleration.x -= player->acceleration.x / friction;
-		player->acceleration.y -= player->acceleration.y / friction;
 	}
 }
 

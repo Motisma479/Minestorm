@@ -3,6 +3,7 @@
 
 void initLayer(MineLayer* layer)
 {
+	*layer = (MineLayer){0};
 	layer->scale = 640.0f;
 	layer->position = (Vector2d){ (float)SCREEN_WIDTH / 2.0f,
 		(float)SCREEN_HEIGHT / 2.0f};
@@ -16,7 +17,7 @@ int updateLayer(MineLayer* layer, float deltaTime)
 	if (layer->active && layer->scale >= 32.0f)
 		layer->scale -= layer->scale*1000.0f / 1024.0f*deltaTime;
 
-	if(layer->scale <= 150.0f)
+	if(layer->scale <= 32.0f)
 	{
 		layer->scale = 0.0f;
 		layer->active = false;

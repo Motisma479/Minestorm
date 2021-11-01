@@ -103,24 +103,25 @@ void drawGame(Game* game)
 		{
 			if (game->draw != DS_COLLISIONS)
 			{
-				for(int i = 0; i < game->enemyCount; i++)
-					drawEnemy(&game->enemies[i], game->atlas);
-				for(int i = 0; i < game->bulletCount; i++)
+				if (game->levelStart)
 				{
-					Bullet* bullet = &game->bullets[i];
-					if (bullet->source == BS_PLAYER1)
-						drawBullet(bullet, game->atlas, SKYBLUE);
-					else if (bullet->source == BS_PLAYER2)
-						drawBullet(bullet, game->atlas, GREEN);
-					else if (bullet->source == BS_ENEMY)
-						drawBullet(bullet, game->atlas, RED);
-
+					for(int i = 0; i < game->enemyCount; i++)
+						drawEnemy(&game->enemies[i], game->atlas);
+					for(int i = 0; i < game->bulletCount; i++)
+					{
+						Bullet* bullet = &game->bullets[i];
+						if (bullet->source == BS_PLAYER1)
+							drawBullet(bullet, game->atlas, SKYBLUE);
+						else if (bullet->source == BS_PLAYER2)
+							drawBullet(bullet, game->atlas, GREEN);
+						else if (bullet->source == BS_ENEMY)
+							drawBullet(bullet, game->atlas, RED);
+					}
+					drawPlayer(&game->player[0], 0.25f, SKYBLUE, game->atlas);
+					if (game->twoPlayers)
+						drawPlayer(&game->player[1], 0.25f, GREEN, game->atlas);
 				}
-
 				drawLayer(&game->layer, game->atlas);
-				drawPlayer(&game->player[0], 0.25f, SKYBLUE, game->atlas);
-				if (game->twoPlayers)
-					drawPlayer(&game->player[1], 0.25f, GREEN, game->atlas);
 			}
 		}break;
 		default:;

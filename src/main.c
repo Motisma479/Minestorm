@@ -14,10 +14,10 @@ int main()
 	game.state = GS_MENU;
 
 	initPlayer(&game.player[0], (Vector2d){SCREEN_WIDTH / 3.0f,
-				   SCREEN_HEIGHT / 2.0f});
+				   SCREEN_HEIGHT - 200});
 	initPlayer(&game.player[1], (Vector2d){SCREEN_WIDTH / 1.5f,
-				   SCREEN_HEIGHT / 2.0f});
-	initLevel1(&game);
+				   SCREEN_HEIGHT - 200});
+	initLayer(&game.layer);
 
 	game.atlas = LoadTexture("assets/mines.png");
 	game.background = LoadTexture("assets/background.png");

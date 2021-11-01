@@ -74,12 +74,14 @@ void getInput(Game* game)
 			*player1 = (Player){0};
 			*player2 = (Player){0};
 			initPlayer(player1, (Vector2d){SCREEN_WIDTH / 3.0f,
-						   SCREEN_HEIGHT / 2.0f});
+						   SCREEN_HEIGHT - 200});
 			initPlayer(player2, (Vector2d){SCREEN_WIDTH / 1.5f,
-						   SCREEN_HEIGHT / 2.0f});
-			initLevel1(game);
+						   SCREEN_HEIGHT - 200});
 			game->twoPlayers = false;
 			game->levelStart = false;
+			game->mineLayerSpawned = false;
+			game->level = 1;
+			startLevel(game);
 		}
 	}
 }

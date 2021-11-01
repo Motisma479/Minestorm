@@ -1,6 +1,6 @@
 #include "collision.h"
 
-void drawShape(const Vector2d *v, int size,Color color)
+void drawShape(const Vector2d *v, int size, Color color)
 {
 	int i = 0;
 	for (i = 0;i < size - 1;i++)

@@ -9,4 +9,5 @@ void initLevel2(Game *game);
 void initLevel3(Game *game);
 void initLevel4(Game *game);
 void initLevel5(Game *game);
+void initAllEnemies(Game *game, EnemyType type, int size);
 #endif //LEVELS_H

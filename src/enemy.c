@@ -10,7 +10,7 @@ void initEnemy(Enemy* enemy, Vector2d position, EnemyType type, EnemySize size)
 	enemy->speed.x = GetRandomValue(-100, 100);
 	enemy->speed.y = GetRandomValue(-100, 100);
 	Vector2d normalized = normalizeVector2d(enemy->speed);
-	switch (enemy->type)
+	switch (type)
 	{
 		case ET_FIREBALL:
 		case ET_FLOATING:
@@ -72,6 +72,11 @@ void initEnemy(Enemy* enemy, Vector2d position, EnemyType type, EnemySize size)
 				}
 			}
 		}break;
+		case ET_MINE_LAYER:
+		{
+			enemy->speed.x = 200;
+			enemy->speed.y = 200;
+		}break;
 		default:
 		{
 			enemy->speed.x = 0;
@@ -86,6 +91,8 @@ void initEnemy(Enemy* enemy, Vector2d position, EnemyType type, EnemySize size)
 	random /= 1000.0f;
 	enemy->lastShot = random;
 }
+
+#include <stdio.h>
 
 void updateEnemy(Game *game, Enemy* enemy,float deltaTime, Player *player1, Player *player2)
 {
@@ -104,11 +111,33 @@ void updateEnemy(Game *game, Enemy* enemy,float deltaTime, Player *player1, Play
 			case ET_MAGNETIC_FIREBALL:
 			case ET_MAGNETIC:
 			{
-				Vector2d playerPos = subsVector2d(player1->position, *position);
-				playerPos = normalizeVector2d(playerPos);
-				float lengthInv = 1 / (lengthSqVector2d(playerPos));
-				position->x += (enemy->speed.x * deltaTime * playerPos.x * lengthInv);
-				position->y += (enemy->speed.y * deltaTime * playerPos.y * lengthInv);
+				Vector2d centerEnemy =
+					subsVector2d((Vector2d){SCREEN_WIDTH / 2,
+									 SCREEN_HEIGHT / 2}, *position);
+
+				Vector2d playerPos =
+					(Vector2d){(int)(centerEnemy.x + player1->position.x) % SCREEN_WIDTH,
+					(int)(centerEnemy.y + player1->position.y) % SCREEN_HEIGHT};
+
+				Vector2d towardsPlayer =
+					subsVector2d(playerPos, (Vector2d){SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2});
+
+				playerPos = normalizeVector2d(towardsPlayer);
+
+				position->x += (enemy->speed.x * deltaTime * playerPos.x);
+				position->y += (enemy->speed.y * deltaTime * playerPos.y);
+			}break;
+			case ET_MINE_LAYER:
+			{
+				if ((int)position->x != (int)(SCREEN_WIDTH / 2))
+					position->x += (enemy->speed.x * deltaTime);
+				else if ((int)position->y != (int)(SCREEN_HEIGHT - 81))
+					position->y += (enemy->speed.y * deltaTime);
+				if ((int)position->y == (int)SCREEN_HEIGHT - 81)
+				{
+					enemy->type = ET_NONE;
+					enemy->active = false;
+				}
 			}break;
 			default:;
 		}

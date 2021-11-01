@@ -4,14 +4,14 @@
 #include "levels.h"
 #include "player.h"
 
-int addEnemy(Game *game, EnemySize size)
+int addEnemy(Game *game, EnemySize size, EnemyType type)
 {
 	for (int i = 0; i < game->enemyCount;i++)
 	{
 		Enemy *enemy = &game->enemies[i];
 		if (!enemy->active)
 		{
-			initEnemy(enemy, enemy->position, enemy->type, size);
+			initEnemy(enemy, enemy->position, type, size);
 			enemy->active = true;
 			return (1);
 		}
@@ -42,9 +42,7 @@ void updateGame(Game* game)
 				if (updateLayer(&game->layer, game->ticksCount))
 				{
 					game->levelStart = true;
-					addEnemy(game, ES_BIG);
-					addEnemy(game, ES_BIG);
-					addEnemy(game, ES_BIG);
+					startLevel(game);
 				}
 			}
 			else
@@ -133,8 +131,8 @@ void gameAddBullet(Game *game, BulletSource source, Enemy *enemy)
 
 			Vector2d direction = getDirection(player->rotation);
 			Vector2d position;
-			position.x  = player->position.x + (direction.x * 20);
-			position.y  = player->position.y + (direction.y * 20);
+			position.x  = player->position.x + (direction.x * 25);
+			position.y  = player->position.y + (direction.y * 25);
 			float angle = player->rotation;
 
 			Bullet bullet = {0};
@@ -161,7 +159,7 @@ void gameRemoveBullet(Game *game)
 	}
 }
 
-void addScore(Game *game, BulletSource source, EnemySize size, int small, int medium, int big)
+void addScore(Game *game, BulletSource source, EnemySize size, EnemyType type, int small, int medium, int big)
 {
 	Player stub;
 	Player *player = &stub;
@@ -174,13 +172,13 @@ void addScore(Game *game, BulletSource source, EnemySize size, int small, int me
 	{
 		case ES_SMALL:{player->score += small;};break;
 		case ES_MEDIUM:{
-			addEnemy(game, ES_SMALL);
-			addEnemy(game, ES_SMALL);
+			addEnemy(game, ES_SMALL, type);
+			addEnemy(game, ES_SMALL, type);
 			player->score += medium;
 		}break;
 		case ES_BIG:{
-			addEnemy(game, ES_MEDIUM);
-			addEnemy(game, ES_MEDIUM);
+			addEnemy(game, ES_MEDIUM, type);
+			addEnemy(game, ES_MEDIUM, type);
 			player->score += big;
 		}break;
 		default:;
@@ -199,7 +197,7 @@ int collisionEnemyBullet(Game *game, Enemy *enemy, Bullet *bullet)
 					getFloatingCollisionBox(0, enemy->position, enemy->scale);
 				if (checkCollisionFloatBullet(floating, bullet, game->draw))
 				{
-					addScore(game, bullet->source, enemy->size, 200, 135, 100);
+					addScore(game, bullet->source, enemy->size, enemy->type, 200, 135, 100);
 					return (1);
 				}
 			}break;
@@ -210,7 +208,7 @@ int collisionEnemyBullet(Game *game, Enemy *enemy, Bullet *bullet)
 					getFireBallCollisionBox(0, enemy->position, enemy->scale);
 				if (checkCollisionFireBallBullet(fireball, bullet, game->draw))
 				{
-					addScore(game, bullet->source, enemy->size, 425, 360, 325);
+					addScore(game, bullet->source, enemy->size, enemy->type, 425, 360, 325);
 					gameAddBullet(game, BS_ENEMY, enemy);
 					return (1);
 				}
@@ -223,7 +221,7 @@ int collisionEnemyBullet(Game *game, Enemy *enemy, Bullet *bullet)
 				if (checkCollisionMagneticBullet(magnetic, bullet,
 												 game->draw))
 				{
-					addScore(game, bullet->source, enemy->size, 600, 535, 500);
+					addScore(game, bullet->source, enemy->size, enemy->type, 600, 535, 500);
 					return (1);
 				}
 			}break;
@@ -234,24 +232,24 @@ int collisionEnemyBullet(Game *game, Enemy *enemy, Bullet *bullet)
 				if (checkCollisionMagneticFireBullet(magneticFire, bullet,
 													 game->draw))
 				{
-					addScore(game, bullet->source, enemy->size, 850, 585, 750);
+					addScore(game, bullet->source, enemy->size, enemy->type, 850, 585, 750);
 					gameAddBullet(game, BS_ENEMY, enemy);
 					return (1);
 				}
 			}break;
 			case ET_MINE_LAYER:
 			{
-				addScore(game, bullet->source, enemy->size, 1000, 1000, 1000);
-
 				MineLayerCollisionBox mineLayer =
 					getMineLayerCollisionBox(0, enemy->position, enemy->scale);
 				if (checkCollisionMineLayerBullet(mineLayer, *bullet,
 												  game->draw))
 				{
-					addScore(game, bullet->source, ES_NONE, 1000, 1000, 1000);
+					if (bullet->source == BS_PLAYER1)
+						game->player[0].score += 1000;
+					else if (bullet->source == BS_PLAYER2)
+						game->player[1].score += 1000;
 					return (1);
 				}
-
 			}break;
 			default:;
 		}
@@ -323,16 +321,12 @@ void gameCollisions(Game* game)
 			game->levelStart = false;
 			*player = (Player){0};
 			player->score = score;
-			player->position.x = SCREEN_WIDTH / 3.0f;
-			player->position.y = SCREEN_HEIGHT / 2.0f;
-			if (player2Hit)
-			{
-				player->position.x = SCREEN_WIDTH / 1.5f;
-				player->position.y = SCREEN_HEIGHT / 2.0f;
-			}
+
 			player->rotation = -90.0f;
 			player->lives = lives;
 			startLevel(game);
+			initLayer(&game->layer);
+			game->levelStart = false;
 			break;
 		}
 		Enemy* enemy = &game->enemies[i];
@@ -400,6 +394,19 @@ void gameCollisions(Game* game)
 																	  game->draw);
 				}
 				break;
+				case ET_MINE_LAYER:
+				{
+					MineLayerCollisionBox mineLayer =
+						getMineLayerCollisionBox(0,enemy->position, enemy->scale);
+					player1Hit = checkCollisionPlayerMineLayer(player1,
+															   mineLayer,
+															   game->draw);
+					if (game->twoPlayers)
+						player2Hit = checkCollisionPlayerMineLayer(player2,
+																   mineLayer,
+																   game->draw);
+				}
+				break;
 				default:
 				;
 			}
@@ -419,7 +426,21 @@ void gameCollisions(Game* game)
 
 static void spawnMineLayer(Game *game)
 {
+	Vector2d position = {80, 80};
 
+	initAllEnemies(game, ET_FLOATING, 7);
+	for (int i = 0; i < game->enemyCount; i += 1)
+	{
+		game->enemies[i].position.x = GetRandomValue(-10, 10) + position.x;
+		game->enemies[i].position.y = GetRandomValue(-10, 10) + position.y;
+	}
+	EnemyType type1 = GetRandomValue(1, 3);
+	EnemyType type2 = GetRandomValue(1, 3);
+	initEnemy(&game->enemies[0], position, ET_MINE_LAYER, ES_BIG);
+	game->enemies[0].active = true;
+	addEnemy(game, ES_BIG, type1);
+	addEnemy(game, ES_BIG, type2);
+	game->mineLayerSpawned = true;
 }
 
 void gameIsOver(Game* game)
@@ -442,16 +463,15 @@ void gameIsOver(Game* game)
 			return;
 	}
 
-	if (!game->mineLayerSpawned)
+	if (game->mineLayerSpawned)
 	{
 		game->level++;
 		if (game->level > 5)
 			game->level = 1;
-		game->levelStart = false;
 		startLevel(game);
+		initLayer(&game->layer);
+		game->levelStart = false;
 	}
 	else
-	{
 		spawnMineLayer(game);
-	}
 }
