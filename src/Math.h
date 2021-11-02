@@ -2,7 +2,26 @@
 #include <math.h>
 #include <stdbool.h>
 
+#ifndef PI
+#define PI 3.14159265358979323846f
+#endif
+#ifndef DEG2RAD
+#define DEG2RAD (PI/180.0f)
+#endif
+#ifndef RAD2DEG
+#define RAD2DEG (180.0f/PI)
+#endif
+#ifndef EPSILON
 #define EPSILON    pow(10,-9)
+#endif
+
+#define ARRAY_SIZE(array) (sizeof(array) / sizeof((array)[0]))
+
+//2D vector
+typedef struct Vector2d {
+    float x;
+    float y;
+} Vector2d;
 
 //For SAT 
 typedef struct Range
@@ -10,14 +29,6 @@ typedef struct Range
     float min;
     float max;
 } Range;
-
-//2D vector
-typedef struct Vector2d
-{
-    float x;
-    float y;
-
-} Vector2d;
 
 //Line segment
 typedef struct LineSegment
@@ -86,12 +97,16 @@ typedef union Shapes
 //typedef enum ShapeType{POINT_SHAPE = 1,SEGMENT_SHAPE,AABB_SHAPE,
                         //OBB_SHAPE,TRIANGLE_SHAPE,CONVEX_SHAPE} ShapeType;
 	//OBB_SHAPE,TRIANGLE_SHAPE,CONVEX_SHAPE} ShapeType;
+//OBB_SHAPE,TRIANGLE_SHAPE,CONVEX_SHAPE} ShapeType;
+//OBB_SHAPE,TRIANGLE_SHAPE,CONVEX_SHAPE} ShapeType;
 
 //Polygon
 //typedef struct PolygonShape
 //{
     //ShapeType type;
     //Shapes shapes;
+//ShapeType type;
+//Shapes shapes;
 
 //} PolygonShape;
 
@@ -108,9 +123,12 @@ float lengthSqVector2d(Vector2d v);
 float lengthVector2d(Vector2d v);
 Vector2d getNormal(Vector2d a, Vector2d b);
 
+Vector2d rotateAndTranslate(Vector2d vector, float rotation, Vector2d position);
 Vector2d scaleVector2d(Vector2d v,float scalar);
 float distVector2d(Vector2d a, Vector2d b);
 float dotProduct(Vector2d a,Vector2d b);
+Vector2d getDirection(float rotation);
+float    getRotation(Vector2d direction);
 
 //Some utilites fonctions
 float lerp(float a,float b,float t);
@@ -126,6 +144,7 @@ bool testCircleRect(Circle c, AABB rect);
 
 
 //Fonctions for the SAT
+Vector2d getCenterConvexPoly(Vector2d *v, int size);
 Range getPointProjOnVector(Vector2d vector, Vector2d point);
 //void getNumberOfVertices(PolygonShape shape,int type,int* nbVertices);
 Range getMinRange(Range r1, Range r2);
@@ -135,6 +154,5 @@ bool rangeOverlapRange(Range r1, Range r2);
 
 //bool intersect(PolygonShape shape1,int type1,PolygonShape shape2,int type2);
 //void getNumberOfVertices(PolygonShape shape,int type,int* nbVertices);
-
-int satAlgorithm(Vector2d *a, Vector2d *b, int sizeA, int sizeB);
-int satAlgorithmPolygonCircle(Vector2d* v,int vSize,Circle* circle);
+int satAlgorithm(const Vector2d *a, const Vector2d *b, int sizeA, int sizeB);
+int satAlgorithmPolygonCircle(const Vector2d* v, int vSize, const Circle* circle);

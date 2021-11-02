@@ -1,147 +1,23 @@
 #include "game.h"
 #include "draw.h"
-#include "Math.h"
+#include "collision.h"
+#include "levels.h"
+#include "player.h"
+#include <stddef.h>
 
-//cross->textureCoord[0] = (Rectangle){345, 90, 75, 75};
-//ship->textureCoord[0] = (Rectangle){513, 89, 256, 79};
-
-#include <stdlib.h>
-
-static int framesCounter;
-
-int addEnemy(Game *game, EnemySize size)
+int addEnemy(Game *game, EnemySize size, EnemyType type)
 {
 	for (int i = 0; i < game->enemyCount;i++)
 	{
 		Enemy *enemy = &game->enemies[i];
 		if (!enemy->active)
 		{
-			initEnemy(enemy, enemy->position, enemy->type, size);
+			initEnemy(enemy, enemy->position, type, size);
 			enemy->active = true;
 			return (1);
 		}
 	}
 	return (0);
-}
-
-void initLevel1(Game *game)
-{
-	Vector2 Random;
-
-	game->layer = (MineLayer){0};
-	initLayer(&game->layer);
-
-	game->enemyCount = ENEMY_COUNT;
-	game->level = 1;
-	for(int i = 0; i < game->enemyCount; i++)
-	{
-		Random.x = GetRandomValue(64.0f, (float)SCREEN_WIDTH - 64.0f);
-		Random.y = GetRandomValue(80.0f, SCREEN_HEIGHT - 80.0f);
-		initEnemy(&game->enemies[i], Random, ET_FLOATING, ES_NONE);
-		game->enemies[i].active = false;
-	}
-}
-
-bool initGame(Game* game)
-{
-	game->state = GS_MENU;
-	InitWindow(SCREEN_WIDTH,SCREEN_HEIGHT,"VICTOR-MATHIEU-OSVALDO");
-	SetExitKey(KEY_NULL);
-	SetTargetFPS(60);
-
-	initPlayer(&game->player[0], (Vector2){SCREEN_WIDTH / 3.0f, SCREEN_HEIGHT / 2.0f});
-	initPlayer(&game->player[1], (Vector2){SCREEN_WIDTH / 1.5f, SCREEN_HEIGHT / 2.0f});
-
-	initLevel1(game);
-
-	loadData(game);
-	game->ticksCount = 0;
-	return true;
-}
-
-void runGameLoop(Game* game)
-{
-	while (!WindowShouldClose() && game->state != GS_CLOSE)
-	{
-		game->ticksCount = GetFrameTime();
-		processInput(game);
-		updateGame(game);
-		drawGame(game, framesCounter);
-	}
-
-}
-
-
-int setInputFlagPressed(KeyboardKey key, PlayerAction *flag, PlayerAction action)
-{
-	if(IsKeyPressed(key))
-	{
-		*flag |= action;
-		return (1);
-	}
-	else
-		*flag &= ~action;
-	return (0);
-}
-
-void setInputFlag(KeyboardKey key, PlayerAction *flag, PlayerAction action)
-{
-	if(IsKeyDown(key))
-		*flag |= action;
-	else
-		*flag &= ~action;
-}
-
-void processInput(Game* game)
-{
-	Player *player1 = &game->player[0];
-	Player *player2 = &game->player[1];
-	if(IsKeyPressed(KEY_SPACE))
-	{
-		static GameState temp = 0;
-
-		if (game->state == GS_PLAY || game->state == GS_PLAY2)
-		{
-			temp = game->state;
-			game->state = GS_PAUSE;
-		}
-		else if (game->state == GS_PAUSE)
-			game->state = temp;
-	}
-
-	setInputFlagPressed(KEY_F, &player1->action, PA_SHOOT);
-	if (!setInputFlagPressed(KEY_T, &player1->action, PA_TELEPORT))
-		setInputFlagPressed(KEY_E, &player1->action, PA_TELEPORT);
-	setInputFlag(KEY_D, &player1->action, PA_TURN_LEFT);
-	setInputFlag(KEY_G, &player1->action, PA_TURN_RIGHT);
-	setInputFlag(KEY_R, &player1->action, PA_ACCELERATION);
-
-	if(IsKeyPressed('K') && (game->state == GS_MENU))
-		game->state = GS_PLAY2;
-	if (game->state == GS_PLAY2)
-	{
-		setInputFlagPressed(KEY_K, &player2->action, PA_SHOOT);
-		if (!setInputFlagPressed(KEY_U, &player2->action, PA_TELEPORT))
-			setInputFlagPressed(KEY_O, &player2->action, PA_TELEPORT);
-		setInputFlag(KEY_J, &player2->action, PA_TURN_LEFT);
-		setInputFlag(KEY_L, &player2->action, PA_TURN_RIGHT);
-		setInputFlag(KEY_I, &player2->action, PA_ACCELERATION);
-	}
-	if(IsKeyPressed(KEY_ESCAPE))
-	{
-		if (game->state == GS_MENU)
-			game->state = GS_CLOSE;
-		if (game->state == GS_PAUSE || game->state == GS_GAMEOVER)
-		{
-			game->state = GS_MENU;
-			*player1 = (Player){0};
-			*player2 = (Player){0};
-			initPlayer(player1, (Vector2){SCREEN_WIDTH / 3.0f, SCREEN_HEIGHT / 2.0f});
-			initPlayer(player2, (Vector2){SCREEN_WIDTH / 1.5f, SCREEN_HEIGHT / 2.0f});
-			initLevel1(game);
-			game->levelStart = false;
-		}
-	}
 }
 
 void updateGame(Game* game)
@@ -152,238 +28,451 @@ void updateGame(Game* game)
 		{
 			if (game->player[1].action & PA_SHOOT)
 			{
-				game->state = GS_PLAY2;
-				game->player[1].action &= ~(PA_SHOOT);
+				game->state = GS_PLAY;
+				game->twoPlayers = true;
 			}
 			else if (game->player[0].action & PA_SHOOT)
 				game->state = GS_PLAY;
 			game->player[0].action &= ~(PA_SHOOT);
-			framesCounter++;
+			game->player[1].action &= ~(PA_SHOOT);
 		}break;
 		case GS_PLAY:
-		case GS_PLAY2:
 		{
 			if (game->levelStart == false)
 			{
 				if (updateLayer(&game->layer, game->ticksCount))
 				{
 					game->levelStart = true;
-					addEnemy(game, ES_BIG);
-					addEnemy(game, ES_BIG);
+					startLevel(game);
 				}
 			}
-			if (game->levelStart)
+			else
 			{
 				updatePlayer(&game->player[0], game->ticksCount);
 				if (game->player[0].action & PA_SHOOT)
+					gameAddBullet(game, BS_PLAYER1, NULL);
+				if (game->twoPlayers)
 				{
-					gameAddBullet(&game->player[0]);
-					game->player[0].action &= ~PA_SHOOT;
-				}
-				if (game->state == GS_PLAY2)
-				{
-					if (game->player[1].action & PA_SHOOT)
-						gameAddBullet(&game->player[1]);
 					updatePlayer(&game->player[1], game->ticksCount);
+					if (game->player[1].action & PA_SHOOT)
+						gameAddBullet(game, BS_PLAYER2, NULL);
 				}
-				for(int i = 0; i < game->enemyCount; i++)
-					updateEnemy(&game->enemies[i], game->ticksCount);
-
-				for(int i = 0; i < game->player[0].bulletCount; i++)
+				for(int i = 0; i < game->bulletCount; i++)
 				{
-					Bullet* bullet = &game->player[0].bullets[i];
+					Bullet* bullet = &game->bullets[i];
 					updateBullet(bullet,game->ticksCount);
 				}
 
-				if (game->state == GS_PLAY2)
-				{
-					for(int i = 0; i < game->player[1].bulletCount; i++)
-					{
-						Bullet* bullet = &game->player[1].bullets[i];
-						updateBullet(bullet,game->ticksCount);
-					}
-				}
-
-				gameCollisions(game, &game->player[0]);
-				if (game->state == GS_PLAY2)
-					gameCollisions(game, &game->player[1]);
-				gameRemoveBullet(&game->player[0]);
-				gameRemoveBullet(&game->player[1]);
+				for(int i = 0; i < game->enemyCount; i++)
+					updateEnemy(game, &game->enemies[i], game->ticksCount, &game->player[0], &game->player[1]);
+				gameCollisions(game);
+				gameRemoveBullet(game);
 				gameIsOver(game);
 			}
 		} break;
-		default:
-		{
-			framesCounter++;
-		}
+		default:;
 	}
+	game->framesCounter++;
 }
 
-
-void gameAddBullet(Player *player)
+static void gameAddEnemyBullet(Game *game, Enemy *enemy)
 {
-	Vector2 *position = &player->position;
-	float   rotation = player->rotation;
-	if(player->bulletCount == BULLET_CAPACITY)
-		return;
+	Vector2d position;
+	float   angle;
+	float speed = 100.0f;
+	Vector2d direction = subsVector2d(game->player[0].position, enemy->position);
 
+	direction = normalizeVector2d(direction);
+
+	if (enemy->size == ES_BIG)
+	{
+		direction.x *= 40;
+		direction.y *= 40;
+	}
+	else if (enemy->size == ES_MEDIUM)
+	{
+		direction.x *= 30;
+		direction.y *= 30;
+	}
+	else
+	{
+		direction.x *= 20;
+		direction.y *= 20;
+	}
+	position.x = enemy->position.x + direction.x;
+	position.y = enemy->position.y + direction.y;
+	angle = getRotation(direction);
+	if (direction.x < 0)
+	{
+		angle += 180.0f;
+	}
 	Bullet bullet = {0};
 
-	initBullet(&bullet, *position, rotation);
+	initBullet(&bullet, position, angle, BS_ENEMY, speed);
 
-	player->bullets[player->bulletCount] = bullet;
-	player->bulletCount += 1;
+	game->bullets[game->bulletCount] = bullet;
+	game->bulletCount += 1;
 }
 
-void gameRemoveBullet(Player *player)
+void gameAddBullet(Game *game, BulletSource source, Enemy *enemy)
 {
-
-	for(int i = 0; i < player->bulletCount; i++)
+	if(game->bulletCount == BULLET_CAPACITY)
+		return;
+	switch(source)
 	{
-		Bullet* bullet = &player->bullets[i];
-
-		if (lengthVector2d((Vector2d){bullet->addPosition.x, bullet->addPosition.y}) > SCREEN_HEIGHT / 2)
+		case BS_PLAYER1: 
+		case BS_PLAYER2:
 		{
-			player->bullets[i] = player->bullets[player->bulletCount - 1];
-			player->bulletCount -= 1;
+
+			float speed = 500.0f;
+
+			Player *player = &game->player[0];
+			if (source == BS_PLAYER2)
+				player = &game->player[1];
+
+			Vector2d direction = getDirection(player->rotation);
+			Vector2d position;
+			position.x  = player->position.x + (direction.x * 25);
+			position.y  = player->position.y + (direction.y * 25);
+			float angle = player->rotation;
+
+			Bullet bullet = {0};
+			initBullet(&bullet, position, angle, source, speed);
+			game->bullets[game->bulletCount] = bullet;
+			game->bulletCount += 1;
+		}break;
+		case BS_ENEMY:gameAddEnemyBullet(game, enemy);break;
+	}
+}
+
+void gameRemoveBullet(Game *game)
+{
+	for(int i = 0; i < game->bulletCount; i++)
+	{
+		Bullet* bullet = &game->bullets[i];
+
+		if ((bullet->source != BS_ENEMY && bullet->lifeTime > 0.7f) ||
+			(bullet->source == BS_ENEMY && bullet->lifeTime > 4.0f))
+		{
+			game->bullets[i] = game->bullets[game->bulletCount - 1];
+			game->bulletCount -= 1;
 		}
 	}
 }
 
-int gameEnemyAliveCount(Game* game)
+void addScore(Game *game, BulletSource source, EnemySize size, EnemyType type, int small, int medium, int big)
 {
-	int count = 0;
-	for(int i = 0; i < game->enemyCount; i++)
+	Player stub;
+	Player *player = &stub;
+
+	if (source == BS_PLAYER1)
+		player = &game->player[0];
+	else if (source == BS_PLAYER2)
+		player = &game->player[1];
+	switch(size)
 	{
-		//if(game->enemies[i].life > 0)
-		//count++;
+		case ES_SMALL:{player->score += small;};break;
+		case ES_MEDIUM:{
+			addEnemy(game, ES_SMALL, type);
+			addEnemy(game, ES_SMALL, type);
+			player->score += medium;
+		}break;
+		case ES_BIG:{
+			addEnemy(game, ES_MEDIUM, type);
+			addEnemy(game, ES_MEDIUM, type);
+			player->score += big;
+		}break;
+		default:;
 	}
-	return count;
-}
-void loadData(Game* game)
-{
-	game->atlas = LoadTexture("assets/mines.png");
-	game->background = LoadTexture("assets/background.png");
-	game->foreground = LoadTexture("assets/foreground.png");
 }
 
-void unloadData(Game* game)
+int collisionEnemyBullet(Game *game, Enemy *enemy, Bullet *bullet)
 {
-	UnloadTexture(game->atlas);
-	UnloadTexture(game->background);
-	UnloadTexture(game->foreground);
-}
-
-//TODO : Collisions
-
-int collisionEnemyBullet(Game *game, Player *player, Enemy *enemy, Bullet *bullet)
-{
-	Rectangle enemyRec = {enemy->position.x, enemy->position.y, 25, 25};
-	Rectangle bulletRec = {bullet->position.x, bullet->position.y, 25 / 4, 25 / 4};
 	if (enemy->active && enemy->type != ET_NONE)
 	{
-		if (CheckCollisionRecs(bulletRec, enemyRec))
+		switch (enemy->type)
 		{
-			switch(enemy->size)
+			case ET_FLOATING:
 			{
-				case ES_SMALL:
+				FloatingCollisionBox floating =
+					getFloatingCollisionBox(0, enemy->position, enemy->scale);
+				if (checkCollisionFloatBullet(floating, bullet, game->draw))
 				{
-					player->score += 200;
-				}break;
-				case ES_MEDIUM:
+					addScore(game, bullet->source, enemy->size, enemy->type, 200, 135, 100);
+					return (1);
+				}
+			}break;
+
+			case ET_FIREBALL:
+			{
+				FireBallCollisionBox fireball =
+					getFireBallCollisionBox(0, enemy->position, enemy->scale);
+				if (checkCollisionFireBallBullet(fireball, bullet, game->draw))
 				{
-					addEnemy(game, ES_SMALL);
-					addEnemy(game, ES_SMALL);
-					player->score += 135;
-				}break;
-				case ES_BIG:
+					addScore(game, bullet->source, enemy->size, enemy->type, 425, 360, 325);
+					gameAddBullet(game, BS_ENEMY, enemy);
+					return (1);
+				}
+			}break;
+
+			case ET_MAGNETIC:
+			{
+				MagneticCollisionBox magnetic =
+					getMagneticCollisionBox(0, enemy->position, enemy->scale);
+				if (checkCollisionMagneticBullet(magnetic, bullet,
+												 game->draw))
 				{
-					addEnemy(game, ES_MEDIUM);
-					addEnemy(game, ES_MEDIUM);
-					player->score += 100;
-				}break;
-				default:
-				break;
-			}
-			enemy->type = ET_NONE;
-			bullet->position.x = -1;
-			bullet->position.y = -1;
-			return (1);
+					addScore(game, bullet->source, enemy->size, enemy->type, 600, 535, 500);
+					return (1);
+				}
+			}break;
+			case ET_MAGNETIC_FIREBALL:
+			{
+				MagneticFireCollisionBox magneticFire =
+					getMagneticFireCollisionBox(0, enemy->position, enemy->scale);
+				if (checkCollisionMagneticFireBullet(magneticFire, bullet,
+													 game->draw))
+				{
+					addScore(game, bullet->source, enemy->size, enemy->type, 850, 585, 750);
+					gameAddBullet(game, BS_ENEMY, enemy);
+					return (1);
+				}
+			}break;
+			case ET_MINE_LAYER:
+			{
+				MineLayerCollisionBox mineLayer =
+					getMineLayerCollisionBox(0, enemy->position, enemy->scale);
+				if (checkCollisionMineLayerBullet(mineLayer, *bullet,
+												  game->draw))
+				{
+					if (bullet->source == BS_PLAYER1)
+						game->player[0].score += 1000;
+					else if (bullet->source == BS_PLAYER2)
+						game->player[1].score += 1000;
+					return (1);
+				}
+			}break;
+			default:;
 		}
 	}
 	return (0);
 }
 
-void gameCollisions(Game* game, Player *player)
+static void bulletBulletCollisions(Game *game, bool *player1Hit, bool *player2Hit, PlayerCollisionBox *player1, PlayerCollisionBox *player2)
 {
-	for(int j = 0; j < game->enemyCount; j++)
+	for(int i = 0; i < game->bulletCount; i++)
 	{
-		Enemy* enemy = &game->enemies[j];
-		Rectangle enemyRec = {enemy->position.x, enemy->position.y, 25, 25};
-		for(int i = 0; i < player->bulletCount; i++)
+		Bullet* bullet = &game->bullets[i];
+		for(int j = i + 1; j < game->bulletCount; j++)
 		{
-			Bullet* bullet = &player->bullets[i];
-			if (collisionEnemyBullet(game, player, enemy, bullet))
-				break;
-		}
-		Rectangle playerRec =
-		{
-			player->position.x,
-			player->position.y,
-			84 * 0.25f,
-			140 * 0.25f
-		};
+			Bullet* bullet1 = &game->bullets[j];
 
-		if (enemy->active && enemy->type != ET_NONE &&
-			CheckCollisionRecs(playerRec, enemyRec))
+			float distance  = distVector2d(bullet1->position, bullet->position);
+			if (distance <= 6.25f)
+			{
+				bullet->lifeTime = 1000.0f;
+				bullet1->lifeTime = 1000.0f;
+				if (bullet->source != BS_ENEMY)
+				{
+					if (bullet->source == BS_PLAYER1)
+						game->player[0].score += 100;
+					else
+						game->player[1].score += 100;
+
+				}
+				if (bullet1->source != BS_ENEMY)
+				{
+					if (bullet1->source == BS_PLAYER1)
+						game->player[0].score += 100;
+					else
+						game->player[1].score += 100;
+				}
+			}
+		}
+		*player1Hit = checkCollisionPlayerBullet(*player1, *bullet, game->draw);
+		if (game->twoPlayers)
+			*player2Hit = checkCollisionPlayerBullet(*player2, *bullet, game->draw);
+		if (*player1Hit || *player2Hit)
 		{
+			bullet->lifeTime = 1000.0f;
+			break;
+		}
+	}
+
+}
+
+void gameCollisions(Game* game)
+{
+	bool player1Hit = 0;
+	bool player2Hit = 0;
+
+	PlayerCollisionBox player1 = getPlayerCollisionBox(game->player[0].rotation, game->player[0].position, 0.25f);
+	PlayerCollisionBox player2 = getPlayerCollisionBox(game->player[1].rotation, game->player[1].position, 0.25f);
+
+	bulletBulletCollisions(game, &player1Hit, &player2Hit, &player1, &player2);
+	for(int i = 0; i < game->enemyCount; i++)
+	{
+		if (player1Hit || player2Hit)
+		{
+			Player *player = &game->player[0];
+			if (player2Hit)
+				player = &game->player[1];
+			int score = player->score;
 			int lives = player->lives - 1;
 			game->levelStart = false;
 			*player = (Player){0};
-			player->position.x = SCREEN_WIDTH / 3.0f;
-			player->position.y = SCREEN_HEIGHT / 2.0f;
+			player->score = score;
+
 			player->rotation = -90.0f;
 			player->lives = lives;
-			initLevel1(game);
+			startLevel(game);
+			initLayer(&game->layer);
+			game->levelStart = false;
+			break;
+		}
+		Enemy* enemy = &game->enemies[i];
+		for(int j = 0; j < game->bulletCount; j++)
+		{
+			Bullet* bullet = &game->bullets[j];
+			if (collisionEnemyBullet(game, enemy, bullet))
+			{
+				enemy->type = ET_NONE;
+				bullet->lifeTime = 100.0f;
+			}
+		}
+		if (enemy->active)
+		{
+			switch(enemy->type)
+			{
+				case ET_FLOATING:
+				{
+					FloatingCollisionBox floating =
+						getFloatingCollisionBox(0, enemy->position, enemy->scale);
+
+					player1Hit = checkCollisionPlayerFloat(player1,floating);
+					if (game->twoPlayers)
+						player2Hit = checkCollisionPlayerFloat(player2,floating);
+					if (game->draw)
+					{
+						drawShape(floating.rombus, ARRAY_SIZE(floating.rombus), (player1Hit || player2Hit) ? RED : GREEN);
+						drawShape(floating.triangle1, ARRAY_SIZE(floating.triangle1), (player1Hit || player2Hit) ? RED : GREEN);
+						drawShape(floating.triangle2, ARRAY_SIZE(floating.triangle2), (player1Hit || player2Hit) ? RED : GREEN);
+					}
+					if (player1Hit || player2Hit)
+						enemy->hit = true;
+					else
+						enemy->hit = false;
+				}
+				break;
+				case ET_MAGNETIC:
+				{
+					MagneticCollisionBox magnetic =
+						getMagneticCollisionBox(0, enemy->position, enemy->scale);
+					player1Hit = checkCollisionPlayerMagnetic(player1, magnetic, game->draw);
+					if (game->twoPlayers)
+						player2Hit = checkCollisionPlayerMagnetic(player2, magnetic, game->draw);
+				}
+				break;
+				case ET_FIREBALL:
+				{
+					FireBallCollisionBox fireball =
+						getFireBallCollisionBox(0, enemy->position, enemy->scale);
+					player1Hit = checkCollisionPlayerFireBall(player1, fireball, game->draw);
+					if (game->twoPlayers)
+						player2Hit = checkCollisionPlayerFireBall(player2, fireball, game->draw);
+				}
+				break;
+				case ET_MAGNETIC_FIREBALL:
+				{
+					MagneticFireCollisionBox magFireball =
+						getMagneticFireCollisionBox(0,enemy->position, enemy->scale);
+					player1Hit = checkCollisionPlayerMagneticFire(player1,
+																  magFireball,
+																  game->draw);
+					if (game->twoPlayers)
+						player2Hit = checkCollisionPlayerMagneticFire(player2,
+																	  magFireball,
+																	  game->draw);
+				}
+				break;
+				case ET_MINE_LAYER:
+				{
+					MineLayerCollisionBox mineLayer =
+						getMineLayerCollisionBox(0,enemy->position, enemy->scale);
+					player1Hit = checkCollisionPlayerMineLayer(player1,
+															   mineLayer,
+															   game->draw);
+					if (game->twoPlayers)
+						player2Hit = checkCollisionPlayerMineLayer(player2,
+																   mineLayer,
+																   game->draw);
+				}
+				break;
+				default:
+				;
+			}
+		}
+	}
+	if (game->draw)
+	{
+		drawShape(player1.head, ARRAY_SIZE(player1.head), (player1Hit) ? RED : GREEN);
+		drawShape(player1.tail, ARRAY_SIZE(player1.tail), (player1Hit) ? RED : GREEN);
+		if (game->twoPlayers)
+		{
+			drawShape(player2.head, ARRAY_SIZE(player2.head), (player2Hit) ? RED : GREEN);
+			drawShape(player2.tail, ARRAY_SIZE(player2.tail), (player2Hit) ? RED : GREEN);
 		}
 	}
 }
 
+static void spawnMineLayer(Game *game)
+{
+	Vector2d position = {80, 80};
+
+	initAllEnemies(game, ET_FLOATING, 7);
+	for (int i = 0; i < game->enemyCount; i += 1)
+	{
+		game->enemies[i].position.x = GetRandomValue(-10, 10) + position.x;
+		game->enemies[i].position.y = GetRandomValue(-10, 10) + position.y;
+	}
+	EnemyType type1 = GetRandomValue(1, 3);
+	EnemyType type2 = GetRandomValue(1, 3);
+	initEnemy(&game->enemies[0], position, ET_MINE_LAYER, ES_BIG);
+	game->enemies[0].active = true;
+	addEnemy(game, ES_BIG, type1);
+	addEnemy(game, ES_BIG, type2);
+	game->mineLayerSpawned = true;
+}
+
 void gameIsOver(Game* game)
 {
-	if (game->state == GS_PLAY)
+	if (game->state == GS_PLAY && !game->twoPlayers)
 	{
 		if (game->player[0].lives <= 0)
 			game->state = GS_GAMEOVER;
 	}
-	else if (game->state == GS_PLAY2)
+	else if (game->twoPlayers)
 	{
 		if (game->player[0].lives <= 0 &&
 			game->player[1].lives <= 0 )
 			game->state = GS_GAMEOVER;
 	}
 
-
-
 	for(int i = 0; i < game->enemyCount; i++)
 	{
 		if (game->enemies[i].type != ET_NONE)
 			return;
 	}
-	game->level++;
-	game->levelStart = false;
-	switch(game->level)
-	{
-		case 2: initLevel1(game);break;
-		case 3: initLevel1(game);break;
-		case 4: initLevel1(game);break;
-		case 5: initLevel1(game);break;
-	}
-}
 
-void Shutdown(Game* game)
-{
-	game->state = GS_CLOSE;
-	unloadData(game);
-	CloseWindow();
+	if (game->mineLayerSpawned)
+	{
+		game->level++;
+		if (game->level > 5)
+			game->level = 1;
+		startLevel(game);
+		initLayer(&game->layer);
+		game->levelStart = false;
+	}
+	else
+		spawnMineLayer(game);
 }

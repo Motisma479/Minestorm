@@ -1,171 +1,197 @@
 #include <raylib.h>
 #include "Math.h"
-
-typedef struct ShipCollisionShape
+#include "collision.h"
+/* 
+#undef main
+int main()
 {
-	Vector2d head[8];
-	Vector2d tail[6];
-} ShipCollisionShape;
+	InitWindow(3080, 1920,"MINESTORM TEST");
+	SetTargetFPS(60);
 
+	Player player = {0};
+	player.position = (Vector2d){200, 200};
+	player.rotation = 0.0f;
+
+	Circle circle = {{300, 300}, 20};
+	Texture2D texture = LoadTexture("./assets/mines.png");
+	Rectangle textureCoord = (Rectangle){83, 58, 84, 140};
+
+	//FloatingCollisionBox floating = getFloatingCollisionBox(0, (Vector2d){0, 0}, 1.0f);
+	MineLayerCollisionBox mineLayer = getMineLayerCollisionBox(0, (Vector2d){0, 0}, 1.0f);
+
+	//Vector2d center = getCenterConvexPoly(floating.body, sizeof(floating.body) / sizeof(Vector2d));
+	Rectangle enemyCoord = (Rectangle){513, 89, 255, 78};
+
+	//Vector2d center = getCenterConvexPoly(mineLayer.poly, sizeof(mineLayer.poly) / sizeof(Vector2d));
+	//Vector2d center = (Vector2d){640, 384};
+	//Vector2d center = (Vector2d){640.5, 130};
+
+	Vector2d *a = mineLayer.poly;
+
+	int sizeA = ARRAY_SIZE(mineLayer.poly);
+
+	int i;
+#if 0
+	printf("\n\n\n.poly = {");
+
+	for (i = 0; i < sizeA;i++)
+	{
+		a[i].x -= center.x;
+		a[i].y -= center.y;
+		printf("{(%f * scale) + position.x, (%f * scale) + position.y}, \n", a[i].x, a[i].y);
+	}
+	printf("}\n");
+
+	a = mineLayer.triangle1;
+	sizeA = ARRAY_SIZE(mineLayer.triangle1);
+
+	printf(".triangle1 = {");
+	for (i = 0; i < sizeA;i++)
+	{
+		a[i].x -= center.x;
+		a[i].y -= center.y;
+		printf("{(%f * scale) + position.x, (%f * scale) + position.y}, \n", a[i].x, a[i].y);
+	}
+	printf("}\n");
+	a = mineLayer.triangle2;
+	sizeA = ARRAY_SIZE(mineLayer.triangle2);
+	printf(".triangle2 = {");#include "Math.h"
+#include <raylib.h>
 #include <stdio.h>
 
-Vector2d getCenter(Vector2d *v, int size)
-{
-	Vector2d result = {0};
-	int i = 0;
-	float areaSum = 0.0f;
-	float area = 0.0f;
-	for (i = 0;i < size - 1;i++){
 
-		area = v[i].x*v[i+1].y - v[i+1].x*v[i].y;
-		areaSum += area;
-		result.x += (v[i].x + v[i+1].x) * area;
-		result.y += (v[i].y + v[i+1].y) * area;
-	}
-	area = v[i].x*v[0].y - v[i].x*v[0].y;
-	areaSum += area;
-	areaSum *= 0.5;
-	result.x = result.x / (areaSum*6.0f);
-	result.y = result.y / (areaSum*6.0f);
-	return (result);
-}
 
 int main()
 {
-	InitWindow(640, 480,"MINESTORM TEST");
-	SetTargetFPS(60);
+    printf("COLLISION");
 
-	//PolygonShape poly;
+    return 0;
+}
+	{
+		a[i].x -= center.x;
+		a[i].y -= center.y;
+		printf("{(%f * scale) + position.x, (%f * scale) + position.y}, \n", a[i].x, a[i].y);
+	}
+	printf("}\n");
+	a = mineLayer.triangle3;
+	sizeA = ARRAY_SIZE(mineLayer.triangle3);
+	printf(".triangle3 = {");
+	for (i = 0; i < sizeA;i++)
+	{
+		a[i].x -= center.x;
+		a[i].y -= center.y;
+		printf("{(%f * scale) + position.x, (%f * scale) + position.y}, \n", a[i].x, a[i].y);
+	}
+	printf("}\n");
+#endif
 
-	//poly.type = CONVEX_SHAPE;
-	//int sizeA = 8;
-	//int sizeB = 6;
-	//Vector2d a[8];
-	//float    rotation = 0.01f;
-/* 
-	a[0] = (Vector2d){110, 130};
-	a[1] = (Vector2d){94, 130};
-	a[2] = (Vector2d){83, 178};
-	a[3] = (Vector2d){93, 197};
-	a[4] = (Vector2d){156, 197};
-	a[5] = (Vector2d){166, 178};
-	a[6] = (Vector2d){150, 130};
-	a[7] = (Vector2d){110, 130}; */
+	//-
+	a = mineLayer.poly;
+	sizeA = ARRAY_SIZE(mineLayer.poly);
+	for (i = 0; i < sizeA;i++)
+	{
+		a[i].x += enemyCoord.x + enemyCoord.width / 2;
+		a[i].y += enemyCoord.y+ enemyCoord.height / 2;
+	}
+	a = mineLayer.triangle1;
+	sizeA = ARRAY_SIZE(mineLayer.triangle2);
+	for (i = 0; i < sizeA;i++)
+	{
+		a[i].x += enemyCoord.x + enemyCoord.width / 2;
+		a[i].y += enemyCoord.y+ enemyCoord.height / 2;
+	}
+	a = mineLayer.triangle2;
+	sizeA = ARRAY_SIZE(mineLayer.triangle2);
+	for (i = 0; i < sizeA;i++)
+	{
+		a[i].x += enemyCoord.x + enemyCoord.width / 2;
+		a[i].y += enemyCoord.y+ enemyCoord.height / 2;
+	}
 
-/* 	Vector2d b[6];
+	a = mineLayer.triangle3;
+	sizeA = ARRAY_SIZE(mineLayer.triangle3);
+	for (i = 0; i < sizeA;i++)
+	{
+		a[i].x += enemyCoord.x + enemyCoord.width / 2;
+		a[i].y += enemyCoord.y+ enemyCoord.height / 2;
+	}
 
-	b[0] = (Vector2d){123, 58};
-	b[1] = (Vector2d){106, 99};
-	b[2] = (Vector2d){110, 130};
-	b[3] = (Vector2d){139, 130};
-	b[4] = (Vector2d){143, 99};
-	b[5] = (Vector2d){126, 58}; */
-
-	//poly.shapes.convexPoly.nbPoints = 4;
-	//poly.shapes.convexPoly.points = (Vector2d *)&a[0];
+	a = mineLayer.poly;
+	//printf("};\n");
 	while (!WindowShouldClose())
 	{
-		//Vector2d center = getCenter(a, 8);
-		//Vector2d center2 = getCenter(b, 6);
-		//printf("%f, %f\n", center.x, center.y);
+
+		Rectangle playerPos =
+		{
+			player.position.x,
+			player.position.y,
+			textureCoord.width * 0.25,
+			textureCoord.height * 0.25
+		};
+
+		Vector2 origin = {playerPos.width / 2, playerPos.height / 2 + (18 * 0.25f)};
+
 		BeginDrawing();
 		ClearBackground(BLACK);
-		/* int i;
 
-		for (i = 0; i < sizeA - 1;i++){
-			DrawLine(a[i].x, a[i].y, a[i + 1].x, a[i + 1].y, WHITE);
-		}
-		//DrawLine(a[i - 1].x, a[i - 1].y, a[0].x, a[0].y, WHITE);
+		//FloatingCollisionBox enemyColBox = getFloatingCollisionBox(0, (Vector2d){0, 0});
+		//MagneticCollisionBox fireColBox =  getEnemyCollisionBox2(0, (Vector2d){0, 0});
 
 		if (IsKeyDown(KEY_A))
-		{
-			for (i = 0; i < sizeA;i++)
-				a[i].x -= 1;
-			for (i = 0; i < sizeB;i++)
-				b[i].x -= 1;
-
-		}
+			player.position.x -= 1;
 		if (IsKeyDown(KEY_D))
-		{
-			for (i = 0; i < sizeA;i++)
-				a[i].x += 1;
-			for (i = 0; i < sizeB;i++)
-				b[i].x += 1;
-		}
+			player.position.x += 1;
 		if (IsKeyDown(KEY_S))
-		{
-			for (i = 0; i < sizeA;i++)
-				a[i].y += 1;
-			for (i = 0; i < sizeB;i++)
-				b[i].y += 1;
-		}
+			player.position.y += 1;
 		if (IsKeyDown(KEY_W))
-		{
-			for (i = 0; i < sizeA;i++)
-				a[i].y -= 1;
-			for (i = 0; i < sizeB;i++)
-				b[i].y -= 1;
-		}
+			player.position.y -= 1;
 		if (IsKeyDown(KEY_E))
-		{
-			for (i = 0; i < sizeA;i++)
-			{
-				// = center;
-				a[i].x -= center.x;
-				a[i].y -= center.y;
-				a[i].x = a[i].x * cosf(rotation) - a[i].y*sinf(rotation);
-				a[i].y = a[i].x * sinf(rotation) + a[i].y*cosf(rotation);
-				a[i].x += center.x;
-				a[i].y += center.y;
-			}
-			for (i = 0; i < sizeB;i++)
-			{
-				// = center;
-				b[i].x -= center2.x;
-				b[i].y -= center2.y;
-				b[i].x = b[i].x * cosf(rotation) - b[i].y*sinf(rotation);
-				b[i].y = b[i].x * sinf(rotation) + b[i].y*cosf(rotation);
-				b[i].x += center2.x;
-				b[i].y += center2.y;
-			}
-		}
-
+			player.rotation += 0.1f;
 		if (IsKeyDown(KEY_Q))
-		{
-			for (i = 0; i < sizeA;i++)
-			{
-				// = center;
-				a[i].x -= center.x;
-				a[i].y -= center.y;
-				a[i].x = a[i].x * cosf(-rotation) - a[i].y*sinf(-rotation);
-				a[i].y = a[i].x * sinf(-rotation) + a[i].y*cosf(-rotation);
-				a[i].x += center.x;
-				a[i].y += center.y;
-			}
-			for (i = 0; i < sizeB;i++)
-			{
-				// = center;
-				b[i].x -= center2.x;
-				b[i].y -= center2.y;
-				b[i].x = b[i].x * cosf(-rotation) - b[i].y*sinf(-rotation);
-				b[i].y = b[i].x * sinf(-rotation) + b[i].y*cosf(-rotation);
-				b[i].x += center2.x;
-				b[i].y += center2.y;
-			}
-		}
+			player.rotation -= 0.1f;
 
-		int intersecting = 0;
-		printf("They are intersecting %d\n", intersecting = satAlgorithm(a, b, 8, 6));
-		Color color = GREEN;
-		if (intersecting)
-			color = RED;
+		PlayerCollisionBox pCol = 
+			getPlayerCollisionBox(player.rotation*DEG2RAD, (Vector2d) {player.position.x, player.position.y},
+								  0.25f);
 
-		for (i = 0; i < 5;i++)
-			DrawLine(b[i].x, b[i].y, b[i + 1].x, b[i + 1].y, color);
-		DrawLine(b[i].x, b[i].y, b[0].x, b[0].y, color);
+		DrawTexturePro(texture, enemyCoord, enemyCoord, (Vector2){0, 0}, 0, RED);
+		DrawTexturePro(texture, textureCoord, playerPos, origin, player.rotation + 90.0f, WHITE);
+		//checkCollisionPlayerFloat(player, getFloatingCollisionBox(0, (Vector2d){0, 0}, 1.0f), 1);
+		//checkCollisionPlayerMagnetic(player,  getMagneticCollisionBox(0, (Vector2d){0, 0}, 1.0f), 1);
+		//checkCollisionPlayerMagneticFire(player,  fireball, 1);
+#if 0
+		drawShape(fireball.poly, ARRAY_SIZE(fireball.poly), WHITE);
+		drawShape(fireball.triangle1, sizeof(fireball.triangle1) / sizeof(Vector2d), WHITE);
+		drawShape(fireball.triangle2, sizeof(fireball.triangle1) / sizeof(Vector2d), WHITE);
+		drawShape(fireball.triangle3, sizeof(fireball.triangle1) / sizeof(Vector2d), WHITE);
+		drawShape(fireball.triangle4, sizeof(fireball.triangle1) / sizeof(Vector2d), WHITE);
+#endif
+		//checkCollisionPlayerMineLayer(player, mineLayer, 1);
+#if 0
+		drawShape(mineLayer.poly, 4, WHITE);
+		drawShape(mineLayer.triangle1, 3, WHITE);
+		drawShape(mineLayer.triangle2, 3, WHITE);
+		drawShape(mineLayer.triangle3, 3, WHITE);
+#endif
+		//drawShape(getMineLayerCollisionBox(0, (Vector2d){0, 0}, 1.0f).triangle1, 3, WHITE);
+		//drawShape(getMineLayerCollisionBox(0, (Vector2d){0, 0}, 1.0f).triangle2, 3, WHITE);
+		//drawShape(getMineLayerCollisionBox(0, (Vector2d){0, 0}, 1.0f).triangle3, 3, WHITE);
+		Vector2d *head = pCol.head;
+		Vector2d *tail = pCol.tail;
 
-		printf("\e[1;1H\e[2J"); */
+		int sizeHead = sizeof(pCol.head) / sizeof(Vector2d);
+		int sizeTail = sizeof(pCol.tail) / sizeof(Vector2d);
+		DrawFPS(400, 100);
+
+		Color inter1 = GREEN;
+
+		int intersection1 = satAlgorithmPolygonCircle(head, sizeHead, &circle) || 
+			satAlgorithmPolygonCircle(tail, sizeTail, &circle);
+		if (intersection1)
+			inter1 = RED;
+		DrawCircle(circle.center.x, circle.center.y, circle.radius, inter1);
+
 		EndDrawing();
 	}
 
-}
+} */

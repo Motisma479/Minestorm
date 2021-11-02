@@ -1,27 +1,81 @@
 #include "enemy.h"
 #include "common.h"
+#include "Math.h"
+#include "game.h"
 
-void initEnemy(Enemy* enemy, Vector2 position, EnemyType type, EnemySize size)
+void initEnemy(Enemy* enemy, Vector2d position, EnemyType type, EnemySize size)
 {
-	enemy->life = MAX_ENEMY_LIFE;
 	enemy->position = position;
 
-	switch(size)
+	enemy->speed.x = GetRandomValue(-100, 100);
+	enemy->speed.y = GetRandomValue(-100, 100);
+	Vector2d normalized = normalizeVector2d(enemy->speed);
+	switch (type)
 	{
-		case ES_SMALL:
+		case ET_FIREBALL:
+		case ET_FLOATING:
 		{
-			enemy->speed.x = 60;
-			enemy->speed.y = 60;
+			switch(size)
+			{
+				case ES_SMALL:
+				{
+					enemy->speed.x = normalized.x * 60;
+					enemy->speed.y = normalized.y * 60;
+					enemy->scale = 0.125f;
+				}break;
+				case ES_MEDIUM:
+				{
+					enemy->speed.x = normalized.x * 40;
+					enemy->speed.y = normalized.y * 40;
+					enemy->scale = 0.25f;
+				}break;
+				case ES_BIG:
+				{
+					enemy->speed.x = normalized.x * 20;
+					enemy->speed.y = normalized.y * 20;
+					enemy->scale = 0.5f;
+				}break;
+				default:
+				{
+					enemy->speed.x = 0;
+					enemy->speed.y = 0;
+				}
+			}
 		}break;
-		case ES_MEDIUM:
+		case ET_MAGNETIC_FIREBALL:
+		case ET_MAGNETIC:
 		{
-			enemy->speed.x = 40;
-			enemy->speed.y = 40;
+			switch(size)
+			{
+				case ES_SMALL:
+				{
+					enemy->speed.x = 60;
+					enemy->speed.y = 60;
+					enemy->scale = 0.125f;
+				}break;
+				case ES_MEDIUM:
+				{
+					enemy->speed.x = 40;
+					enemy->speed.y = 40;
+					enemy->scale = 0.25f;
+				}break;
+				case ES_BIG:
+				{
+					enemy->speed.x = 20;
+					enemy->speed.y = 20;
+					enemy->scale = 0.5f;
+				}break;
+				default:
+				{
+					enemy->speed.x = 0;
+					enemy->speed.y = 0;
+				}
+			}
 		}break;
-		case ES_BIG:
+		case ET_MINE_LAYER:
 		{
-			enemy->speed.x = 20;
-			enemy->speed.y = 20;
+			enemy->speed.x = 200;
+			enemy->speed.y = 200;
 		}break;
 		default:
 		{
@@ -29,22 +83,78 @@ void initEnemy(Enemy* enemy, Vector2 position, EnemyType type, EnemySize size)
 			enemy->speed.y = 0;
 		}
 	}
-	enemy->rotation = 0;
 	enemy->type = type;
 	enemy->size = size;
+	enemy->rotation = atan(normalized.y / normalized.x);
+	float random = GetRandomValue(0, 1250);
+
+	random /= 1000.0f;
+	enemy->lastShot = random;
 }
 
-void updateEnemy(Enemy* enemy,float deltaTime)
-{
-	if(enemy->life <= 0.0f) //if enemy is dead, we do not update his position
-		return;
+#include <stdio.h>
 
-	Vector2 *position = &enemy->position;
+void updateEnemy(Game *game, Enemy* enemy,float deltaTime, Player *player1, Player *player2)
+{
+	Vector2d *position = &enemy->position;
 
 	if (enemy->active)
 	{
-		position->x += enemy->speed.x * deltaTime;
-		position->y += enemy->speed.y * deltaTime;
+		switch(enemy->type)
+		{
+			case ET_FIREBALL:
+			case ET_FLOATING:
+			{
+				position->x += enemy->speed.x * deltaTime;
+				position->y += enemy->speed.y * deltaTime;
+			}break;
+			case ET_MAGNETIC_FIREBALL:
+			case ET_MAGNETIC:
+			{
+				Vector2d centerEnemy =
+					subsVector2d((Vector2d){SCREEN_WIDTH / 2,
+									 SCREEN_HEIGHT / 2}, *position);
+
+				Vector2d playerPos =
+					(Vector2d){(int)(centerEnemy.x + player1->position.x) % SCREEN_WIDTH,
+					(int)(centerEnemy.y + player1->position.y) % SCREEN_HEIGHT};
+
+				Vector2d towardsPlayer =
+					subsVector2d(playerPos, (Vector2d){SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2});
+
+				playerPos = normalizeVector2d(towardsPlayer);
+
+				position->x += (enemy->speed.x * deltaTime * playerPos.x);
+				position->y += (enemy->speed.y * deltaTime * playerPos.y);
+			}break;
+			case ET_MINE_LAYER:
+			{
+				if ((int)position->x != (int)(SCREEN_WIDTH / 2))
+					position->x += (enemy->speed.x * deltaTime);
+				else if ((int)position->y != (int)(SCREEN_HEIGHT - 81))
+					position->y += (enemy->speed.y * deltaTime);
+				if ((int)position->y == (int)SCREEN_HEIGHT - 81)
+				{
+					enemy->type = ET_NONE;
+					enemy->active = false;
+				}
+			}break;
+			default:;
+		}
+		switch(enemy->type)
+		{
+			case ET_FIREBALL:
+			case ET_MAGNETIC_FIREBALL:
+			{
+				if (enemy->lastShot < 0.01f)
+					gameAddBullet(game, BS_ENEMY, enemy);
+			}break;
+			default:;
+		}
+		enemy->lastShot += deltaTime;
+		if (enemy->lastShot > 6.0f)
+			enemy->lastShot = 0.0f;
+
 	}
 
 	if (position->x < 64.0f) { position->x = (float)SCREEN_WIDTH - 64.0f; }
@@ -58,11 +168,28 @@ void updateEnemy(Enemy* enemy,float deltaTime)
 void drawEnemy(Enemy* enemy, const Texture2D texture)
 {
 	Color color = RED;
-	Vector2 size;
 	Rectangle textureCoord = {0};
+	Rectangle position = {0};
+
 
 	if (enemy->type == ET_NONE)
 		return;
+
+	float scale = 1.0f;
+	switch(enemy->size)
+	{
+		case ES_NONE:
+		{
+			scale = 0.125f;
+			color = WHITE;
+		}break;
+		case ES_SMALL: scale = 0.125f;break;
+		case ES_MEDIUM:scale = 0.25f;break;
+		case ES_BIG:   scale = 0.5f;break;
+	}
+
+	position.x = enemy->position.x;
+	position.y = enemy->position.y;
 	if (!enemy->active)
 		textureCoord = (Rectangle){345, 90, 75, 75};
 	else
@@ -70,44 +197,37 @@ void drawEnemy(Enemy* enemy, const Texture2D texture)
 		switch (enemy->type)
 		{
 			case ET_NONE: break;
-			case ET_FLOATING: textureCoord = (Rectangle){70, 332, 117, 109}; break;
-			case ET_FIREBALL: textureCoord = (Rectangle){846, 332, 104, 106}; break;
-			case ET_MAGNETIC: textureCoord = (Rectangle){335, 332, 99, 105}; break;
+
+			case ET_FLOATING: 
+			{
+				textureCoord = (Rectangle){70, 332, 117, 109};
+				position.x = enemy->position.x - (9 * scale);
+				position.y = enemy->position.y - (58 * scale);
+			} break;
+
+			case ET_FIREBALL: {
+				textureCoord = (Rectangle){846, 332, 104, 106};
+				position.x = enemy->position.x - (14 * scale);
+				position.y = enemy->position.y - (12 * scale);
+			}break;
+
+			case ET_MAGNETIC: 
+			{
+				textureCoord = (Rectangle){335, 332, 99, 105}; 
+				position.x = enemy->position.x + (68 * scale);
+				position.y = enemy->position.y + (65 * scale);
+			}
+			break;
+
 			case ET_MAGNETIC_FIREBALL: textureCoord = (Rectangle){567, 308, 149, 153}; break;
+			case ET_MINE_LAYER: textureCoord = (Rectangle){513, 89, 255, 78}; break;
 		}
 	}
 
-	switch(enemy->size)
-	{
-		case ES_NONE:
-		{
-			size.x = textureCoord.width / 8;
-			size.y = textureCoord.height / 8;
-			color = WHITE;
-		}break;
-		case ES_SMALL:
-		{
-			size.x = textureCoord.width / 8;
-			size.y = textureCoord.height / 8;
-		}break;
-		case ES_MEDIUM:
-		{
-			size.x = textureCoord.width / 4;
-			size.y = textureCoord.height / 4;
-		}break;
-		case ES_BIG:
-		{
-			size.x = textureCoord.width / 2;
-			size.y = textureCoord.height / 2;
-		}break;
-	}
-
-	Rectangle position = {
-		enemy->position.x,
-		enemy->position.y,
-		size.x,
-		size.y};
-
+	position.width  = textureCoord.width  * scale;
+	position.height = textureCoord.height * scale;
 	Vector2 center = {position.width / 2.0f, position.height / 2.0f};
-	DrawTexturePro(texture, textureCoord ,position,center,enemy->rotation, color);
+	if (enemy->hit)
+		color = WHITE;
+	DrawTexturePro(texture, textureCoord ,position, center, enemy->rotation, color);
 }

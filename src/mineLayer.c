@@ -4,7 +4,7 @@
 void initLayer(MineLayer* layer)
 {
 	layer->scale = 640.0f;
-	layer->position = (Vector2){ (float)SCREEN_WIDTH / 2.0f,
+	layer->position = (Vector2d){ (float)SCREEN_WIDTH / 2.0f,
 		(float)SCREEN_HEIGHT / 2.0f};
 	layer->active = true;
 	//layer->active = false;

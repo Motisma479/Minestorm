@@ -1,9 +1,10 @@
 #pragma once
 #include <raylib.h>
+#include "Math.h"
 
 typedef struct MineLayer
 {
-	Vector2 position;
+	Vector2d position;
 	float scale;
 	bool active;
 	float rotation;

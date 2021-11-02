@@ -1,5 +1,4 @@
 #include "Math.h"
-#include <raylib.h>
 #include <stdio.h>
 
 Vector2d zeroVector2d()
@@ -17,7 +16,7 @@ Vector2d subsVector2d(Vector2d a,Vector2d b)
 bool isEqualToVector2d(Vector2d a,Vector2d b)
 {
     bool test = (a.x - b.x) >= -EPSILON  && (a.x - b.x) <= EPSILON && 
-    (a.y - b.y) >= -EPSILON  && (a.y - b.y) <= EPSILON;
+		(a.y - b.y) >= -EPSILON  && (a.y - b.y) <= EPSILON;
 
     return test;
 }
@@ -36,6 +35,16 @@ Vector2d normalizeVector2d(Vector2d v)
 Vector2d negateVector2d(Vector2d v)
 {
     return (Vector2d){-v.x,-v.y};
+}
+
+Vector2d getDirection(float rotation)
+{
+    return (Vector2d){cosf(rotation*DEG2RAD),sinf(rotation*DEG2RAD)};
+}
+
+float getRotation(Vector2d direction)
+{
+    return (RAD2DEG * atan(direction.y / direction.x));
 }
 
 float lengthSqVector2d(Vector2d v)
@@ -125,10 +134,10 @@ bool testCircleRect(Circle c, AABB rect)
     float distY;
 
     if(c.center.x < rect.min.x) distX = rect.min.x;
-    else if(c.center.x > rect.max.x) distX = rect.max.x;
+    else distX = rect.max.x;
 
-    if(c.center.y < rect.min.y) distX = rect.min.y;
-    else if(c.center.y > rect.max.y) distY = rect.max.y;
+    if(c.center.y < rect.min.y) distY = rect.min.y;
+    else distY = rect.max.y;
 
     float distSq = lengthSqVector2d((Vector2d){distX,distY});
 
@@ -216,7 +225,36 @@ Vector2d getLocalVector2d(Vector2d a, Vector2d b)
 	return (result);
 }
 
-int satAlgorithm(Vector2d *a, Vector2d *b, int sizeA, int sizeB)
+Vector2d rotateAndTranslate(Vector2d vector, float rotation, Vector2d position)
+{
+	Vector2d result = {
+		.x = (vector.x * cosf(rotation) - vector.y*sinf(rotation)) + position.x,
+		.y = (vector.x * sinf(rotation) + vector.y*cosf(rotation)) + position.y};
+	return (result);
+}
+
+Vector2d getCenterConvexPoly(Vector2d *v, int size)
+{
+	Vector2d result = {0};
+	int i = 0;
+	float areaSum = 0.0f;
+	float area = 0.0f;
+	for (i = 0;i < size - 1;i++){
+
+		area = v[i].x*v[i+1].y - v[i+1].x*v[i].y;
+		areaSum += area;
+		result.x += (v[i].x + v[i+1].x) * area;
+		result.y += (v[i].y + v[i+1].y) * area;
+	}
+	area = v[i].x*v[0].y - v[i].x*v[0].y;
+	areaSum += area;
+	areaSum *= 0.5;
+	result.x = result.x / (areaSum*6.0f);
+	result.y = result.y / (areaSum*6.0f);
+	return (result);
+}
+
+int satAlgorithm(const Vector2d *a,const Vector2d *b, int sizeA, int sizeB)
 {
 	float infinity = 1.0f / 0.0f;
 	float minusInfinity = log(0);
@@ -261,108 +299,45 @@ int satAlgorithm(Vector2d *a, Vector2d *b, int sizeA, int sizeB)
 	return 1;
 }
 
-
-int satAlgorithmPolygonCircle(Vector2d* v,int vSize,Circle* circle)
+int satAlgorithmPolygonCircle(const Vector2d* v, int vSize, const Circle *circle)
 {
-	Vector2d closestVertex;
-	Vector2d closestNormalized;
-	float mindist = -1.0f / 0.0f;
-	
-	Range circleRange;
-	Range polyRange;
+	float infinity = 1.0f / 0.0f;
+	float minusInfinity = log(0);
 
-	//Get the normalized axis of the polygon
-	Vector2d axis[vSize];
-	for(int k = 0; k < vSize; k++)
+	for (int i = 0; i < vSize - 1;i++)
 	{
-		axis[k] = normalizeVector2d(getNormal(v[k],v[k + 1 == vSize ? 0 : k+1]));
-	}
+		Range range1 = {infinity, minusInfinity};
+		Range range2 = range1;
 
-	//Circle
-	for(int i = 0; i < vSize; i++)
-	{
-		//delta between the circle position and the current vertex of the polygon
-		Vector2d delta = subsVector2d(v[i],circle->center);
-		float dist = lengthSqVector2d(delta);
-
-		if(dist > mindist*mindist)
+		Vector2d normal = getNormal(v[i], v[i + 1]);
+		for (int j = 0; j < vSize;j++)
 		{
-			mindist = dist;
-			closestVertex = delta;
-
-			closestNormalized = normalizeVector2d(closestVertex);
-
-			float projCircle = dotProduct(closestNormalized,circle->center);
-			
-			circleRange.min = projCircle - circle->radius;
-			circleRange.max = projCircle + circle->radius;
+			float projection = dotProduct(v[j], normal);
+			if (projection < range1.min)
+				range1.min = projection;
+			if (projection > range1.max)
+				range1.max = projection;
 		}
 
-		//Vector2d closestNormalized = normalizeVector2d(closestVertex);
-
-		//Project the center onto the closest vertex of the polygon
-/* 		float projCircle = dotProduct(closestNormalized,circle->center);
-		
-		circleRange.min = projCircle - circle->radius;
-		circleRange.max = projCircle + circle->radius; */
-
-
-		//Loop over the polygon
-		polyRange.min =polyRange.max = dotProduct(axis[0],v[0]);
-		for(int j = 1; j < vSize - 1; j++)
+		for (int j = 0;j < vSize;j++)
 		{
-			float proj = dotProduct(axis[j],v[j]);
-			if(proj < polyRange.min)
-			{
-				polyRange.min = proj;
-			}
-			if(proj > polyRange.max)
-			{
-				polyRange.max = proj;
-			}
+			Vector2d normalized = normalizeVector2d(normal);
+
+
+			float projection1 = dotProduct((Vector2d){circle->center.x + (normalized.x * circle->radius), circle->center.y + (normalized.y * circle->radius)}, normal);
+			float projection2 = dotProduct((Vector2d){circle->center.x - (normalized.x * circle->radius), circle->center.y - (normalized.y * circle->radius)}, normal);
+
+			if (projection1 < range2.min)
+				range2.min = projection1;
+			if (projection1 > range2.max)
+				range2.max = projection1;
+			if (projection2 < range2.min)
+				range2.min = projection2;
+			if (projection2 > range2.max)
+				range2.max = projection2;
 		}
-
-		if(!rangeOverlapRange(polyRange,circleRange))
-		{
+		if(!rangeOverlapRange(range1,range2))
 			return 0;
-		}
-
 	}
-
-	//Vector2d closestNormalized = normalizeVector2d(closestVertex);
-
-	//Project the center onto the closest vertex of the polygon
-/* 	float projCircle = dotProduct(closestNormalized,circle->center);
-	
-	circleRange.min = projCircle - circle->radius;
-	circleRange.max = projCircle + circle->radius;
- */
-
-/* 	//Get the normalized axis of the poygon
-	Vector2d axis[vSize];
-	for(int i = 0; i < vSize; i++)
-	{
-		axis[i] = normalizeVector2d(getNormal(v[i],v[i + 1 == vSize ? 0 : i+1]));
-	} */
-
-	/*loop over polygon*/
-/* 	polyRange.min =polyRange.max = dotProduct(axis[0],v[0]);
-	for(int i = 1; i < vSize - 1; i++)
-	{
-		float proj = dotProduct(axis[i],v[i]);
-		if(proj < polyRange.min)
-		{
-			polyRange.min = proj;
-		}
-		if(proj > polyRange.max)
-		{
-			polyRange.max = proj;
-		}
-	} */
-/* 	if(!rangeOverlapRange(polyRange,circleRange))
-	{
-		return 0;
-	} */
-
 	return 1;
 }

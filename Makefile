@@ -5,14 +5,11 @@ TEST_COLLISION = test
 
 
 # Add your objs to generate in OBJS var
-OBJS=src/main.o src/game.o src/player.o src/mineLayer.o src/floatingMine.o src/bullet.o src/testCollision.o src/test.o src/Math.o src/colliders.o
+OBJS=src/main.o src/game.o src/player.o src/mineLayer.o src/enemy.o src/draw.o src/floatingMine.o src/bullet.o src/testCollision.o src/test.o src/Math.o src/colliders.o src/levels.o src/input.o src/collision.o
 
-#SD = /home/ISART/v.caraulan/Work/minestorm/src/
 SD = ./src/
 
-OBJS=$(SD)main.o $(SD)game.o $(SD)player.o $(SD)mineLayer.o $(SD)enemy.o $(SD)bullet.o $(SD)draw.o $(SD)Math.o 
-
-OBJS=$(SD)main.o $(SD)game.o $(SD)player.o $(SD)mineLayer.o $(SD)enemy.o $(SD)bullet.o $(SD)draw.o $(SD)Math.o
+#OBJS=$(SD)main.o $(SD)game.o $(SD)player.o $(SD)mineLayer.o $(SD)enemy.o $(SD)bullet.o $(SD)draw.o $(SD)Math.o $(SD)collision.o $(SD)levels.o $(SD)input.o
 
 CC=gcc
 TARGET=$(shell $(CC) -dumpmachine)
@@ -25,7 +22,7 @@ LDLIBS=-lraylib
 ifeq ($(TARGET),x86_64-linux-gnu)
 LDLIBS+=-ldl -lpthread -lm
 else ifeq ($(TARGET),x86_64-pc-cygwin)
-LDLIBS+=-lgdi32
+LDLIBS+=-lgdi32 -lWinmm -lWs2_32
 endif
 
 DEPS=$(OBJS:.o=.d)
@@ -42,7 +39,7 @@ all: $(PROGRAM)  $(TEST_COLLISION)
 $(PROGRAM): $(OBJS)
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-$(TEST_COLLISION): ./src/test.o ./src/Math.c
+$(TEST_COLLISION): ./src/test.o ./src/Math.o ./src/collision.o
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 build.tar.gz: $(PROGRAM) $(wildcard assets/*)

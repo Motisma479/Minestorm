@@ -3,5 +3,6 @@
 #ifndef DRAW_H
 #define DRAW_H
 
-void drawGame(Game* game, int frameCounter);
+void drawGame(Game* game);
+void drawBullet(Bullet* bullet, const Texture2D texture, Color color);
 #endif //DRAW_H
