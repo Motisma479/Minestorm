@@ -111,11 +111,11 @@ void drawGame(Game* game)
 					{
 						Bullet* bullet = &game->bullets[i];
 						if (bullet->source == BS_PLAYER1)
-							drawBullet(bullet, game->atlas, SKYBLUE);
+							drawBullet(bullet, &game->atlas, SKYBLUE);
 						else if (bullet->source == BS_PLAYER2)
-							drawBullet(bullet, game->atlas, GREEN);
+							drawBullet(bullet, &game->atlas, GREEN);
 						else if (bullet->source == BS_ENEMY)
-							drawBullet(bullet, game->atlas, RED);
+							drawBullet(bullet, &game->atlas, RED);
 					}
 					drawPlayer(&game->player[0], 0.25f, SKYBLUE, &game->atlas);
 					if (game->twoPlayers)

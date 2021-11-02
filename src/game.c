@@ -260,7 +260,7 @@ int collisionEnemyBullet(Game *game, Enemy *enemy, Bullet *bullet)
 
 static void bulletBulletCollisions(Game *game, bool *player1Hit, bool *player2Hit, PlayerCollisionBox *player1, PlayerCollisionBox *player2)
 {
-	for(int i = 0; i < game->bulletCount; i++)
+		for(int i = 0; i < game->bulletCount; i++)
 	{
 		Bullet* bullet = &game->bullets[i];
 		for(int j = i + 1; j < game->bulletCount; j++)
@@ -298,6 +298,7 @@ static void bulletBulletCollisions(Game *game, bool *player1Hit, bool *player2Hi
 			break;
 		}
 	}
+
 
 }
 
@@ -417,10 +418,44 @@ void gameCollisions(Game* game)
 	{
 		drawShape(player1.head, ARRAY_SIZE(player1.head), (player1Hit) ? RED : GREEN);
 		drawShape(player1.tail, ARRAY_SIZE(player1.tail), (player1Hit) ? RED : GREEN);
+
+		/*****************Draw gizmo : PLAYER 1**********************/
+		DrawLine((int)game->player[0].position.x,(int)game->player[0].position.y,
+		(int)game->player[0].position.x + cosf(game->player[0].rotation*DEG2RAD),
+		(int)game->player[0].position.y - 50*sinf(-game->player[0].rotation*DEG2RAD),GREEN);
+
+
+		DrawLine((int)game->player[0].position.x,(int)game->player[0].position.y,
+		(int)game->player[0].position.x*cosf(game->player[0].rotation*DEG2RAD - PI/2) + 50,
+		(int)game->player[0].position.y*sinf(-game->player[0].rotation*DEG2RAD - PI/2),RED);
+
+/*  		DrawLine((int)game->player[0].position.x,(int)game->player[0].position.y,
+		(int)game->player[0].position.x*cosf(game->player[0].rotation*DEG2RAD),
+		(int)game->player[0].position.y*sinf(-game->player[0].rotation*DEG2RAD) - 50,GREEN);
+
+
+		DrawLine((int)game->player[0].position.x,(int)game->player[0].position.y,
+		(int)game->player[0].position.x*cosf(game->player[0].rotation*DEG2RAD + PI/2) + 50,
+		(int)game->player[0].position.y*sinf(-game->player[0].rotation*DEG2RAD + PI/2),RED); */
+
+
+		
+
+
 		if (game->twoPlayers)
 		{
 			drawShape(player2.head, ARRAY_SIZE(player2.head), (player2Hit) ? RED : GREEN);
 			drawShape(player2.tail, ARRAY_SIZE(player2.tail), (player2Hit) ? RED : GREEN);
+
+			/*****************Draw gizmo : PLAYER 2**********************/
+			DrawLine((int)game->player[1].position.x,(int)game->player[1].position.y,
+			(int)game->player[1].position.x,
+			(int)game->player[1].position.y - 50,GREEN);
+
+
+			DrawLine((int)game->player[1].position.x,(int)game->player[1].position.y,
+			(int)game->player[1].position.x + 50,
+			(int)game->player[1].position.y,RED);
 		}
 	}
 }
