@@ -14,6 +14,9 @@
 #ifndef EPSILON
 #define EPSILON    pow(10,-9)
 #endif
+#ifndef NULL
+#define NULL (void *)0
+#endif
 
 #define ARRAY_SIZE(array) (sizeof(array) / sizeof((array)[0]))
 

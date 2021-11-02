@@ -17,7 +17,7 @@ LDLIBS=-lraylib
 
 ifeq ($(TARGET),x86_64-linux-gnu)
 LDLIBS+=-ldl -lpthread -lm
-#else ifeq ($(TARGET),x86_64-pc-cygwin)
+else ifeq ($(TARGET),x86_64-pc-cygwin)
 LDLIBS+=-lgdi32 -lWinmm -lWs2_32
 endif
 

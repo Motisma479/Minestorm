@@ -22,11 +22,8 @@ void initLevel1(Game *game)
 	game->level = 1;
 	for(int i = 0; i < game->bulletCount; i++)
 		game->bullets[i] = (Bullet){0};
-	initAllEnemies(game, ET_FLOATING, 14);
-	initEnemy(&game->enemies[0], (Vector2d){0, 0}, ET_FLOATING, ES_SMALL);
-	game->enemies[0].active = true;
-	addEnemy(game, ES_BIG, ET_FLOATING);
-	addEnemy(game, ES_BIG, ET_FLOATING);
+	initAllEnemies(game, ET_MAGNETIC, 7);
+	addEnemy(game, ES_BIG, ET_MAGNETIC);
 }
 
 void initLevel2(Game *game)
