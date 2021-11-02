@@ -186,9 +186,25 @@ void updateGame(Game* game)
 						gameAddBullet(&game->player[1]);
 					updatePlayer(&game->player[1], game->ticksCount);
 				}
-				for(int i = 0; i < game->enemyCount; i++)
+				for(int i = 0; i < game->enemyCount; i++){
 					updateEnemy(&game->enemies[i], game->ticksCount, &game->player[0], &game->player[1]);
+					addBulletEnemy(&game->enemies[i]);
+					
+				}
 
+				int e = 0;
+				for(int i = 0; i < game->enemyCount; i++){
+					for (int j = 0; j < game->enemies[e].bulletCount; j++){
+						Bullet* bullet = &game->enemies[e].bullets[j];
+						updateBulletEnemy(bullet,game->ticksCount);
+					}
+					e++;
+				}
+				for(int i = 0; i < game->player[0].bulletCount; i++)
+				{
+					Bullet* bullet = &game->player[0].bullets[i];
+					updateBullet(bullet,game->ticksCount);
+				}
 				for(int i = 0; i < game->player[0].bulletCount; i++)
 				{
 					Bullet* bullet = &game->player[0].bullets[i];

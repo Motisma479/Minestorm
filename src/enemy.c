@@ -3,21 +3,21 @@
 #include "common.h"
 
 static Enemy defs[] = {
-    {ET_FLOATING, ES_BIG, {0, 0}, {20, 20}, 0, 3, false, 100},               //0
-    {ET_FLOATING, ES_MEDIUM, {0, 0}, {40, 40}, 0, 3, false, 135},            //1
-    {ET_FLOATING, ES_SMALL, {0, 0}, {60, 60}, 0, 3, false, 100},             //2
+    {ET_FLOATING, ES_BIG, {0, 0}, {20, 20}, 0, 3, false, 100, 0},               //0
+    {ET_FLOATING, ES_MEDIUM, {0, 0}, {40, 40}, 0, 3, false, 135, 0},            //1
+    {ET_FLOATING, ES_SMALL, {0, 0}, {60, 60}, 0, 3, false, 100, 0},             //2
 
-    {ET_FIREBALL, ES_BIG, {0, 0}, {20, 20}, 0, 3, false, 325},               //3
-    {ET_FIREBALL, ES_MEDIUM, {0, 0}, {40, 40}, 0, 3, false, 360},            //4
-    {ET_FIREBALL, ES_SMALL, {0, 0}, {60, 60}, 0, 3, false, 425},             //5
+    {ET_FIREBALL, ES_BIG, {0, 0}, {20, 20}, 0, 3, false, 325, 0},               //3
+    {ET_FIREBALL, ES_MEDIUM, {0, 0}, {40, 40}, 0, 3, false, 360, 0},            //4
+    {ET_FIREBALL, ES_SMALL, {0, 0}, {60, 60}, 0, 3, false, 425, 0},             //5
 
-    {ET_MAGNETIC, ES_BIG, {0, 0}, {20, 20}, 0, 3, false, 500},               //6
-    {ET_MAGNETIC, ES_MEDIUM, {0, 0}, {40, 40}, 0, 3, false, 535},            //7
-    {ET_MAGNETIC, ES_SMALL, {0, 0}, {60, 60}, 0, 3, false, 600},             //8
+    {ET_MAGNETIC, ES_BIG, {0, 0}, {20, 20}, 0, 3, false, 500, 0},               //6
+    {ET_MAGNETIC, ES_MEDIUM, {0, 0}, {40, 40}, 0, 3, false, 535, 0},            //7
+    {ET_MAGNETIC, ES_SMALL, {0, 0}, {60, 60}, 0, 3, false, 600, 0},             //8
 
-    {ET_MAGNETIC_FIREBALL, ES_BIG, {0, 0}, {20, 20}, 0, 3, false, 750},      //9
-    {ET_MAGNETIC_FIREBALL, ES_MEDIUM,{0, 0}, {40, 40}, 0, 3, false, 585},    //10
-    {ET_MAGNETIC_FIREBALL, ES_SMALL, {0, 0}, {60, 60}, 0, 3, false, 850},    //11
+    {ET_MAGNETIC_FIREBALL, ES_BIG, {0, 0}, {20, 20}, 0, 3, false, 750, 0},      //9
+    {ET_MAGNETIC_FIREBALL, ES_MEDIUM,{0, 0}, {40, 40}, 0, 3, false, 585, 0},    //10
+    {ET_MAGNETIC_FIREBALL, ES_SMALL, {0, 0}, {60, 60}, 0, 3, false, 850, 0},    //11
     //Implement new enemie here
 };
 
@@ -136,4 +136,56 @@ void drawEnemy(Enemy* enemy, const Texture2D texture)
 
 	Vector2 center = {position.width / 2.0f, position.height / 2.0f};
 	DrawTexturePro(texture, textureCoord ,position,center,enemy->rotation, color);
+}
+
+void initBulletEnemy(Bullet* bullet,Vector2 position,float angle)
+{
+	bullet->position = position;
+	bullet->speed    = 100.0f;
+	bullet->angle    = angle;
+}
+
+void addBulletEnemy(Enemy *enemy)
+{
+	Vector2 *position = &enemy->position;
+	float   rotation = enemy->rotation;
+	if(enemy->bulletCount == BULLET_CAPACITY)
+		return;
+
+	Bullet bullet = {0};
+
+	initBulletEnemy(&bullet, *position, rotation);
+	enemy->bullets[enemy->bulletCount] = bullet;
+	enemy->bulletCount += 1;
+	if(enemy->bulletCount > 9){
+		enemy->bulletCount = 0;
+	}
+}
+
+void updateBulletEnemy(Bullet* bullet,float deltaTime)
+{
+	Vector2 *position = &bullet->position;
+	Vector2 *addPosition = &bullet->addPosition;
+
+	float xDeplacement = bullet->speed * cosf(bullet->angle*DEG2RAD) * deltaTime;
+	float yDeplacement = bullet->speed * sinf(bullet->angle*DEG2RAD) * deltaTime;
+	position->x += xDeplacement;
+	position->y += yDeplacement;
+	addPosition->x += xDeplacement;
+	addPosition->y += yDeplacement;
+
+	if (position->x < 164.0f) { position->x = (float)SCREEN_WIDTH - 164.0f; }
+	else if (position->x > (float)SCREEN_WIDTH - 164.0f) { position->x = 164.0f; }
+
+	if (position->y < 180.0f) { position->y = (float)SCREEN_HEIGHT - 180.0f; }
+	else if (position->y > (float)SCREEN_HEIGHT - 180.0f) { position->y = 180.0f; }
+}
+
+void drawBulletEnemy(Bullet* bullet, const Texture2D texture, Color color)
+{
+	Rectangle rect     = {885, 116, 25, 25};
+	Rectangle position = {bullet->position.x,bullet->position.y , rect.width / 4, rect.height / 4};
+	Vector2 origin     = {position.width / 2, position.height / 2};
+
+	DrawTexturePro(texture,rect,position,origin, 0, color);
 }

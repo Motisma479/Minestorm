@@ -114,6 +114,17 @@ void drawGame(Game* game, int frameCounter)
 		{
 			for(int i = 0; i < game->enemyCount; i++)
 				drawEnemy(&game->enemies[i], game->atlas);
+
+			int e=0;
+			for(int i = 0; i < game->enemyCount; i++)
+				for (int j = 0; j < game->enemies[e].bulletCount; j++){
+				{
+					Bullet* bullet = &game->enemies[e].bullets[e];
+					drawBulletEnemy(bullet, game->atlas, RED);
+				}
+				e++;
+			}
+
 			for(int i = 0; i < game->player[0].bulletCount; i++)
 			{
 				Bullet* bullet = &game->player[0].bullets[i];
