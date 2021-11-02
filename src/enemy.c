@@ -39,6 +39,7 @@ void initEnemy(Enemy* enemy, Vector2d position, EnemyType type, EnemySize size)
 	enemy->position = position;
 	float random = GetRandomValue(0, 1250);
 	random /= 1000.0f;
+	enemy->rotation = GetRandomValue(0, 360);
 	enemy->lastShot = random;
 }
 
@@ -53,8 +54,10 @@ void updateEnemy(Game *game, Enemy* enemy,float deltaTime, Player *player1, Play
 			case ET_FIREBALL:
 			case ET_FLOATING:
 			{
-				position->x += enemy->speed.x * deltaTime;
-				position->y += enemy->speed.y * deltaTime;
+				Vector2d direction = getDirection(enemy->rotation);
+
+				position->x += enemy->speed.x * deltaTime * direction.x;
+				position->y += enemy->speed.y * deltaTime * direction.y;
 			}break;
 			case ET_MAGNETIC_FIREBALL:
 			case ET_MAGNETIC:
@@ -178,5 +181,5 @@ void drawEnemy(Enemy* enemy, const Texture2D texture)
 	Vector2 center = {position.width / 2.0f, position.height / 2.0f};
 	if (enemy->hit)
 		color = WHITE;
-	DrawTexturePro(texture, textureCoord ,position, center, enemy->rotation, color);
+	DrawTexturePro(texture, textureCoord ,position, center, 0, color);
 }

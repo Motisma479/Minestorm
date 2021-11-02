@@ -15,7 +15,10 @@ void initLayer(MineLayer* layer)
 int updateLayer(MineLayer* layer, float deltaTime)
 {
 	if (layer->active && layer->scale >= 32.0f)
+	{
 		layer->scale -= layer->scale*1000.0f / 1024.0f*deltaTime;
+		layer->position.y -= 3.0f;
+	}
 
 	if(layer->scale <= 32.0f)
 	{

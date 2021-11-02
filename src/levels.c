@@ -23,8 +23,8 @@ void initLevel1(Game *game)
 	for(int i = 0; i < game->bulletCount; i++)
 		game->bullets[i] = (Bullet){0};
 	initAllEnemies(game, ET_FLOATING, 14);
-	addEnemy(game, ES_BIG, ET_FLOATING);
-	addEnemy(game, ES_BIG, ET_FLOATING);
+	addEnemy(game, ES_BIG, ET_MAGNETIC);
+	addEnemy(game, ES_BIG, ET_MAGNETIC);
 }
 
 void initLevel2(Game *game)

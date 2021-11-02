@@ -22,7 +22,6 @@ int main()
 	game.atlas = LoadTexture("assets/mines.png");
 	game.background = LoadTexture("assets/background.png");
 	game.foreground = LoadTexture("assets/foreground.png");
-
 	while (!WindowShouldClose() && game.state != GS_CLOSE)
 	{
 		game.ticksCount = GetFrameTime();

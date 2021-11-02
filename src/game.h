@@ -62,9 +62,9 @@ typedef struct Game
 	float     ticksCount;
 	bool      twoPlayers;
 	bool      levelStart;
+	int       highScore;
 	DrawState draw;
 	bool      mineLayerSpawned;
-
 } Game;
 
 bool initGame(Game* game);

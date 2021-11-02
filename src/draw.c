@@ -36,7 +36,7 @@ static void drawScoreBoard(Game *game, Vector2d offset)
 	player.position = (Vector2d){60 + offset.x, 30 + offset.y};
 	player.rotation = -90.0f;
 
-	DrawRectangle(40+offset.x, 0+offset.y, 244, 40, SKYBLUE);
+	DrawRectangleRounded((Rectangle){44+offset.x, 0+offset.y, 230, 40}, 0.3f, 1, SKYBLUE);
 	DrawText("Player ONE", 45+offset.x, 0+offset.y, 20, BLUE);
 
 	drawLives(game, &player, offset, BLUE);
@@ -46,7 +46,7 @@ static void drawScoreBoard(Game *game, Vector2d offset)
 
 	if (game->twoPlayers)
 	{
-		DrawRectangle(364-offset.x, 0+offset.y, 230, 40, GREEN);
+		DrawRectangleRounded((Rectangle){ 364-offset.x, 0+offset.y, 230, 40}, 0.3f, 1, GREEN);
 		DrawText("Player TWO", 470-offset.x, 0+offset.y, 20, LIME);
 
 		player = game->player[1];
@@ -97,7 +97,11 @@ static void drawPauseMenu(Game *game)
 static void drawGameOver(Game *game)
 {
 	DrawText("Game Over" , 259, 100,25, WHITE);
+
 	DrawText("Main Menu" , 126, 266,25, RED);
+
+	DrawRectangleRounded((Rectangle){150, 490, 280, 50}, 0.5f, 1, WHITE);
+	DrawText(TextFormat("HIGH SCORE: %d",game->highScore) , 159, 500,25, BLACK);
 	if((game->framesCounter / 30) % 2)
 	{
 		DrawText("Esc", 401, 266,25, RED);

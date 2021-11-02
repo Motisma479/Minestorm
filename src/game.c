@@ -21,10 +21,13 @@ int addEnemy(Game *game, EnemySize size, EnemyType type)
 
 void updateGame(Game* game)
 {
+	if (game->highScore < game->player[0].score)
+		game->highScore = game->player[0].score;
+	if (game->highScore < game->player[1].score)
+		game->highScore = game->player[1].score;
 	switch(game->state)
 	{
-		case GS_MENU:
-		{
+		case GS_MENU:{
 			if (game->player[1].action & PA_SHOOT)
 			{
 				game->state = GS_PLAY;
@@ -35,8 +38,7 @@ void updateGame(Game* game)
 			game->player[0].action &= ~(PA_SHOOT);
 			game->player[1].action &= ~(PA_SHOOT);
 		}break;
-		case GS_PLAY:
-		{
+		case GS_PLAY:{
 			if (game->levelStart == false)
 			{
 				if (updateLayer(&game->layer, game->ticksCount))
@@ -187,8 +189,7 @@ int collisionEnemyBullet(Game *game, Enemy *enemy, Bullet *bullet)
 	{
 		switch (enemy->type)
 		{
-			case ET_FLOATING:
-			{
+			case ET_FLOATING:{
 				FloatingCollisionBox floating =
 					getFloatingCollisionBox(0, enemy->position, enemy->scale);
 				if (checkCollisionFloatBullet(floating, bullet, game->draw))
@@ -198,8 +199,7 @@ int collisionEnemyBullet(Game *game, Enemy *enemy, Bullet *bullet)
 				}
 			}break;
 
-			case ET_FIREBALL:
-			{
+			case ET_FIREBALL:{
 				FireBallCollisionBox fireball =
 					getFireBallCollisionBox(0, enemy->position, enemy->scale);
 				if (checkCollisionFireBallBullet(fireball, bullet, game->draw))
@@ -210,8 +210,7 @@ int collisionEnemyBullet(Game *game, Enemy *enemy, Bullet *bullet)
 				}
 			}break;
 
-			case ET_MAGNETIC:
-			{
+			case ET_MAGNETIC:{
 				MagneticCollisionBox magnetic =
 					getMagneticCollisionBox(0, enemy->position, enemy->scale);
 				if (checkCollisionMagneticBullet(magnetic, bullet,
@@ -221,8 +220,7 @@ int collisionEnemyBullet(Game *game, Enemy *enemy, Bullet *bullet)
 					return (1);
 				}
 			}break;
-			case ET_MAGNETIC_FIREBALL:
-			{
+			case ET_MAGNETIC_FIREBALL:{
 				MagneticFireCollisionBox magneticFire =
 					getMagneticFireCollisionBox(0, enemy->position, enemy->scale);
 				if (checkCollisionMagneticFireBullet(magneticFire, bullet,
@@ -233,8 +231,7 @@ int collisionEnemyBullet(Game *game, Enemy *enemy, Bullet *bullet)
 					return (1);
 				}
 			}break;
-			case ET_MINE_LAYER:
-			{
+			case ET_MINE_LAYER:{
 				MineLayerCollisionBox mineLayer =
 					getMineLayerCollisionBox(0, enemy->position, enemy->scale);
 				if (checkCollisionMineLayerBullet(mineLayer, *bullet,
@@ -284,8 +281,9 @@ static void bulletBulletCollisions(Game *game, bool *player1Hit, bool *player2Hi
 				}
 			}
 		}
-		*player1Hit = checkCollisionPlayerBullet(*player1, *bullet, game->draw);
-		if (game->twoPlayers)
+		if (game->player[0].lives > 0)
+			*player1Hit = checkCollisionPlayerBullet(*player1, *bullet, game->draw);
+		if (game->twoPlayers && game->player[1].lives > 0)
 			*player2Hit = checkCollisionPlayerBullet(*player2, *bullet, game->draw);
 		if (*player1Hit || *player2Hit)
 		{
@@ -307,7 +305,7 @@ void gameCollisions(Game* game)
 	bulletBulletCollisions(game, &player1Hit, &player2Hit, &player1, &player2);
 	for(int i = 0; i < game->enemyCount; i++)
 	{
-		if (player1Hit || player2Hit)
+		if ((player1Hit  && game->player[0].lives > 0)|| (player2Hit && game->player[1].lives > 0))
 		{
 			Player *player = &game->player[0];
 			if (player2Hit)
@@ -422,7 +420,7 @@ void gameCollisions(Game* game)
 
 static void spawnMineLayer(Game *game)
 {
-	Vector2d position = {80, 80};
+	Vector2d position = {80, SCREEN_HEIGHT / 2};
 
 	initAllEnemies(game, ET_FLOATING, 7);
 	for (int i = 0; i < game->enemyCount; i += 1)
