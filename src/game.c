@@ -159,7 +159,7 @@ void gameRemoveBullet(Game *game)
 	}
 }
 
-void addScore(Game *game, BulletSource source, EnemySize size, EnemyType type, int small, int medium, int big)
+void addScore(Game *game, BulletSource source, EnemySize size, EnemyType type, int score)
 {
 	Player stub;
 	Player *player = &stub;
@@ -170,19 +170,15 @@ void addScore(Game *game, BulletSource source, EnemySize size, EnemyType type, i
 		player = &game->player[1];
 	switch(size)
 	{
-		case ES_SMALL:{player->score += small;};break;
-		case ES_MEDIUM:{
-			addEnemy(game, ES_SMALL, type);
-			addEnemy(game, ES_SMALL, type);
-			player->score += medium;
-		}break;
-		case ES_BIG:{
-			addEnemy(game, ES_MEDIUM, type);
-			addEnemy(game, ES_MEDIUM, type);
-			player->score += big;
+		case ES_MEDIUM:
+		case ES_BIG:
+		{
+			addEnemy(game, size - 1, type);
+			addEnemy(game, size - 1, type);
 		}break;
 		default:;
 	}
+	player->score += score;
 }
 
 int collisionEnemyBullet(Game *game, Enemy *enemy, Bullet *bullet)
@@ -197,7 +193,7 @@ int collisionEnemyBullet(Game *game, Enemy *enemy, Bullet *bullet)
 					getFloatingCollisionBox(0, enemy->position, enemy->scale);
 				if (checkCollisionFloatBullet(floating, bullet, game->draw))
 				{
-					addScore(game, bullet->source, enemy->size, enemy->type, 200, 135, 100);
+					addScore(game, bullet->source, enemy->size, enemy->type, enemy->pointsToRecieve);
 					return (1);
 				}
 			}break;
@@ -208,7 +204,7 @@ int collisionEnemyBullet(Game *game, Enemy *enemy, Bullet *bullet)
 					getFireBallCollisionBox(0, enemy->position, enemy->scale);
 				if (checkCollisionFireBallBullet(fireball, bullet, game->draw))
 				{
-					addScore(game, bullet->source, enemy->size, enemy->type, 425, 360, 325);
+					addScore(game, bullet->source, enemy->size, enemy->type, enemy->pointsToRecieve);
 					gameAddBullet(game, BS_ENEMY, enemy);
 					return (1);
 				}
@@ -221,7 +217,7 @@ int collisionEnemyBullet(Game *game, Enemy *enemy, Bullet *bullet)
 				if (checkCollisionMagneticBullet(magnetic, bullet,
 												 game->draw))
 				{
-					addScore(game, bullet->source, enemy->size, enemy->type, 600, 535, 500);
+					addScore(game, bullet->source, enemy->size, enemy->type, enemy->pointsToRecieve);
 					return (1);
 				}
 			}break;
@@ -232,7 +228,7 @@ int collisionEnemyBullet(Game *game, Enemy *enemy, Bullet *bullet)
 				if (checkCollisionMagneticFireBullet(magneticFire, bullet,
 													 game->draw))
 				{
-					addScore(game, bullet->source, enemy->size, enemy->type, 850, 585, 750);
+					addScore(game, bullet->source, enemy->size, enemy->type, enemy->pointsToRecieve);
 					gameAddBullet(game, BS_ENEMY, enemy);
 					return (1);
 				}

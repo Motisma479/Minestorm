@@ -3,96 +3,44 @@
 #include "Math.h"
 #include "game.h"
 
+static Enemy defs[] = {
+	{{0, 0}, {0, 0}, 0, false, false,  ET_FLOATING, ES_NONE, 0.125f, 0, 100},
+	{{0, 0}, {20, 20}, 0, false, false,  ET_FLOATING, ES_BIG, 0.5f, 0, 100},                  //0
+    {{0, 0}, {40, 40}, 0, false , false, ET_FLOATING, ES_MEDIUM, 0.25f, false, 135},          //1
+    {{0, 0}, {60, 60}, 0, false , false, ET_FLOATING, ES_SMALL, 0.125f, false, 100},          //2
+
+    {{0, 0}, {20, 20}, 0, false , false, ET_FIREBALL, ES_BIG, 0.5f, false, 325},              //3
+    {{0, 0}, {40, 40}, 0, false , false, ET_FIREBALL, ES_MEDIUM, 0.25f, false, 360},          //4
+    {{0, 0}, {60, 60}, 0, false , false, ET_FIREBALL, ES_SMALL, 0.125f, false, 425},          //5
+
+    {{0, 0}, {20, 20}, 0, false , false, ET_MAGNETIC, ES_BIG, 0.5f, false, 500},              //6
+    {{0, 0}, {40, 40}, 0, false , false, ET_MAGNETIC, ES_MEDIUM, 0.25f, false, 535},          //7
+    {{0, 0}, {60, 60}, 0, false , false, ET_MAGNETIC, ES_SMALL, 0.125f, false, 600},          //8
+
+	{{0, 0}, {20, 20}, 0, false , false, ET_MAGNETIC_FIREBALL, ES_BIG, 0.5f, false, 750},     //9
+    {{0, 0}, {40, 40}, 0, false , false, ET_MAGNETIC_FIREBALL, ES_MEDIUM, 0.25f, false, 585}, //10
+    {{0, 0}, {60, 60}, 0, false , false, ET_MAGNETIC_FIREBALL, ES_SMALL, 0.125f, false, 850}, //11
+
+	{{0, 0}, {200, 200},0, false, false,  ET_MINE_LAYER, ES_BIG, 0.5f, false, 850},           //12
+};
+
+Enemy getEnemieStat(EnemyType type, EnemySize size){
+	for (int i = 0; i < (int)(sizeof(defs) / sizeof(defs[0]));i++)
+	{
+		if (defs[i].type == type && defs[i].size == size)
+			return (defs[i]);
+	}
+	return (defs[0]);
+}
+
 void initEnemy(Enemy* enemy, Vector2d position, EnemyType type, EnemySize size)
 {
+	*enemy = getEnemieStat(type, size);
 	enemy->position = position;
-
-	enemy->speed.x = GetRandomValue(-100, 100);
-	enemy->speed.y = GetRandomValue(-100, 100);
-	Vector2d normalized = normalizeVector2d(enemy->speed);
-	switch (type)
-	{
-		case ET_FIREBALL:
-		case ET_FLOATING:
-		{
-			switch(size)
-			{
-				case ES_SMALL:
-				{
-					enemy->speed.x = normalized.x * 60;
-					enemy->speed.y = normalized.y * 60;
-					enemy->scale = 0.125f;
-				}break;
-				case ES_MEDIUM:
-				{
-					enemy->speed.x = normalized.x * 40;
-					enemy->speed.y = normalized.y * 40;
-					enemy->scale = 0.25f;
-				}break;
-				case ES_BIG:
-				{
-					enemy->speed.x = normalized.x * 20;
-					enemy->speed.y = normalized.y * 20;
-					enemy->scale = 0.5f;
-				}break;
-				default:
-				{
-					enemy->speed.x = 0;
-					enemy->speed.y = 0;
-				}
-			}
-		}break;
-		case ET_MAGNETIC_FIREBALL:
-		case ET_MAGNETIC:
-		{
-			switch(size)
-			{
-				case ES_SMALL:
-				{
-					enemy->speed.x = 60;
-					enemy->speed.y = 60;
-					enemy->scale = 0.125f;
-				}break;
-				case ES_MEDIUM:
-				{
-					enemy->speed.x = 40;
-					enemy->speed.y = 40;
-					enemy->scale = 0.25f;
-				}break;
-				case ES_BIG:
-				{
-					enemy->speed.x = 20;
-					enemy->speed.y = 20;
-					enemy->scale = 0.5f;
-				}break;
-				default:
-				{
-					enemy->speed.x = 0;
-					enemy->speed.y = 0;
-				}
-			}
-		}break;
-		case ET_MINE_LAYER:
-		{
-			enemy->speed.x = 200;
-			enemy->speed.y = 200;
-		}break;
-		default:
-		{
-			enemy->speed.x = 0;
-			enemy->speed.y = 0;
-		}
-	}
-	enemy->type = type;
-	enemy->size = size;
-	enemy->rotation = atan(normalized.y / normalized.x);
 	float random = GetRandomValue(0, 1250);
-
 	random /= 1000.0f;
 	enemy->lastShot = random;
 }
-
-#include <stdio.h>
 
 void updateEnemy(Game *game, Enemy* enemy,float deltaTime, Player *player1, Player *player2)
 {
@@ -116,7 +64,7 @@ void updateEnemy(Game *game, Enemy* enemy,float deltaTime, Player *player1, Play
 									 SCREEN_HEIGHT / 2}, *position);
 
 				Vector2d playerPos =
-					(Vector2d){(int)(centerEnemy.x + player1->position.x) % SCREEN_WIDTH,
+				(Vector2d){(int)(centerEnemy.x + player1->position.x) % SCREEN_WIDTH,
 					(int)(centerEnemy.y + player1->position.y) % SCREEN_HEIGHT};
 
 				Vector2d towardsPlayer =
@@ -129,11 +77,12 @@ void updateEnemy(Game *game, Enemy* enemy,float deltaTime, Player *player1, Play
 			}break;
 			case ET_MINE_LAYER:
 			{
-				if ((int)position->x != (int)(SCREEN_WIDTH / 2))
+				if ((int)position->x < (int)(SCREEN_WIDTH / 2) - 10 ||
+					(int)position->x > (int)(SCREEN_WIDTH / 2) + 10)
 					position->x += (enemy->speed.x * deltaTime);
-				else if ((int)position->y != (int)(SCREEN_HEIGHT - 81))
+				else if ((int)position->y < (int)(SCREEN_HEIGHT - 81))
 					position->y += (enemy->speed.y * deltaTime);
-				if ((int)position->y == (int)SCREEN_HEIGHT - 81)
+				else
 				{
 					enemy->type = ET_NONE;
 					enemy->active = false;

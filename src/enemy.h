@@ -31,6 +31,7 @@ typedef struct Enemy
 	EnemySize size;
 	float     scale;
 	float     lastShot;
+	int       pointsToRecieve;
 } Enemy;
 
 void initEnemy(Enemy* enemy, Vector2d position, EnemyType type, EnemySize size);

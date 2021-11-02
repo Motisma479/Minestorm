@@ -62,20 +62,26 @@ static void drawPauseMenu(Game *game)
 	DrawText("ACCELERATE", 80, 100, 20, BLUE);
 	DrawText("TURN LEFT", 80, 120, 20, BLUE);
 	DrawText("TURN RIGHT", 80, 140, 20, BLUE);
+	DrawText("TELEPORT", 80, 160, 20, BLUE);
 
 	DrawText("FIRE", 385, 80, 20, GREEN);
 	DrawText("ACCELERATE", 385, 100, 20, GREEN);
 	DrawText("TURN LEFT", 385, 120, 20, GREEN);
 	DrawText("TURN RIGHT", 385, 140, 20, GREEN);
+	DrawText("TELEPORT", 385, 160, 20, GREEN);
 
-	DrawText("\'F\'",  225, 80, 20, BLUE);
-	DrawText("\'R\'",  225, 100, 20, BLUE);
-	DrawText("\'D\'",  225, 120, 20, BLUE);
-	DrawText("\'G\'",  225, 140, 20, BLUE);
-	DrawText("\'K\'",  530, 80, 20, GREEN);
-	DrawText("\'I\'",  530, 100, 20, GREEN);
-	DrawText("\'J\'",  530, 120, 20, GREEN);
-	DrawText("\'L\'",  530, 140, 20, GREEN);
+	DrawText("F",  225, 80, 20, BLUE);
+	DrawText("R",  225, 100, 20, BLUE);
+	DrawText("D",  225, 120, 20, BLUE);
+	DrawText("G",  225, 140, 20, BLUE);
+	DrawText("E",  225, 160, 20, BLUE);
+	DrawText("T",  245, 160, 20, BLUE);
+	DrawText("K",  530, 80, 20, GREEN);
+	DrawText("I",  530, 100, 20, GREEN);
+	DrawText("J",  530, 120, 20, GREEN);
+	DrawText("L",  530, 140, 20, GREEN);
+	DrawText("U",  530, 160, 20, GREEN);
+	DrawText("O",  550, 160, 20, GREEN);
 
 	DrawText("Resume" , 126, 200,25, BLUE);
 	DrawText("Main Menu" , 126, 266,25, RED);
@@ -100,30 +106,36 @@ static void drawGameOver(Game *game)
 
 static void drawMenu(Game *game)
 {
-	//DrawRectangle(40, 80, 300, 40, SKYBLUE);
 	DrawText("FIRE", 80, 80, 20, BLUE);
 	DrawText("ACCELERATE", 80, 100, 20, BLUE);
 	DrawText("TURN LEFT", 80, 120, 20, BLUE);
 	DrawText("TURN RIGHT", 80, 140, 20, BLUE);
+	DrawText("TELEPORT", 80, 160, 20, BLUE);
 
 	DrawText("FIRE", 385, 80, 20, GREEN);
 	DrawText("ACCELERATE", 385, 100, 20, GREEN);
 	DrawText("TURN LEFT", 385, 120, 20, GREEN);
 	DrawText("TURN RIGHT", 385, 140, 20, GREEN);
+	DrawText("TELEPORT", 385, 160, 20, GREEN);
+
+	DrawText("F",  225, 80, 20, BLUE);
+	DrawText("R",  225, 100, 20, BLUE);
+	DrawText("D",  225, 120, 20, BLUE);
+	DrawText("G",  225, 140, 20, BLUE);
+	DrawText("E",  225, 160, 20, BLUE);
+	DrawText("T",  245, 160, 20, BLUE);
+	DrawText("K",  530, 80, 20, GREEN);
+	DrawText("I",  530, 100, 20, GREEN);
+	DrawText("J",  530, 120, 20, GREEN);
+	DrawText("L",  530, 140, 20, GREEN);
+	DrawText("U",  530, 160, 20, GREEN);
+	DrawText("O",  550, 160, 20, GREEN);
 
 	DrawText("MENU"          , 285, 100, 25, WHITE);
 	DrawText("Single Player" , 159, 300, 25, BLUE);
 	DrawText("2 Players"     , 159, 366, 25, GREEN);
 	DrawText("QUIT"          , 159, 550, 25, RED);
 
-	DrawText("\'F\'",  225, 80, 20, BLUE);
-	DrawText("\'R\'",  225, 100, 20, BLUE);
-	DrawText("\'D\'",  225, 120, 20, BLUE);
-	DrawText("\'G\'",  225, 140, 20, BLUE);
-	DrawText("\'K\'",  530, 80, 20, GREEN);
-	DrawText("\'I\'",  530, 100, 20, GREEN);
-	DrawText("\'J\'",  530, 120, 20, GREEN);
-	DrawText("\'L\'",  530, 140, 20, GREEN);
 	if((game->framesCounter / 30) % 2)
 	{
 		DrawText("\'F\'" , 416, 300,25, BLUE);

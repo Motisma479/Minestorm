@@ -22,14 +22,17 @@ void initLevel1(Game *game)
 	game->level = 1;
 	for(int i = 0; i < game->bulletCount; i++)
 		game->bullets[i] = (Bullet){0};
-	initAllEnemies(game, ET_MAGNETIC, 7);
-	addEnemy(game, ES_BIG, ET_MAGNETIC);
+	initAllEnemies(game, ET_FLOATING, 14);
+	addEnemy(game, ES_BIG, ET_FLOATING);
+	addEnemy(game, ES_BIG, ET_FLOATING);
 }
 
 void initLevel2(Game *game)
 {
 	game->enemyCount = ENEMY_COUNT;
 	game->level = 2;
+	for(int i = 0; i < game->bulletCount; i++)
+		game->bullets[i] = (Bullet){0};
 	initAllEnemies(game, ET_FLOATING, 14);
 	addEnemy(game, ES_BIG, ET_FLOATING);
 	addEnemy(game, ES_BIG, ET_FIREBALL);
@@ -39,6 +42,8 @@ void initLevel3(Game *game)
 {
 	game->enemyCount = ENEMY_COUNT;
 	game->level = 3;
+	for(int i = 0; i < game->bulletCount; i++)
+		game->bullets[i] = (Bullet){0};
 	initAllEnemies(game, ET_FLOATING, 21);
 	addEnemy(game, ES_BIG, ET_FLOATING);
 	addEnemy(game, ES_BIG, ET_MAGNETIC);
@@ -49,6 +54,8 @@ void initLevel4(Game *game)
 {
 	game->enemyCount = ENEMY_COUNT;
 	game->level = 4;
+	for(int i = 0; i < game->bulletCount; i++)
+		game->bullets[i] = (Bullet){0};
 	initAllEnemies(game, ET_FLOATING, 21);
 	addEnemy(game, ES_BIG, ET_FLOATING);
 	addEnemy(game, ES_BIG, ET_MAGNETIC_FIREBALL);
@@ -59,6 +66,8 @@ void initLevel5(Game *game)
 {
 	game->enemyCount = ENEMY_COUNT;
 	game->level = 5;
+	for(int i = 0; i < game->bulletCount; i++)
+		game->bullets[i] = (Bullet){0};
 	initAllEnemies(game, ET_MAGNETIC_FIREBALL, 28);
 	addEnemy(game, ES_BIG, ET_FLOATING);
 	addEnemy(game, ES_BIG, ET_FIREBALL);
