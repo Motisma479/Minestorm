@@ -5,6 +5,9 @@
 #include "player.h"
 #include <stddef.h>
 
+/* float posX = 0.0f; */
+/* float posY = 0.0f; */
+
 int addEnemy(Game *game, EnemySize size, EnemyType type)
 {
 	for (int i = 0; i < game->enemyCount;i++)
@@ -420,14 +423,18 @@ void gameCollisions(Game* game)
 		drawShape(player1.tail, ARRAY_SIZE(player1.tail), (player1Hit) ? RED : GREEN);
 
 		/*****************Draw gizmo : PLAYER 1**********************/
-		DrawLine((int)game->player[0].position.x,(int)game->player[0].position.y,
-		(int)game->player[0].position.x + cosf(game->player[0].rotation*DEG2RAD),
-		(int)game->player[0].position.y - 50*sinf(-game->player[0].rotation*DEG2RAD),GREEN);
+		float endX1 = game->player[0].position.x + getDirection(game->player[0].rotation).x*50 ;
+		float endY1 = game->player[0].position.y + getDirection(game->player[0].rotation).y*50;
+		
+		float endX2 = game->player[0].position.x + getDirection(game->player[0].rotation + 90.0f).x*50 ;
+		float endY2 = game->player[0].position.y + getDirection(game->player[0].rotation + 90.0f).y*50;
 
 
-		DrawLine((int)game->player[0].position.x,(int)game->player[0].position.y,
-		(int)game->player[0].position.x*cosf(game->player[0].rotation*DEG2RAD - PI/2) + 50,
-		(int)game->player[0].position.y*sinf(-game->player[0].rotation*DEG2RAD - PI/2),RED);
+		DrawLine(game->player[0].position.x,game->player[0].position.y,endX1,endY1,GREEN);
+		DrawLine(game->player[0].position.x,game->player[0].position.y,endX2,endY2,RED);
+
+
+		//DrawLine(,RED);
 
 /*  		DrawLine((int)game->player[0].position.x,(int)game->player[0].position.y,
 		(int)game->player[0].position.x*cosf(game->player[0].rotation*DEG2RAD),

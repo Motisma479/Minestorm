@@ -97,3 +97,8 @@ void teleportingPlayer(Player* player)
 	player->position = (Vector2d) {(float)GetRandomValue(64,SCREEN_WIDTH - 64),
 		(float)GetRandomValue(80,SCREEN_HEIGHT - 80)};
 }
+
+Vector2d getPlayerDirection(Player* player)
+{
+	return (Vector2d){cosf(player->rotation*DEG2RAD + PI / 20.0f),sinf(player->rotation*DEG2RAD+ PI / 20.0f)};
+}
