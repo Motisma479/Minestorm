@@ -1,25 +1,45 @@
-#include <raylib.h>
+#include "game.h"
+#include "player.h"
+#include "levels.h"
+#include "draw.h"
+#include "input.h"
 
-int main(void)
+int main()
 {
-    const int screenWidth  = 800;
-    const int screenHeight = 450;
+	Game game = {0};
 
-    InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
-    SetTargetFPS(60);
+	InitWindow(SCREEN_WIDTH,SCREEN_HEIGHT,"MATHIEU-OSVALDO-VICTOR");
+	game.highScore = loadHScore();
+	SetExitKey(KEY_NULL);
+	SetTargetFPS(60);
+	game.state = GS_MENU;
 
-    // Main game loop
-    while (!WindowShouldClose())
-    {
-        BeginDrawing();
+	initPlayer(&game.player[0], (Vector2d){SCREEN_WIDTH / 3.0f,
+				   SCREEN_HEIGHT - 200});
+	initPlayer(&game.player[1], (Vector2d){SCREEN_WIDTH / 1.5f,
+				   SCREEN_HEIGHT - 200});
+	initLayer(&game.layer);
 
-        ClearBackground(RAYWHITE);
-        DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
+	game.atlas = LoadTexture("assets/mines.png");
+	game.background = LoadTexture("assets/background.png");
+	game.foreground = LoadTexture("assets/foreground.png");
+	while (!WindowShouldClose() && game.state != GS_CLOSE)
+	{
+		game.ticksCount = GetFrameTime();
+		getInput(&game);
 
-        EndDrawing();
-    }
+		//We start drawing the background before updating
+		//because we want to draw the collisions boxes immediately after updating them
+		BeginDrawing();
+		DrawTextureEx(game.background, (Vector2){0, 0}, 0, 1.0f, WHITE);
+		updateGame(&game);
+		drawGame(&game); 
+	}
 
-    CloseWindow();
+	UnloadTexture(game.atlas);
+	UnloadTexture(game.background);
+	UnloadTexture(game.foreground);
 
-    return 0;
+	CloseWindow();
+	return 0;
 }

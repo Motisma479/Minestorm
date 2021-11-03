@@ -1,10 +1,14 @@
 PROGRAM=minestorm
+TEST_COLLISION = test_collision
 
 # Add your objs to generate in OBJS var
-OBJS=src/main.o
 
-CC?=gcc
-TARGET?=$(shell $(CC) -dumpmachine)
+SD = ./src/
+
+OBJS=$(SD)main.o $(SD)game.o $(SD)player.o $(SD)mineLayer.o $(SD)enemy.o $(SD)bullet.o $(SD)draw.o $(SD)Math.o $(SD)collision.o $(SD)levels.o $(SD)input.o $(SD)save.o
+
+CC=gcc
+TARGET=$(shell $(CC) -dumpmachine)
 
 CFLAGS=-O0 -g -Wall -Wextra -Wno-unused-parameter
 CPPFLAGS=-Iinclude -Ithird_party/include -MMD
@@ -14,14 +18,14 @@ LDLIBS=-lraylib
 ifeq ($(TARGET),x86_64-linux-gnu)
 LDLIBS+=-ldl -lpthread -lm
 else ifeq ($(TARGET),x86_64-pc-cygwin)
-LDLIBS+=-lgdi32
+LDLIBS+=-lgdi32 -lWinmm -lWs2_32
 endif
 
 DEPS=$(OBJS:.o=.d)
 
 .PHONY: all clean
 
-all: $(PROGRAM)
+all: $(PROGRAM)  $(TEST_COLLISION)
 
 -include $(DEPS)
 
@@ -31,6 +35,8 @@ all: $(PROGRAM)
 $(PROGRAM): $(OBJS)
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
+$(TEST_COLLISION): ./src/test.o ./src/Math.o ./src/collision.o
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o $@
 build.tar.gz: $(PROGRAM) $(wildcard assets/*)
 	tar czf build.tar.gz $(PROGRAM) assets
 
