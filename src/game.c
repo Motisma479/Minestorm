@@ -455,14 +455,15 @@ void gameCollisions(Game* game)
 			drawShape(player2.tail, ARRAY_SIZE(player2.tail), (player2Hit) ? RED : GREEN);
 
 			/*****************Draw gizmo : PLAYER 2**********************/
-			DrawLine((int)game->player[1].position.x,(int)game->player[1].position.y,
-			(int)game->player[1].position.x,
-			(int)game->player[1].position.y - 50,GREEN);
+			float endX1 = game->player[1].position.x + getDirection(game->player[1].rotation).x*50 ;
+			float endY1 = game->player[1].position.y + getDirection(game->player[1].rotation).y*50;
+			
+			float endX2 = game->player[1].position.x + getDirection(game->player[1].rotation + 90.0f).x*50 ;
+			float endY2 = game->player[1].position.y + getDirection(game->player[1].rotation + 90.0f).y*50;
 
 
-			DrawLine((int)game->player[1].position.x,(int)game->player[1].position.y,
-			(int)game->player[1].position.x + 50,
-			(int)game->player[1].position.y,RED);
+			DrawLine(game->player[1].position.x,game->player[1].position.y,endX1,endY1,GREEN);
+			DrawLine(game->player[1].position.x,game->player[1].position.y,endX2,endY2,RED);
 		}
 	}
 }
