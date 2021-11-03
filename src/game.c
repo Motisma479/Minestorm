@@ -422,30 +422,9 @@ void gameCollisions(Game* game)
 		drawShape(player1.head, ARRAY_SIZE(player1.head), (player1Hit) ? RED : GREEN);
 		drawShape(player1.tail, ARRAY_SIZE(player1.tail), (player1Hit) ? RED : GREEN);
 
-		/*****************Draw gizmo : PLAYER 1**********************/
-		float endX1 = game->player[0].position.x + getDirection(game->player[0].rotation).x*50 ;
-		float endY1 = game->player[0].position.y + getDirection(game->player[0].rotation).y*50;
-		
-		float endX2 = game->player[0].position.x + getDirection(game->player[0].rotation + 90.0f).x*50 ;
-		float endY2 = game->player[0].position.y + getDirection(game->player[0].rotation + 90.0f).y*50;
 
-
-		DrawLine(game->player[0].position.x,game->player[0].position.y,endX1,endY1,GREEN);
-		DrawLine(game->player[0].position.x,game->player[0].position.y,endX2,endY2,RED);
-
-
-		//DrawLine(,RED);
-
-/*  		DrawLine((int)game->player[0].position.x,(int)game->player[0].position.y,
-		(int)game->player[0].position.x*cosf(game->player[0].rotation*DEG2RAD),
-		(int)game->player[0].position.y*sinf(-game->player[0].rotation*DEG2RAD) - 50,GREEN);
-
-
-		DrawLine((int)game->player[0].position.x,(int)game->player[0].position.y,
-		(int)game->player[0].position.x*cosf(game->player[0].rotation*DEG2RAD + PI/2) + 50,
-		(int)game->player[0].position.y*sinf(-game->player[0].rotation*DEG2RAD + PI/2),RED); */
-
-
+		/*********DRAW PLAYERS GIZMO**********/
+		drawPlayerGizmo(game);
 		
 
 
@@ -453,17 +432,6 @@ void gameCollisions(Game* game)
 		{
 			drawShape(player2.head, ARRAY_SIZE(player2.head), (player2Hit) ? RED : GREEN);
 			drawShape(player2.tail, ARRAY_SIZE(player2.tail), (player2Hit) ? RED : GREEN);
-
-			/*****************Draw gizmo : PLAYER 2**********************/
-			float endX1 = game->player[1].position.x + getDirection(game->player[1].rotation).x*50 ;
-			float endY1 = game->player[1].position.y + getDirection(game->player[1].rotation).y*50;
-			
-			float endX2 = game->player[1].position.x + getDirection(game->player[1].rotation + 90.0f).x*50 ;
-			float endY2 = game->player[1].position.y + getDirection(game->player[1].rotation + 90.0f).y*50;
-
-
-			DrawLine(game->player[1].position.x,game->player[1].position.y,endX1,endY1,GREEN);
-			DrawLine(game->player[1].position.x,game->player[1].position.y,endX2,endY2,RED);
 		}
 	}
 }
