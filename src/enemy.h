@@ -38,3 +38,4 @@ void makeEnemyType(Enemy* enemy, EnemyType type);
 void drawEnemy(Enemy* enemy, const Texture2D texture);
 void loadEnemyData(Enemy* enemy);
 void unLoadEnemyData(Enemy* enemy);
+

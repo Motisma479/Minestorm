@@ -265,7 +265,7 @@ int satAlgorithm(const Vector2d *a,const Vector2d *b, int sizeA, int sizeB)
 		Range range2 = range1;
 
 		Vector2d normal = getNormal(a[i], a[i + 1]);
-		printf("normal x.%f y.%f x.%f y.%f %f %f\n",a[i].x, a[i].y, a[i+1].x, a[i+1].y, normal.x, normal.y);
+/* 		printf("normal x.%f y.%f x.%f y.%f %f %f\n",a[i].x, a[i].y, a[i+1].x, a[i+1].y, normal.x, normal.y);
 		Vector2d absNormal = normal;
 		Vector2d normalized = absNormal;
 		if (absNormal.x < 0)
@@ -273,7 +273,7 @@ int satAlgorithm(const Vector2d *a,const Vector2d *b, int sizeA, int sizeB)
 		if (absNormal.y < 0)
 			absNormal.y = -absNormal.y;
 		absNormal.x += a[i].x;
-		absNormal.y += a[i].y;
+		absNormal.y += a[i].y; */
 		//DrawLine(absNormal.x, absNormal.y, absNormal.x + (10*normalized.x), absNormal.y + (10*normalized.y), WHITE);
 		for (int j = 0; j < sizeA;j++)
 		{

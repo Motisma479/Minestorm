@@ -423,16 +423,16 @@ void gameCollisions(Game* game)
 		drawShape(player1.tail, ARRAY_SIZE(player1.tail), (player1Hit) ? RED : GREEN);
 
 
-		/*********DRAW PLAYERS GIZMO**********/
-		drawPlayerGizmo(game);
-		
-
-
 		if (game->twoPlayers)
 		{
 			drawShape(player2.head, ARRAY_SIZE(player2.head), (player2Hit) ? RED : GREEN);
 			drawShape(player2.tail, ARRAY_SIZE(player2.tail), (player2Hit) ? RED : GREEN);
 		}
+
+
+		/*********DRAW PLAYERS GIZMO**********/
+		drawPlayerGizmo(game);
+		drawEnemyGizmo(game);
 	}
 }
 

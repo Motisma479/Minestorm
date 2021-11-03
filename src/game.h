@@ -78,6 +78,7 @@ int gameEnemyAliveCount(Game* game);
 void gameAddBullet(Game *game, BulletSource source, Enemy *enemy);
 void gameRemoveBullet(Game *game);
 void gameCollisions(Game* game);
+void gameIsOver(Game* game);
 
 /* void loadData(Game* game); */
 /* void unloadData(Game* game); */

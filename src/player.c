@@ -72,23 +72,7 @@ void drawPlayer(Player* player, float scale, Color color, const Texture2D* textu
 
 		DrawTexturePro(*texture, textureCoord,
 					playerPos, origin, player->rotation + 90.0f, color);
-
-		
-	/* DrawLine((int)player->position.x,(int)player->position.y,
-		(int)player->position.x,
-		(int)player->position.y - 50,GREEN);
-
-
-	
-	DrawLine((int)player->position.x,(int)player->position.y,
-		(int)player->position.x + 50,
-		(int)player->position.y,RED); */
-
-		/* DrawLine((int)player->position.x,(int)player->position.y,
-			(int)player->position.x + 100,
-			(int)player->position.y + 100,WHITE); */
 	}
-	//DrawCircle(playerPos.x, playerPos.y, 10, WHITE);
 
 }
 
@@ -96,9 +80,4 @@ void teleportingPlayer(Player* player)
 {
 	player->position = (Vector2d) {(float)GetRandomValue(64,SCREEN_WIDTH - 64),
 		(float)GetRandomValue(80,SCREEN_HEIGHT - 80)};
-}
-
-Vector2d getPlayerDirection(Player* player)
-{
-	return (Vector2d){cosf(player->rotation*DEG2RAD + PI / 20.0f),sinf(player->rotation*DEG2RAD+ PI / 20.0f)};
 }

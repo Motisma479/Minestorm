@@ -150,7 +150,7 @@ void drawPlayerGizmo(Game* game)
 			float endY2 = game->player[i].position.y + getDirection(game->player[i].rotation + 90.0f).y*30;
 
 
-			DrawLine(game->player[i].position.x,game->player[i].position.y,endX1,endY1,GREEN);
+			DrawLine(game->player[i].position.x,game->player[i].position.y,endX1,endY1,BLUE);
 			DrawLine(game->player[i].position.x,game->player[i].position.y,endX2,endY2,RED);
 		}
 	}
@@ -163,9 +163,35 @@ void drawPlayerGizmo(Game* game)
 		float endY2 = game->player[0].position.y + getDirection(game->player[0].rotation + 90.0f).y*30;
 
 
-		DrawLine(game->player[0].position.x,game->player[0].position.y,endX1,endY1,GREEN);
+		DrawLine(game->player[0].position.x,game->player[0].position.y,endX1,endY1,BLUE);
 		DrawLine(game->player[0].position.x,game->player[0].position.y,endX2,endY2,RED);
 	}
+}
 
+void drawEnemyGizmo(Game* game)
+{
+	for(int i = 0; i < game->enemyCount ; i++)
+	{
+		if(game->enemies[i].active)
+		{
+ 			/*float endX1 = game->enemies[i].position.x + getDirection(game->enemies[i].rotation).x*50 ;
+			float endY1 = game->enemies[i].position.y + getDirection(game->enemies[i].rotation).y*50;
+			
+			float endX2 = game->enemies[i].position.x + getDirection(game->enemies[i].rotation).x*50 ;
+			float endY2 = game->enemies[i].position.y + getDirection(game->enemies[i].rotation).y*50;
 
+			DrawLine(game->enemies[i].position.x,game->enemies[i].position.y,endX1,endY1,BLUE);
+			DrawLine(game->enemies[i].position.x,game->enemies[i].position.y,endX2,endY2,RED); */
+			
+			float endX1 = game->enemies[i].position.x + getDirection(game->enemies[i].rotation).x*35;
+			float endY1 = game->enemies[i].position.y + getDirection(game->enemies[i].rotation).y*35;
+			
+			float endX2 = game->enemies[i].position.x + getDirection(game->enemies[i].rotation + 90.0f).x*35;
+			float endY2 = game->enemies[i].position.y + getDirection(game->enemies[i].rotation + 90.0f).y*35;
+
+			DrawLine(game->enemies[i].position.x  ,game->enemies[i].position.y,endX1,endY1,RED);
+			DrawLine(game->enemies[i].position.x  ,game->enemies[i].position.y,endX2,endY2,BLUE);
+		}
+
+	}
 }

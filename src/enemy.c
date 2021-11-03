@@ -92,8 +92,6 @@ void initEnemy(Enemy* enemy, Vector2d position, EnemyType type, EnemySize size)
 	enemy->lastShot = random;
 }
 
-#include <stdio.h>
-
 void updateEnemy(Game *game, Enemy* enemy,float deltaTime, Player *player1, Player *player2)
 {
 	Vector2d *position = &enemy->position;
@@ -230,4 +228,14 @@ void drawEnemy(Enemy* enemy, const Texture2D texture)
 	if (enemy->hit)
 		color = WHITE;
 	DrawTexturePro(texture, textureCoord ,position, center, enemy->rotation, color);
+	/*************************TESTING ENEMY GIZMO********************/
+	/* float endX1 = position.x + getDirection(enemy->rotation).x*50 ;
+	float endY1 = position.y + getDirection(enemy->rotation).y*50 ;
+	
+	float endX2 =position.x + getDirection(enemy->rotation + 90.0f).x*50 ; */
+	/* float endY2 =position.y + getDirection(enemy->rotation + 90.0f).y*50; */
+/* 
+	DrawLine(position.x,position.y,endX1,endY1,RED);
+	DrawLine(position.x,position.y,endX2,endY2,BLUE);*/
 }
+ 

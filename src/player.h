@@ -39,4 +39,4 @@ void    loadPlayerData(Player* player);
 void    unloadPlayerdata(Player* player);
 void    inputsPlayer(Player* player);
 void    teleportingPlayer(Player* player);
-Vector2d getPlayerDirection(Player* player);
+
