@@ -47,11 +47,11 @@ void updatePlayer(Player* player, float deltaTime)
 		player->position.x += player->acceleration.x;
 		player->position.y += player->acceleration.y;
 		// Wraparound
-		if (player->position.x < 64.0f) { player->position.x = (float)SCREEN_WIDTH - 64.0f; }
-		else if (player->position.x > (float)SCREEN_WIDTH - 64.0f) { player->position.x = 64.0f; }
+		if (player->position.x < 10.0f) { player->position.x = (float)SCREEN_WIDTH - 10.0f; }
+		else if (player->position.x > (float)SCREEN_WIDTH - 10.0f) { player->position.x = 10.0f; }
 
-		if (player->position.y < 80.0f) { player->position.y = (float)SCREEN_HEIGHT - 80.0f; }
-		else if (player->position.y > (float)SCREEN_HEIGHT - 80.0f) { player->position.y = 80.0f; }
+		if (player->position.y < 10.0f) { player->position.y = (float)SCREEN_HEIGHT - 10.0f; }
+		else if (player->position.y > (float)SCREEN_HEIGHT - 10.0f) { player->position.y = 10.0f; }
 
 	}
 }

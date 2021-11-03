@@ -176,7 +176,7 @@ PlayerCollisionBox getPlayerCollisionBox(float rotation, Vector2d position, floa
 
 
 bool checkCollisionPlayerMineLayer(const PlayerCollisionBox colBox,
-								   MineLayerCollisionBox magneticFire, char draw)
+								   MineLayerCollisionBox magneticFire)
 {
 	int sizeHead = ARRAY_SIZE(colBox.head);
 	int sizeTail = ARRAY_SIZE(colBox.tail);
@@ -195,45 +195,29 @@ bool checkCollisionPlayerMineLayer(const PlayerCollisionBox colBox,
 	const Vector2d *triangle3 = magneticFire.triangle3;
 
 	int intersection1 =
-		(satAlgorithm(head, poly, sizeHead, size1) ||
-		 satAlgorithm(tail, poly, sizeTail, size1)) &&
-		(satAlgorithm(poly, head, size1, sizeHead) ||
-		 satAlgorithm(poly, tail, size1, sizeTail));
+	(satAlgorithm(head, poly, sizeHead, size1) ||
+	 satAlgorithm(tail, poly, sizeTail, size1)) &&
+	(satAlgorithm(poly, head, size1, sizeHead) ||
+	 satAlgorithm(poly, tail, size1, sizeTail));
 
 	int intersection2 =
-		(satAlgorithm(head, triangle1, sizeHead, size2) ||
-		 satAlgorithm(tail, triangle1, sizeTail, size2)) &&
-		(satAlgorithm(triangle1, head, size2, sizeHead) ||
-		 satAlgorithm(triangle1, tail, size2, sizeTail));
+	(satAlgorithm(head, triangle1, sizeHead, size2) ||
+	 satAlgorithm(tail, triangle1, sizeTail, size2)) &&
+	(satAlgorithm(triangle1, head, size2, sizeHead) ||
+	 satAlgorithm(triangle1, tail, size2, sizeTail));
 
 	int intersection3 =
-		(satAlgorithm(head, triangle2, sizeHead, size3) ||
-		 satAlgorithm(tail, triangle2, sizeTail, size3)) &&
-		(satAlgorithm(triangle2, head, size3, sizeHead) ||
-		 satAlgorithm(triangle2, tail, size3, sizeTail));
+	(satAlgorithm(head, triangle2, sizeHead, size3) ||
+	 satAlgorithm(tail, triangle2, sizeTail, size3)) &&
+	(satAlgorithm(triangle2, head, size3, sizeHead) ||
+	 satAlgorithm(triangle2, tail, size3, sizeTail));
 
 	int intersection4 =
-		(satAlgorithm(head, triangle3, sizeHead, size4) ||
-		 satAlgorithm(tail, triangle3, sizeTail, size4)) &&
-		(satAlgorithm(triangle3, head, size4, sizeHead) ||
-		 satAlgorithm(triangle3, tail, size4, sizeTail));
+	(satAlgorithm(head, triangle3, sizeHead, size4) ||
+	 satAlgorithm(tail, triangle3, sizeTail, size4)) &&
+	(satAlgorithm(triangle3, head, size4, sizeHead) ||
+	 satAlgorithm(triangle3, tail, size4, sizeTail));
 
-	if (draw)
-	{
-		Color inter;
-
-		drawShape(head, sizeHead, GREEN);
-		drawShape(tail, sizeTail, GREEN);
-
-		inter = intersection1 ? RED : GREEN;
-		drawShape(poly, size1, inter);
-		inter = intersection2 ? RED : GREEN;
-		drawShape(triangle1, size2, inter);
-		inter = intersection3 ? RED : GREEN;
-		drawShape(triangle2, size3, inter);
-		inter = intersection4 ? RED : GREEN;
-		drawShape(triangle3, size4, inter);
-	}
 	return (intersection1 || intersection2 || intersection3 ||
 			intersection4);
 }
@@ -254,10 +238,10 @@ bool checkCollisionPlayerFloat(const PlayerCollisionBox playerCol,  FloatingColl
 	const Vector2d *triangle2 = floating.triangle2;
 
 	int intersection =
-		((satAlgorithm(head, rombus, sizeHead, size1) ||
-		  satAlgorithm(tail, rombus, sizeTail, size1)) &&
-		 (satAlgorithm(rombus, head, size1, sizeHead) ||
-		  satAlgorithm(rombus, tail, size1, sizeTail))) || 
+	((satAlgorithm(head, rombus, sizeHead, size1) ||
+	  satAlgorithm(tail, rombus, sizeTail, size1)) &&
+	 (satAlgorithm(rombus, head, size1, sizeHead) ||
+	  satAlgorithm(rombus, tail, size1, sizeTail))) || 
 		satAlgorithm(head, triangle1, sizeHead, size2) ||
 		satAlgorithm(tail, triangle1, sizeTail, size2) || 
 		satAlgorithm(head, triangle2, sizeHead, size3) ||
@@ -266,7 +250,7 @@ bool checkCollisionPlayerFloat(const PlayerCollisionBox playerCol,  FloatingColl
 	return (intersection);
 }
 
-bool checkCollisionPlayerFireBall(const PlayerCollisionBox colBox,  FireBallCollisionBox fireBall, char draw)
+bool checkCollisionPlayerFireBall(const PlayerCollisionBox colBox,  FireBallCollisionBox fireBall)
 {
 	int sizeHead = ARRAY_SIZE(colBox.head);
 	int sizeTail = ARRAY_SIZE(colBox.tail);
@@ -283,41 +267,27 @@ bool checkCollisionPlayerFireBall(const PlayerCollisionBox colBox,  FireBallColl
 	const Vector2d *triangle2 = fireBall.triangle2;
 
 	int intersection1 =
-		(satAlgorithm(head, poly, sizeHead, size1) ||
-		 satAlgorithm(tail, poly, sizeTail, size1)) &&
-		(satAlgorithm(poly, head, size1, sizeHead) ||
-		 satAlgorithm(poly, tail, size1, sizeTail));
+	(satAlgorithm(head, poly, sizeHead, size1) ||
+	 satAlgorithm(tail, poly, sizeTail, size1)) &&
+	(satAlgorithm(poly, head, size1, sizeHead) ||
+	 satAlgorithm(poly, tail, size1, sizeTail));
 
 	int intersection2 =
-		(satAlgorithm(head, triangle1, sizeHead, size2) ||
-		 satAlgorithm(tail, triangle1, sizeTail, size2)) &&
-		(satAlgorithm(triangle1, head, size2, sizeHead) ||
-		 satAlgorithm(triangle1, tail, size2, sizeTail));
+	(satAlgorithm(head, triangle1, sizeHead, size2) ||
+	 satAlgorithm(tail, triangle1, sizeTail, size2)) &&
+	(satAlgorithm(triangle1, head, size2, sizeHead) ||
+	 satAlgorithm(triangle1, tail, size2, sizeTail));
 
 	int intersection3 =
-		(satAlgorithm(head, triangle2, sizeHead, size3) ||
-		 satAlgorithm(tail, triangle2, sizeTail, size3)) &&
-		(satAlgorithm(triangle2, head, size3, sizeHead) ||
-		 satAlgorithm(triangle2, tail, size3, sizeTail));
+	(satAlgorithm(head, triangle2, sizeHead, size3) ||
+	 satAlgorithm(tail, triangle2, sizeTail, size3)) &&
+	(satAlgorithm(triangle2, head, size3, sizeHead) ||
+	 satAlgorithm(triangle2, tail, size3, sizeTail));
 
-	if (draw)
-	{
-		Color inter;
-
-		drawShape(head, sizeHead, GREEN);
-		drawShape(tail, sizeTail, GREEN);
-
-		inter = intersection1 ? RED : GREEN;
-		drawShape(poly, size1, inter);
-		inter = intersection2 ? RED : GREEN;
-		drawShape(triangle1, size2, inter);
-		inter = intersection3 ? RED : GREEN;
-		drawShape(triangle2, size3, inter);
-	}
 	return (intersection1 || intersection2 || intersection3);
 }
 
-bool checkCollisionPlayerMagnetic(const PlayerCollisionBox colBox,  MagneticCollisionBox magnetic, char draw)
+bool checkCollisionPlayerMagnetic(const PlayerCollisionBox colBox,  MagneticCollisionBox magnetic)
 {
 	int sizeHead = ARRAY_SIZE(colBox.head);
 	int sizeTail = ARRAY_SIZE(colBox.tail);
@@ -334,42 +304,27 @@ bool checkCollisionPlayerMagnetic(const PlayerCollisionBox colBox,  MagneticColl
 	const Vector2d *triangle2 = magnetic.triangle2;
 
 	int intersection1 =
-		(satAlgorithm(head, poly, sizeHead, size1) ||
-		 satAlgorithm(tail, poly, sizeTail, size1)) &&
-		(satAlgorithm(poly, head, size1, sizeHead) ||
-		 satAlgorithm(poly, tail, size1, sizeTail));
+	(satAlgorithm(head, poly, sizeHead, size1) ||
+	 satAlgorithm(tail, poly, sizeTail, size1)) &&
+	(satAlgorithm(poly, head, size1, sizeHead) ||
+	 satAlgorithm(poly, tail, size1, sizeTail));
 
 	int intersection2 =
-		(satAlgorithm(head, triangle1, sizeHead, size2) ||
-		 satAlgorithm(tail, triangle1, sizeTail, size2)) &&
-		(satAlgorithm(triangle1, head, size2, sizeHead) ||
-		 satAlgorithm(triangle1, tail, size2, sizeTail));
+	(satAlgorithm(head, triangle1, sizeHead, size2) ||
+	 satAlgorithm(tail, triangle1, sizeTail, size2)) &&
+	(satAlgorithm(triangle1, head, size2, sizeHead) ||
+	 satAlgorithm(triangle1, tail, size2, sizeTail));
 
 	int intersection3 =
-		(satAlgorithm(head, triangle2, sizeHead, size3) ||
-		 satAlgorithm(tail, triangle2, sizeTail, size3)) &&
-		(satAlgorithm(triangle2, head, size3, sizeHead) ||
-		 satAlgorithm(triangle2, tail, size3, sizeTail));
+	(satAlgorithm(head, triangle2, sizeHead, size3) ||
+	 satAlgorithm(tail, triangle2, sizeTail, size3)) &&
+	(satAlgorithm(triangle2, head, size3, sizeHead) ||
+	 satAlgorithm(triangle2, tail, size3, sizeTail));
 
-
-	if (draw)
-	{
-		Color inter;
-
-		drawShape(head, sizeHead, GREEN);
-		drawShape(tail, sizeTail, GREEN);
-
-		inter = intersection1 ? RED : GREEN;
-		drawShape(poly, size1, inter);
-		inter = intersection2 ? RED : GREEN;
-		drawShape(triangle1, size2, inter);
-		inter = intersection3 ? RED : GREEN;
-		drawShape(triangle2, size3, inter);
-	}
 	return (intersection1 || intersection2 || intersection3);
 }
 
-bool checkCollisionPlayerMagneticFire(const PlayerCollisionBox colBox,  MagneticFireCollisionBox magneticFire, char draw)
+bool checkCollisionPlayerMagneticFire(const PlayerCollisionBox colBox,  MagneticFireCollisionBox magneticFire)
 {
 	int sizeHead = ARRAY_SIZE(colBox.head);
 	int sizeTail = ARRAY_SIZE(colBox.tail);
@@ -390,54 +345,35 @@ bool checkCollisionPlayerMagneticFire(const PlayerCollisionBox colBox,  Magnetic
 	const Vector2d *triangle4 = magneticFire.triangle4;
 
 	int intersection1 =
-		(satAlgorithm(head, poly, sizeHead, size1) ||
-		 satAlgorithm(tail, poly, sizeTail, size1)) &&
-		(satAlgorithm(poly, head, size1, sizeHead) ||
-		 satAlgorithm(poly, tail, size1, sizeTail));
+	(satAlgorithm(head, poly, sizeHead, size1) ||
+	 satAlgorithm(tail, poly, sizeTail, size1)) &&
+	(satAlgorithm(poly, head, size1, sizeHead) ||
+	 satAlgorithm(poly, tail, size1, sizeTail));
 
 	int intersection2 =
-		(satAlgorithm(head, triangle1, sizeHead, size2) ||
-		 satAlgorithm(tail, triangle1, sizeTail, size2)) &&
-		(satAlgorithm(triangle1, head, size2, sizeHead) ||
-		 satAlgorithm(triangle1, tail, size2, sizeTail));
+	(satAlgorithm(head, triangle1, sizeHead, size2) ||
+	 satAlgorithm(tail, triangle1, sizeTail, size2)) &&
+	(satAlgorithm(triangle1, head, size2, sizeHead) ||
+	 satAlgorithm(triangle1, tail, size2, sizeTail));
 
 	int intersection3 =
-		(satAlgorithm(head, triangle2, sizeHead, size3) ||
-		 satAlgorithm(tail, triangle2, sizeTail, size3)) &&
-		(satAlgorithm(triangle2, head, size3, sizeHead) ||
-		 satAlgorithm(triangle2, tail, size3, sizeTail));
+	(satAlgorithm(head, triangle2, sizeHead, size3) ||
+	 satAlgorithm(tail, triangle2, sizeTail, size3)) &&
+	(satAlgorithm(triangle2, head, size3, sizeHead) ||
+	 satAlgorithm(triangle2, tail, size3, sizeTail));
 
 	int intersection4 =
-		(satAlgorithm(head, triangle3, sizeHead, size4) ||
-		 satAlgorithm(tail, triangle3, sizeTail, size4)) &&
-		(satAlgorithm(triangle3, head, size4, sizeHead) ||
-		 satAlgorithm(triangle3, tail, size4, sizeTail));
+	(satAlgorithm(head, triangle3, sizeHead, size4) ||
+	 satAlgorithm(tail, triangle3, sizeTail, size4)) &&
+	(satAlgorithm(triangle3, head, size4, sizeHead) ||
+	 satAlgorithm(triangle3, tail, size4, sizeTail));
 
 	int intersection5 =
-		(satAlgorithm(head, triangle4, sizeHead, size5) ||
-		 satAlgorithm(tail, triangle4, sizeTail, size5)) &&
-		(satAlgorithm(triangle4, head, size5, sizeHead) ||
-		 satAlgorithm(triangle4, tail, size5, sizeTail));
+	(satAlgorithm(head, triangle4, sizeHead, size5) ||
+	 satAlgorithm(tail, triangle4, sizeTail, size5)) &&
+	(satAlgorithm(triangle4, head, size5, sizeHead) ||
+	 satAlgorithm(triangle4, tail, size5, sizeTail));
 
-	if (draw)
-	{
-		Color inter;
-
-		drawShape(head, sizeHead, GREEN);
-		drawShape(tail, sizeTail, GREEN);
-
-		inter = intersection1 ? RED : GREEN;
-		drawShape(poly, size1, inter);
-
-		inter = intersection2 ? RED : GREEN;
-		drawShape(triangle1, size2, inter);
-		inter = intersection3 ? RED : GREEN;
-		drawShape(triangle2, size3, inter);
-		inter = intersection4 ? RED : GREEN;
-		drawShape(triangle3, size4, inter);
-		inter = intersection5 ? RED : GREEN;
-		drawShape(triangle4, size5, inter);
-	}
 	return (intersection1 || intersection2 || intersection3 ||
 			intersection4 || intersection5);
 }
@@ -455,21 +391,13 @@ bool checkCollisionMineLayerBullet(MineLayerCollisionBox colBox,  Bullet bullet,
 	const Vector2d *triangle2 = colBox.triangle2;
 	const Vector2d *triangle3 = colBox.triangle3;
 
-	int intersection = satAlgorithmPolygonCircle(poly, size1, &circle) ||
-		satAlgorithmPolygonCircle(triangle1, size2, &circle) ||
-		satAlgorithmPolygonCircle(triangle2, size3, &circle);
+	int intersection = satAlgorithmPolygonCircle(poly, sizePoly, &circle) ||
+		satAlgorithmPolygonCircle(triangle1, size1, &circle) ||
+		satAlgorithmPolygonCircle(triangle2, size2, &circle) ||
+		satAlgorithmPolygonCircle(triangle3, size3, &circle);
 
 	if (draw)
-	{
-		Color inter;
-
-		inter = intersection ? RED : GREEN;
-		drawShape(poly, sizePoly, inter);
-		drawShape(triangle1, size1, inter);
-		drawShape(triangle2, size2, inter);
-		drawShape(triangle3, size3, inter);
 		DrawCircle(circle.center.x, circle.center.y, circle.radius, WHITE);
-	}
 	return (intersection);
 }
 
@@ -485,14 +413,7 @@ bool checkCollisionPlayerBullet(const PlayerCollisionBox colBox,  Bullet bullet,
 	int intersection = satAlgorithmPolygonCircle(head, sizeHead, &circle) ||
 		satAlgorithmPolygonCircle(tail, sizeTail, &circle);
 	if (draw)
-	{
-		Color inter;
-
-		inter = intersection ? RED : GREEN;
-		drawShape(head, sizeHead, inter);
-		drawShape(tail, sizeTail, inter);
 		DrawCircle(circle.center.x, circle.center.y, circle.radius, WHITE);
-	}
 	return (intersection);
 }
 

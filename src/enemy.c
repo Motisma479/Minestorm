@@ -64,19 +64,45 @@ void updateEnemy(Game *game, Enemy* enemy,float deltaTime, Player *player1, Play
 			{
 				Vector2d centerEnemy =
 					subsVector2d((Vector2d){SCREEN_WIDTH / 2,
-									 SCREEN_HEIGHT / 2}, *position);
+									 SCREEN_HEIGHT / 2}, * position);
 
-				Vector2d playerPos =
-				(Vector2d){(int)(centerEnemy.x + player1->position.x) % SCREEN_WIDTH,
-					(int)(centerEnemy.y + player1->position.y) % SCREEN_HEIGHT};
+				if (enemy->type == ET_MAGNETIC)
+				{
+					centerEnemy.x -= 68 * enemy->scale;
+					centerEnemy.y -= 65 * enemy->scale;
+				}
+				Vector2d player1Pos =
+				(Vector2d){(int)((centerEnemy.x) + player1->position.x) % SCREEN_WIDTH,
+					(int)((centerEnemy.y) + player1->position.y) % SCREEN_HEIGHT};
 
-				Vector2d towardsPlayer =
-					subsVector2d(playerPos, (Vector2d){SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2});
+				Vector2d player2Pos =
+				(Vector2d){(int)((centerEnemy.x)+ player2->position.x) % (SCREEN_WIDTH),
+					(int)((centerEnemy.y) + player2->position.y) % (SCREEN_HEIGHT)};
 
-				playerPos = normalizeVector2d(towardsPlayer);
+				if (player1Pos.x < 0)
+					player1Pos.x = (SCREEN_WIDTH) - player1Pos.x;
+				if (player1Pos.y < 0)
+					player1Pos.y = (SCREEN_HEIGHT) - player1Pos.y;
 
-				position->x += (enemy->speed.x * deltaTime * playerPos.x);
-				position->y += (enemy->speed.y * deltaTime * playerPos.y);
+				if (player2Pos.x < 0)
+					player2Pos.x = (SCREEN_WIDTH) - player2Pos.x;
+				if (player2Pos.y < 0)
+					player2Pos.y = (SCREEN_HEIGHT) - player2Pos.y;
+
+				Vector2d towardsPlayer1 =
+					subsVector2d(player1Pos, (Vector2d){SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2});
+				Vector2d towardsPlayer2 =
+					subsVector2d(player2Pos, (Vector2d){SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2});
+
+				if (game->twoPlayers)
+				{
+					if (lengthVector2d(towardsPlayer1) > lengthVector2d(towardsPlayer2))
+						towardsPlayer1 = towardsPlayer2;
+				}
+
+				player1Pos = normalizeVector2d(towardsPlayer1);
+				position->x += (enemy->speed.x * deltaTime * player1Pos.x);
+				position->y += (enemy->speed.y * deltaTime * player1Pos.y);
 			}break;
 			case ET_MINE_LAYER:
 			{
@@ -98,7 +124,7 @@ void updateEnemy(Game *game, Enemy* enemy,float deltaTime, Player *player1, Play
 			case ET_FIREBALL:
 			case ET_MAGNETIC_FIREBALL:
 			{
-				if (enemy->lastShot < 0.01f)
+				if (enemy->lastShot < 0.001f)
 					gameAddBullet(game, BS_ENEMY, enemy);
 			}break;
 			default:;
@@ -109,11 +135,11 @@ void updateEnemy(Game *game, Enemy* enemy,float deltaTime, Player *player1, Play
 
 	}
 
-	if (position->x < 64.0f) { position->x = (float)SCREEN_WIDTH - 64.0f; }
-	else if (position->x > (float)SCREEN_WIDTH - 64.0f) { position->x = 64.0f; }
+	if (position->x < 10.0f) { position->x = (float)SCREEN_WIDTH; }
+	else if (position->x > (float)SCREEN_WIDTH) { position->x = 10.0f; }
 
-	if (position->y < 80.0f) { position->y = (float)SCREEN_HEIGHT - 80.0f; }
-	else if (position->y > (float)SCREEN_HEIGHT - 80.0f) { position->y = 80.0f; }
+	if (position->y < 10.0f) { position->y = (float)SCREEN_HEIGHT; }
+	else if (position->y > (float)SCREEN_HEIGHT) { position->y = 10.0f; }
 
 }
 
@@ -160,7 +186,7 @@ void drawEnemy(Enemy* enemy, const Texture2D texture)
 			case ET_FIREBALL: {
 				textureCoord = (Rectangle){846, 332, 104, 106};
 				position.x = enemy->position.x - (14 * scale);
-				position.y = enemy->position.y - (12 * scale);
+				position.y = enemy->position.y - (8 * scale);
 			}break;
 
 			case ET_MAGNETIC: 

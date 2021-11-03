@@ -8,8 +8,8 @@ void initAllEnemies(Game *game, EnemyType type, int size)
 
 	for(int i = 0; i < game->enemyCount; i++)
 	{
-		random.x = GetRandomValue(64.0f, (float)SCREEN_WIDTH - 64.0f);
-		random.y = GetRandomValue(80.0f, SCREEN_HEIGHT - 300);
+		random.x = GetRandomValue(10.0f, (float)SCREEN_WIDTH);
+		random.y = GetRandomValue(10.0f, SCREEN_HEIGHT - 300);
 		if (i < size)
 			initEnemy(&game->enemies[i], random, type, ES_NONE);
 		game->enemies[i].active = false;
@@ -23,8 +23,8 @@ void initLevel1(Game *game)
 	for(int i = 0; i < game->bulletCount; i++)
 		game->bullets[i] = (Bullet){0};
 	initAllEnemies(game, ET_FLOATING, 14);
-	addEnemy(game, ES_BIG, ET_MAGNETIC);
-	addEnemy(game, ES_BIG, ET_MAGNETIC);
+	addEnemy(game, ES_BIG, ET_FIREBALL);
+	addEnemy(game, ES_BIG, ET_FIREBALL);
 }
 
 void initLevel2(Game *game)

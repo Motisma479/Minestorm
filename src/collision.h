@@ -61,13 +61,12 @@ PlayerCollisionBox  getPlayerCollisionBox(float rotation, Vector2d position, flo
 
 bool checkCollisionMineLayerBullet(MineLayerCollisionBox colBox,  Bullet bullet, char draw);
 bool checkCollisionPlayerMineLayer(const PlayerCollisionBox colBox,
-								   MineLayerCollisionBox magneticFire, char draw);
+								   MineLayerCollisionBox magneticFire);
 bool checkCollisionPlayerFloat(const PlayerCollisionBox player,  FloatingCollisionBox floating);
-bool checkCollisionPlayerMagnetic(const PlayerCollisionBox player,  MagneticCollisionBox magnetic, char draw);
-bool checkCollisionPlayerFireBall(const PlayerCollisionBox player,  FireBallCollisionBox fireball, char draw);
+bool checkCollisionPlayerMagnetic(const PlayerCollisionBox player,  MagneticCollisionBox magnetic);
+bool checkCollisionPlayerFireBall(const PlayerCollisionBox player,  FireBallCollisionBox fireball);
 bool checkCollisionPlayerMagneticFire(const PlayerCollisionBox player,
-									  MagneticFireCollisionBox magneticFire,
-									  char draw);
+									  MagneticFireCollisionBox magneticFire);
 bool checkCollisionPlayerBullet(const PlayerCollisionBox player,  Bullet bullet, char draw);
 bool checkCollisionFloatBullet(FloatingCollisionBox floating,  Bullet *bullet, char draw);
 bool checkCollisionFireBallBullet(FireBallCollisionBox fireball, Bullet *bullet, char draw);

@@ -38,8 +38,8 @@ typedef struct Player
 	Vector2d     speed;
 	Vector2d     acceleration;
     float        rotation;
-	int          lives;
-	int          score;
+	char         lives;
+	unsigned long long int score;
 	PlayerAction action;
 	Rectangle    textureCoord;
 } Player;
@@ -62,7 +62,7 @@ typedef struct Game
 	float     ticksCount;
 	bool      twoPlayers;
 	bool      levelStart;
-	int       highScore;
+	unsigned long long int highScore;
 	DrawState draw;
 	bool      mineLayerSpawned;
 } Game;
@@ -84,7 +84,6 @@ void unloadData(Game* game);
 
 void gameIsOver(Game* game);
 void Shutdown(Game* game);
-
 
 bool initGame(Game* game);
 void processInput(Game* game);

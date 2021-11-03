@@ -73,6 +73,7 @@ void getInput(Game* game)
 			game->state = GS_MENU;
 			*player1 = (Player){0};
 			*player2 = (Player){0};
+			game->layer = (MineLayer){0};
 			initPlayer(player1, (Vector2d){SCREEN_WIDTH / 3.0f,
 						   SCREEN_HEIGHT - 200});
 			initPlayer(player2, (Vector2d){SCREEN_WIDTH / 1.5f,

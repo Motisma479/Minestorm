@@ -7,10 +7,10 @@ static void drawLives(Game *game, Player *player, Vector2d offset, Color color)
 	float scale = 0.1f;
 	if (player->lives > 0)
 		drawPlayer(player, scale, color, game->atlas);
-	player->position = (Vector2d){80+offset.x, 30+offset.y};
+	player->position = (Vector2d){220+offset.x, 12+offset.y};
 	if (player->lives > 1)
 		drawPlayer(player, scale, color, game->atlas);
-	player->position = (Vector2d){100+offset.x, 30+offset.y};
+	player->position = (Vector2d){240+offset.x, 12+offset.y};
 	if (player->lives > 2)
 		drawPlayer(player, scale, color, game->atlas);
 }
@@ -19,13 +19,13 @@ static void drawLives2(Game *game, Player *player, Vector2d offset, Color color)
 {
 	float scale = 0.1f;
 	player->rotation = -90.0f;
-	player->position = (Vector2d){530-offset.x, 30+offset.y};
+	player->position = (Vector2d){SCREEN_WIDTH-53-offset.x, 12+offset.y};
 	if (player->lives > 0)
 		drawPlayer(player, scale, color, game->atlas);
-	player->position = (Vector2d){550-offset.x, 30+offset.y};
+	player->position = (Vector2d){SCREEN_WIDTH-73-offset.x, 12+offset.y};
 	if (player->lives > 1)
 		drawPlayer(player, scale, color, game->atlas);
-	player->position = (Vector2d){570-offset.x, 30+offset.y};
+	player->position = (Vector2d){SCREEN_WIDTH-93-offset.x, 12+offset.y};
 	if (player->lives > 2)
 		drawPlayer(player, scale, color, game->atlas);
 }
@@ -33,27 +33,28 @@ static void drawLives2(Game *game, Player *player, Vector2d offset, Color color)
 static void drawScoreBoard(Game *game, Vector2d offset)
 {
 	Player player = game->player[0];
-	player.position = (Vector2d){60 + offset.x, 30 + offset.y};
+	player.position = (Vector2d){200 + offset.x, 12 + offset.y};
 	player.rotation = -90.0f;
 
-	DrawRectangleRounded((Rectangle){44+offset.x, 0+offset.y, 230, 40}, 0.3f, 1, SKYBLUE);
-	DrawText("Player ONE", 45+offset.x, 0+offset.y, 20, BLUE);
+	DrawText("P1", 45+offset.x, 0+offset.y, 15, BLUE);
 
 	drawLives(game, &player, offset, BLUE);
 
-	DrawText(TextFormat("%d", game->player[0].score), 200+offset.x,
-			 0+offset.y, 20, BLUE);
+	DrawText(TextFormat("%d", game->player[0].score), 70+offset.x,
+			 0+offset.y, 15, BLUE);
 
 	if (game->twoPlayers)
 	{
-		DrawRectangleRounded((Rectangle){ 364-offset.x, 0+offset.y, 230, 40}, 0.3f, 1, GREEN);
-		DrawText("Player TWO", 470-offset.x, 0+offset.y, 20, LIME);
+		DrawText("P2", 420 + offset.x, 0+offset.y, 15, LIME);
 
 		player = game->player[1];
 		drawLives2(game, &player, offset, LIME);
-		DrawText(TextFormat("%d", game->player[1].score), 370 - offset.x,
-				 0 + offset.y, 20, LIME);
+		DrawText(TextFormat("%d", game->player[1].score), 445 + offset.x,
+				 0 + offset.y, 15, LIME);
 	}
+	if ((game->framesCounter / 30) % 3)
+		DrawText("||", 490, 750, 25, YELLOW);
+	DrawText("  SPACE", 490, 750, 25, YELLOW);
 }
 
 static void drawPauseMenu(Game *game)
@@ -85,7 +86,7 @@ static void drawPauseMenu(Game *game)
 
 	DrawText("Resume" , 126, 200,25, BLUE);
 	DrawText("Main Menu" , 126, 266,25, RED);
-	if((game->framesCounter / 30) % 2)
+	if((game->framesCounter / 30) % 3)
 		DrawText("PAUSE" , 285, 100, 25, WHITE);
 	else
 	{
@@ -102,7 +103,7 @@ static void drawGameOver(Game *game)
 
 	DrawRectangleRounded((Rectangle){150, 490, 280, 50}, 0.5f, 1, WHITE);
 	DrawText(TextFormat("HIGH SCORE: %d",game->highScore) , 159, 500,25, BLACK);
-	if((game->framesCounter / 30) % 2)
+	if((game->framesCounter / 30) % 3)
 	{
 		DrawText("Esc", 401, 266,25, RED);
 	}
@@ -140,7 +141,7 @@ static void drawMenu(Game *game)
 	DrawText("2 Players"     , 159, 366, 25, GREEN);
 	DrawText("QUIT"          , 159, 550, 25, RED);
 
-	if((game->framesCounter / 30) % 2)
+	if((game->framesCounter / 30) % 3)
 	{
 		DrawText("\'F\'" , 416, 300,25, BLUE);
 		DrawText("\'K\'" , 416, 366,25, GREEN);
@@ -181,13 +182,19 @@ void drawGame(Game* game)
 		}break;
 		default:;
 	}
-	DrawTextureEx(game->foreground, (Vector2){0, 0}, 0, 1.0f, WHITE);
+#if 1
+	DrawTexturePro(game->foreground,
+				   (Rectangle){38, 40, game->foreground.width - 77,
+					   game->foreground.height - 81} ,
+				   (Rectangle){0, 0, game->foreground.width,
+					   game->foreground.height},
+				   (Vector2){0, 0}, 0, WHITE);
+#endif
 	drawScoreBoard(game, (Vector2d){0, 0});
 	if (game->state == GS_GAMEOVER)
 	{
 		drawScoreBoard(game, (Vector2d){30, 400});
 		drawGameOver(game);
 	}
-	DrawFPS(0, 0);
 	EndDrawing();
 }

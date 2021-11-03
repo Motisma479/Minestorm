@@ -82,9 +82,12 @@ static void gameAddEnemyBullet(Game *game, Enemy *enemy)
 	float   angle;
 	float speed = 100.0f;
 	Vector2d direction = subsVector2d(game->player[0].position, enemy->position);
+	Vector2d direction1 = subsVector2d(game->player[1].position, enemy->position);
+
+	if (lengthVector2d(direction) > lengthVector2d(direction1))
+		direction = direction1;
 
 	direction = normalizeVector2d(direction);
-
 	if (enemy->size == ES_BIG)
 	{
 		direction.x *= 40;
@@ -104,13 +107,10 @@ static void gameAddEnemyBullet(Game *game, Enemy *enemy)
 	position.y = enemy->position.y + direction.y;
 	angle = getRotation(direction);
 	if (direction.x < 0)
-	{
 		angle += 180.0f;
-	}
 	Bullet bullet = {0};
 
 	initBullet(&bullet, position, angle, BS_ENEMY, speed);
-
 	game->bullets[game->bulletCount] = bullet;
 	game->bulletCount += 1;
 }
@@ -121,7 +121,7 @@ void gameAddBullet(Game *game, BulletSource source, Enemy *enemy)
 		return;
 	switch(source)
 	{
-		case BS_PLAYER1: 
+		case BS_PLAYER1:
 		case BS_PLAYER2:
 		{
 
@@ -153,7 +153,7 @@ void gameRemoveBullet(Game *game)
 		Bullet* bullet = &game->bullets[i];
 
 		if ((bullet->source != BS_ENEMY && bullet->lifeTime > 0.7f) ||
-			(bullet->source == BS_ENEMY && bullet->lifeTime > 4.0f))
+			(bullet->source == BS_ENEMY && bullet->lifeTime > 7.0f))
 		{
 			game->bullets[i] = game->bullets[game->bulletCount - 1];
 			game->bulletCount -= 1;
@@ -330,7 +330,7 @@ void gameCollisions(Game* game)
 			if (collisionEnemyBullet(game, enemy, bullet))
 			{
 				enemy->type = ET_NONE;
-				bullet->lifeTime = 100.0f;
+				bullet->lifeTime = 1000.0f;
 			}
 		}
 		if (enemy->active)
@@ -361,18 +361,30 @@ void gameCollisions(Game* game)
 				{
 					MagneticCollisionBox magnetic =
 						getMagneticCollisionBox(0, enemy->position, enemy->scale);
-					player1Hit = checkCollisionPlayerMagnetic(player1, magnetic, game->draw);
+					player1Hit = checkCollisionPlayerMagnetic(player1, magnetic);
 					if (game->twoPlayers)
-						player2Hit = checkCollisionPlayerMagnetic(player2, magnetic, game->draw);
+						player2Hit = checkCollisionPlayerMagnetic(player2, magnetic);
+					if (game->draw)
+					{
+						drawShape(magnetic.poly, ARRAY_SIZE(magnetic.poly), (player1Hit || player2Hit) ? RED : GREEN);
+						drawShape(magnetic.triangle1, ARRAY_SIZE(magnetic.triangle1), (player1Hit || player2Hit) ? RED : GREEN);
+						drawShape(magnetic.triangle2, ARRAY_SIZE(magnetic.triangle2), (player1Hit || player2Hit) ? RED : GREEN);
+					}
 				}
 				break;
 				case ET_FIREBALL:
 				{
 					FireBallCollisionBox fireball =
 						getFireBallCollisionBox(0, enemy->position, enemy->scale);
-					player1Hit = checkCollisionPlayerFireBall(player1, fireball, game->draw);
+					player1Hit = checkCollisionPlayerFireBall(player1, fireball);
 					if (game->twoPlayers)
-						player2Hit = checkCollisionPlayerFireBall(player2, fireball, game->draw);
+						player2Hit = checkCollisionPlayerFireBall(player2, fireball);
+					if (game->draw)
+					{
+						drawShape(fireball.poly, ARRAY_SIZE(fireball.poly), (player1Hit || player2Hit) ? RED : GREEN);
+						drawShape(fireball.triangle1, ARRAY_SIZE(fireball.triangle1), (player1Hit || player2Hit) ? RED : GREEN);
+						drawShape(fireball.triangle2, ARRAY_SIZE(fireball.triangle2), (player1Hit || player2Hit) ? RED : GREEN);
+					}
 				}
 				break;
 				case ET_MAGNETIC_FIREBALL:
@@ -380,12 +392,18 @@ void gameCollisions(Game* game)
 					MagneticFireCollisionBox magFireball =
 						getMagneticFireCollisionBox(0,enemy->position, enemy->scale);
 					player1Hit = checkCollisionPlayerMagneticFire(player1,
-																  magFireball,
-																  game->draw);
+																  magFireball);
 					if (game->twoPlayers)
 						player2Hit = checkCollisionPlayerMagneticFire(player2,
-																	  magFireball,
-																	  game->draw);
+																	  magFireball);
+					if (game->draw)
+					{
+						drawShape(magFireball.poly, ARRAY_SIZE(magFireball.poly), (player1Hit || player2Hit) ? RED : GREEN);
+						drawShape(magFireball.triangle1, ARRAY_SIZE(magFireball.triangle1), (player1Hit || player2Hit) ? RED : GREEN);
+						drawShape(magFireball.triangle2, ARRAY_SIZE(magFireball.triangle2), (player1Hit || player2Hit) ? RED : GREEN);
+						drawShape(magFireball.triangle3, ARRAY_SIZE(magFireball.triangle3), (player1Hit || player2Hit) ? RED : GREEN);
+						drawShape(magFireball.triangle4, ARRAY_SIZE(magFireball.triangle4), (player1Hit || player2Hit) ? RED : GREEN);
+					}
 				}
 				break;
 				case ET_MINE_LAYER:
@@ -393,12 +411,17 @@ void gameCollisions(Game* game)
 					MineLayerCollisionBox mineLayer =
 						getMineLayerCollisionBox(0,enemy->position, enemy->scale);
 					player1Hit = checkCollisionPlayerMineLayer(player1,
-															   mineLayer,
-															   game->draw);
+															   mineLayer);
 					if (game->twoPlayers)
 						player2Hit = checkCollisionPlayerMineLayer(player2,
-																   mineLayer,
-																   game->draw);
+																   mineLayer);
+					if (game->draw)
+					{
+						drawShape(mineLayer.poly, ARRAY_SIZE(mineLayer.poly), (player1Hit || player2Hit) ? RED : GREEN);
+						drawShape(mineLayer.triangle1, ARRAY_SIZE(mineLayer.triangle1), (player1Hit || player2Hit) ? RED : GREEN);
+						drawShape(mineLayer.triangle2, ARRAY_SIZE(mineLayer.triangle2), (player1Hit || player2Hit) ? RED : GREEN);
+						drawShape(mineLayer.triangle3, ARRAY_SIZE(mineLayer.triangle3), (player1Hit || player2Hit) ? RED : GREEN);
+					}
 				}
 				break;
 				default:
@@ -420,7 +443,7 @@ void gameCollisions(Game* game)
 
 static void spawnMineLayer(Game *game)
 {
-	Vector2d position = {80, SCREEN_HEIGHT / 2};
+	Vector2d position = {10, SCREEN_HEIGHT / 2};
 
 	initAllEnemies(game, ET_FLOATING, 7);
 	for (int i = 0; i < game->enemyCount; i += 1)

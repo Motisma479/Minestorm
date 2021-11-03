@@ -20,7 +20,7 @@ int updateLayer(MineLayer* layer, float deltaTime)
 		layer->position.y -= 3.0f;
 	}
 
-	if(layer->scale <= 32.0f)
+	if(layer->scale <= 32.0f || layer->position.y < 0)
 	{
 		layer->scale = 0.0f;
 		layer->active = false;
