@@ -4,24 +4,24 @@
 #include "game.h"
 
 static Enemy defs[] = {
-	{{0, 0}, {0, 0}, 0, false, false,  ET_FLOATING, ES_NONE, 0.125f, 0, 100},
-	{{0, 0}, {20, 20}, 0, false, false,  ET_FLOATING, ES_BIG, 0.5f, 0, 100},                  //0
-    {{0, 0}, {40, 40}, 0, false , false, ET_FLOATING, ES_MEDIUM, 0.25f, false, 135},          //1
-    {{0, 0}, {60, 60}, 0, false , false, ET_FLOATING, ES_SMALL, 0.125f, false, 100},          //2
+	{{0, 0}, {0, 0}, 0, false, false,  ET_FLOATING, ES_NONE, 0.125f, 0, 100, false},
+	{{0, 0}, {20, 20}, 0, false, false,  ET_FLOATING, ES_BIG, 0.5f, 0, 100, false},                  //0
+    {{0, 0}, {40, 40}, 0, false , false, ET_FLOATING, ES_MEDIUM, 0.25f, false, 135, false},          //1
+    {{0, 0}, {60, 60}, 0, false , false, ET_FLOATING, ES_SMALL, 0.125f, false, 100, false},          //2
 
-    {{0, 0}, {20, 20}, 0, false , false, ET_FIREBALL, ES_BIG, 0.5f, false, 325},              //3
-    {{0, 0}, {40, 40}, 0, false , false, ET_FIREBALL, ES_MEDIUM, 0.25f, false, 360},          //4
-    {{0, 0}, {60, 60}, 0, false , false, ET_FIREBALL, ES_SMALL, 0.125f, false, 425},          //5
+    {{0, 0}, {20, 20}, 0, false , false, ET_FIREBALL, ES_BIG, 0.5f, false, 325, false},              //3
+    {{0, 0}, {40, 40}, 0, false , false, ET_FIREBALL, ES_MEDIUM, 0.25f, false, 360, false},          //4
+    {{0, 0}, {60, 60}, 0, false , false, ET_FIREBALL, ES_SMALL, 0.125f, false, 425, false},          //5
 
-    {{0, 0}, {20, 20}, 0, false , false, ET_MAGNETIC, ES_BIG, 0.5f, false, 500},              //6
-    {{0, 0}, {40, 40}, 0, false , false, ET_MAGNETIC, ES_MEDIUM, 0.25f, false, 535},          //7
-    {{0, 0}, {60, 60}, 0, false , false, ET_MAGNETIC, ES_SMALL, 0.125f, false, 600},          //8
+    {{0, 0}, {20, 20}, 0, false , false, ET_MAGNETIC, ES_BIG, 0.5f, false, 500, false},              //6
+    {{0, 0}, {40, 40}, 0, false , false, ET_MAGNETIC, ES_MEDIUM, 0.25f, false, 535, false},          //7
+    {{0, 0}, {60, 60}, 0, false , false, ET_MAGNETIC, ES_SMALL, 0.125f, false, 600, false},          //8
 
-	{{0, 0}, {20, 20}, 0, false , false, ET_MAGNETIC_FIREBALL, ES_BIG, 0.5f, false, 750},     //9
-    {{0, 0}, {40, 40}, 0, false , false, ET_MAGNETIC_FIREBALL, ES_MEDIUM, 0.25f, false, 585}, //10
-    {{0, 0}, {60, 60}, 0, false , false, ET_MAGNETIC_FIREBALL, ES_SMALL, 0.125f, false, 850}, //11
+	{{0, 0}, {20, 20}, 0, false , false, ET_MAGNETIC_FIREBALL, ES_BIG, 0.5f, false, 750, false},     //9
+    {{0, 0}, {40, 40}, 0, false , false, ET_MAGNETIC_FIREBALL, ES_MEDIUM, 0.25f, false, 585, false}, //10
+    {{0, 0}, {60, 60}, 0, false , false, ET_MAGNETIC_FIREBALL, ES_SMALL, 0.125f, false, 850, false}, //11
 
-	{{0, 0}, {200, 200},0, false, false,  ET_MINE_LAYER, ES_BIG, 0.5f, false, 850},           //12
+	{{0, 0}, {200, 200},0, false, false,  ET_MINE_LAYER, ES_BIG, 0.5f, false, 850, false},           //12
 };
 
 Enemy getEnemieStat(EnemyType type, EnemySize size){
@@ -131,7 +131,10 @@ void updateEnemy(Game *game, Enemy* enemy,float deltaTime, Player *player1, Play
 		}
 		enemy->lastShot += deltaTime;
 		if (enemy->lastShot > 6.0f)
+		{
 			enemy->lastShot = 0.0f;
+			enemy->shot = false;
+		}
 
 	}
 

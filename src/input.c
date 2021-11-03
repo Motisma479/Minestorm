@@ -53,6 +53,15 @@ void getInput(Game* game)
 		setInputFlag(KEY_L, &player2->action, PA_TURN_RIGHT);
 		setInputFlag(KEY_I, &player2->action, PA_ACCELERATION);
 	}
+	if (IsKeyPressed(KEY_MINUS))
+	{
+		game->slowDown = 0.125f;
+	}
+	if (IsKeyPressed(KEY_EQUAL))
+	{
+		game->slowDown = 1.0f;
+	}
+
 	if (IsKeyPressed('C'))
 	{
 		if (game->draw == DS_DEFAULT)

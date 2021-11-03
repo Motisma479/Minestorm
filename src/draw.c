@@ -52,7 +52,7 @@ static void drawScoreBoard(Game *game, Vector2d offset)
 		DrawText(TextFormat("%d", game->player[1].score), 445 + offset.x,
 				 0 + offset.y, 15, LIME);
 	}
-	if ((game->framesCounter / 30) % 3)
+	if ((game->framesCounter / 30) % 100)
 		DrawText("||", 490, 750, 25, YELLOW);
 	DrawText("  SPACE", 490, 750, 25, YELLOW);
 }
@@ -182,20 +182,19 @@ void drawGame(Game* game)
 		}break;
 		default:;
 	}
-#if 1
 	DrawTexturePro(game->foreground,
 				   (Rectangle){38, 40, game->foreground.width - 77,
 					   game->foreground.height - 81} ,
 				   (Rectangle){0, 0, game->foreground.width,
 					   game->foreground.height},
 				   (Vector2){0, 0}, 0, WHITE);
-#endif
 	drawScoreBoard(game, (Vector2d){0, 0});
 	if (game->state == GS_GAMEOVER)
 	{
 		drawScoreBoard(game, (Vector2d){30, 400});
 		drawGameOver(game);
 	}
+
 	EndDrawing();
 }
 

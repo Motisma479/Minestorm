@@ -30,6 +30,7 @@ typedef struct Enemy
 	EnemyType type;
 	EnemySize size;
 	float     scale;
+	bool      shot;
 	float     lastShot;
 	int       pointsToRecieve;
 } Enemy;

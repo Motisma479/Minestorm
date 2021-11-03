@@ -65,6 +65,7 @@ typedef struct Game
 	unsigned long long int highScore;
 	DrawState draw;
 	bool      mineLayerSpawned;
+	float     slowDown;
 } Game;
 
 bool initGame(Game* game);

@@ -62,6 +62,12 @@ void updateGame(Game* game)
 				{
 					Bullet* bullet = &game->bullets[i];
 					updateBullet(bullet,game->ticksCount);
+					if (bullet->source == BS_PLAYER1)
+						drawBullet(bullet, game->atlas, BLUE);
+					if (bullet->source == BS_PLAYER2)
+						drawBullet(bullet, game->atlas, GREEN);
+					if (bullet->source == BS_ENEMY)
+						drawBullet(bullet, game->atlas, RED);
 				}
 
 				for(int i = 0; i < game->enemyCount; i++)
@@ -73,7 +79,6 @@ void updateGame(Game* game)
 		} break;
 		default:;
 	}
-	game->framesCounter++;
 }
 
 static void gameAddEnemyBullet(Game *game, Enemy *enemy)
@@ -110,7 +115,11 @@ static void gameAddEnemyBullet(Game *game, Enemy *enemy)
 		angle += 180.0f;
 	Bullet bullet = {0};
 
-	initBullet(&bullet, position, angle, BS_ENEMY, speed);
+	if (!enemy->shot)
+	{
+		initBullet(&bullet, position, angle, BS_ENEMY, speed);
+		enemy->shot = true;
+	}
 	game->bullets[game->bulletCount] = bullet;
 	game->bulletCount += 1;
 }
@@ -125,12 +134,13 @@ void gameAddBullet(Game *game, BulletSource source, Enemy *enemy)
 		case BS_PLAYER2:
 		{
 
-			float speed = 500.0f;
+			float speed = 900.0f;
 
 			Player *player = &game->player[0];
 			if (source == BS_PLAYER2)
 				player = &game->player[1];
 
+			player->action &= ~(PA_SHOOT);
 			Vector2d direction = getDirection(player->rotation);
 			Vector2d position;
 			position.x  = player->position.x + (direction.x * 25);

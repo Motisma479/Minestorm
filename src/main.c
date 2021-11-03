@@ -8,6 +8,7 @@ int main()
 {
 	Game game = {0};
 
+	SetConfigFlags(FLAG_MSAA_4X_HINT);
 	InitWindow(SCREEN_WIDTH,SCREEN_HEIGHT,"MATHIEU-OSVALDO-VICTOR");
 	SetExitKey(KEY_NULL);
 	SetTargetFPS(60);
@@ -22,17 +23,27 @@ int main()
 	game.atlas = LoadTexture("assets/mines.png");
 	game.background = LoadTexture("assets/background.png");
 	game.foreground = LoadTexture("assets/foreground.png");
+	game.slowDown = 1.0f;
+	float goal = 0;
+	float deltaTime = 0;
 	while (!WindowShouldClose() && game.state != GS_CLOSE)
 	{
-		game.ticksCount = GetFrameTime();
+		deltaTime = GetFrameTime();
 		getInput(&game);
 
 		//We start drawing the background before updating
 		//because we want to draw the collisions boxes immediately after updating them
+		goal = 0;
 		BeginDrawing();
 		DrawTextureEx(game.background, (Vector2){0, 0}, 0, 1.0f, WHITE);
-		updateGame(&game);
+		while (goal < deltaTime)
+		{
+			game.ticksCount = 0.00035;
+			updateGame(&game);
+			goal += 0.00035;
+		}
 		drawGame(&game); 
+		game.framesCounter++;
 	}
 
 	UnloadTexture(game.atlas);

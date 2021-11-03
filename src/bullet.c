@@ -19,7 +19,7 @@ void updateBullet(Bullet* bullet,float deltaTime)
 	float yDeplacement = bullet->speed * sinf(bullet->angle*DEG2RAD) * deltaTime;
 	position->x += xDeplacement;
 	position->y += yDeplacement;
-	bullet->lifeTime += 1.0f * deltaTime;
+	bullet->lifeTime += deltaTime;
 	if (position->x < 10.0f) { position->x = (float)SCREEN_WIDTH - 10.0f; }
 	else if (position->x > (float)SCREEN_WIDTH - 10.0f) { position->x = 10.0f; }
 
