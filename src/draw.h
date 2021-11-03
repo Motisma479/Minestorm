@@ -5,4 +5,5 @@
 
 void drawGame(Game* game);
 void drawBullet(Bullet* bullet, const Texture2D texture, Color color);
+void drawPlayerGizmo(Game* game);
 #endif //DRAW_H

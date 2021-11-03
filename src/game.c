@@ -433,6 +433,7 @@ void gameCollisions(Game* game)
 	{
 		drawShape(player1.head, ARRAY_SIZE(player1.head), (player1Hit) ? RED : GREEN);
 		drawShape(player1.tail, ARRAY_SIZE(player1.tail), (player1Hit) ? RED : GREEN);
+		drawPlayerGizmo(game);
 		if (game->twoPlayers)
 		{
 			drawShape(player2.head, ARRAY_SIZE(player2.head), (player2Hit) ? RED : GREEN);
