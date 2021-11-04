@@ -18,6 +18,14 @@
 #define NULL (void *)0
 #endif
 
+#ifndef INFINITY 
+#define INFINITY (1.0f / 0.0f)
+#endif
+
+#ifndef MINUS_INFINITY 
+#define MINUS_INFINITY log(0)
+#endif
+
 #define ARRAY_SIZE(array) (sizeof(array) / sizeof((array)[0]))
 
 //2D vector

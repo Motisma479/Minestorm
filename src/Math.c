@@ -209,12 +209,9 @@ Vector2d getCenterConvexPoly(Vector2d *v, int size)
 
 int satAlgorithm(const Vector2d *a,const Vector2d *b, int sizeA, int sizeB)
 {
-	float infinity = 1.0f / 0.0f;
-	float minusInfinity = log(0);
-
 	for (int i = 0; i < sizeA - 1;i++)
 	{
-		Range range1 = {infinity, minusInfinity};
+		Range range1 = {INFINITY, MINUS_INFINITY};
 		Range range2 = range1;
 
 		Vector2d normal = getNormal(a[i], a[i + 1]);
@@ -244,12 +241,9 @@ int satAlgorithm(const Vector2d *a,const Vector2d *b, int sizeA, int sizeB)
 
 int satAlgorithmPolygonCircle(const Vector2d* v, int vSize, const Circle *circle)
 {
-	float infinity = 1.0f / 0.0f;
-	float minusInfinity = log(0);
-
 	for (int i = 0; i < vSize - 1;i++)
 	{
-		Range range1 = {infinity, minusInfinity};
+		Range range1 = {INFINITY, MINUS_INFINITY};
 		Range range2 = range1;
 
 		Vector2d normal = getNormal(v[i], v[i + 1]);
@@ -267,8 +261,12 @@ int satAlgorithmPolygonCircle(const Vector2d* v, int vSize, const Circle *circle
 			Vector2d normalized = normalizeVector2d(normal);
 
 
-			float projection1 = dotProduct((Vector2d){circle->center.x + (normalized.x * circle->radius), circle->center.y + (normalized.y * circle->radius)}, normal);
-			float projection2 = dotProduct((Vector2d){circle->center.x - (normalized.x * circle->radius), circle->center.y - (normalized.y * circle->radius)}, normal);
+			float projection1 = dotProduct((Vector2d){
+				circle->center.x + (normalized.x * circle->radius),
+				circle->center.y + (normalized.y * circle->radius)}, normal);
+			float projection2 = dotProduct((Vector2d){
+				circle->center.x - (normalized.x * circle->radius),
+				circle->center.y - (normalized.y * circle->radius)}, normal);
 
 			if (projection1 < range2.min)
 				range2.min = projection1;

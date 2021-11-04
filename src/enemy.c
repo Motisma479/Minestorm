@@ -6,22 +6,22 @@
 static Enemy defs[] = {
 	{{0, 0}, {0, 0}, 0, false, false,  ET_FLOATING, ES_NONE, 0.125f, 0, 100, false},
 	{{0, 0}, {20, 20}, 0, false, false,  ET_FLOATING, ES_BIG, 0.5f, 0, 100, false},                  //0
-    {{0, 0}, {40, 40}, 0, false , false, ET_FLOATING, ES_MEDIUM, 0.25f, false, 135, false},          //1
-    {{0, 0}, {60, 60}, 0, false , false, ET_FLOATING, ES_SMALL, 0.125f, false, 100, false},          //2
+    {{0, 0}, {40, 40}, 0, false , false, ET_FLOATING, ES_MEDIUM, 0.25f, 0, 135, false},          //1
+    {{0, 0}, {60, 60}, 0, false , false, ET_FLOATING, ES_SMALL, 0.125f, 0, 100, false},          //2
 
-    {{0, 0}, {20, 20}, 0, false , false, ET_FIREBALL, ES_BIG, 0.5f, false, 325, false},              //3
-    {{0, 0}, {40, 40}, 0, false , false, ET_FIREBALL, ES_MEDIUM, 0.25f, false, 360, false},          //4
-    {{0, 0}, {60, 60}, 0, false , false, ET_FIREBALL, ES_SMALL, 0.125f, false, 425, false},          //5
+    {{0, 0}, {20, 20}, 0, false , false, ET_FIREBALL, ES_BIG, 0.5f, 0, 325, false},              //3
+    {{0, 0}, {40, 40}, 0, false , false, ET_FIREBALL, ES_MEDIUM, 0.25f, 0, 360, false},          //4
+    {{0, 0}, {60, 60}, 0, false , false, ET_FIREBALL, ES_SMALL, 0.125f, 0, 425, false},          //5
 
-    {{0, 0}, {20, 20}, 0, false , false, ET_MAGNETIC, ES_BIG, 0.5f, false, 500, false},              //6
-    {{0, 0}, {40, 40}, 0, false , false, ET_MAGNETIC, ES_MEDIUM, 0.25f, false, 535, false},          //7
-    {{0, 0}, {60, 60}, 0, false , false, ET_MAGNETIC, ES_SMALL, 0.125f, false, 600, false},          //8
+    {{0, 0}, {20, 20}, 0, false , false, ET_MAGNETIC, ES_BIG, 0.5f, 0, 500, false},              //6
+    {{0, 0}, {40, 40}, 0, false , false, ET_MAGNETIC, ES_MEDIUM, 0.25f, 0, 535, false},          //7
+    {{0, 0}, {60, 60}, 0, false , false, ET_MAGNETIC, ES_SMALL, 0.125f, 0, 600, false},          //8
 
-	{{0, 0}, {20, 20}, 0, false , false, ET_MAGNETIC_FIREBALL, ES_BIG, 0.5f, false, 750, false},     //9
-    {{0, 0}, {40, 40}, 0, false , false, ET_MAGNETIC_FIREBALL, ES_MEDIUM, 0.25f, false, 585, false}, //10
-    {{0, 0}, {60, 60}, 0, false , false, ET_MAGNETIC_FIREBALL, ES_SMALL, 0.125f, false, 850, false}, //11
+	{{0, 0}, {20, 20}, 0, false , false, ET_MAGNETIC_FIREBALL, ES_BIG, 0.5f, 0, 750, false},     //9
+    {{0, 0}, {40, 40}, 0, false , false, ET_MAGNETIC_FIREBALL, ES_MEDIUM, 0.25f, 0, 585, false}, //10
+    {{0, 0}, {60, 60}, 0, false , false, ET_MAGNETIC_FIREBALL, ES_SMALL, 0.125f, 0, 850, false}, //11
 
-	{{0, 0}, {200, 200},0, false, false,  ET_MINE_LAYER, ES_BIG, 0.5f, false, 850, false},           //12
+	{{0, 0}, {200, 200},0, false, false,  ET_MINE_LAYER, ES_BIG, 0.5f, 0, 850, false},           //12
 };
 
 Enemy getEnemieStat(EnemyType type, EnemySize size){

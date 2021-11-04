@@ -199,33 +199,22 @@ void drawGame(Game* game)
 
 void drawPlayerGizmo(Game* game)
 {
-	if(game->twoPlayers)
+	int count = 1;
+	if (game->twoPlayers)
+		count = 2;
+	for(int i = 0; i < count; i++)
 	{
-		for(int i = 0; i < 2 ; i++)
-		{
-			float endX1 = game->player[i].position.x + getDirection(game->player[i].rotation).x*30 ;
-			float endY1 = game->player[i].position.y + getDirection(game->player[i].rotation).y*30;
+		float endX1 = game->player[i].position.x +
+		getDirection(game->player[i].rotation).x*30;
+		float endY1 = game->player[i].position.y +
+		getDirection(game->player[i].rotation).y*30;
+		float endX2 = game->player[i].position.x +
+		getDirection(game->player[i].rotation + 90.0f).x*30 ;
+		float endY2 = game->player[i].position.y +
+		getDirection(game->player[i].rotation + 90.0f).y*30;
 
-			float endX2 = game->player[i].position.x + getDirection(game->player[i].rotation + 90.0f).x*30 ;
-			float endY2 = game->player[i].position.y + getDirection(game->player[i].rotation + 90.0f).y*30;
-
-
-
-			DrawLine(game->player[i].position.x,game->player[i].position.y,endX1,endY1,BLUE);
-			DrawLine(game->player[i].position.x,game->player[i].position.y,endX2,endY2,RED);
-		}
-	}
-	else
-	{
-		float endX1 = game->player[0].position.x + getDirection(game->player[0].rotation).x*30 ;
-		float endY1 = game->player[0].position.y + getDirection(game->player[0].rotation).y*30;
-
-		float endX2 = game->player[0].position.x + getDirection(game->player[0].rotation + 90.0f).x*30 ;
-		float endY2 = game->player[0].position.y + getDirection(game->player[0].rotation + 90.0f).y*30;
-
-
-		DrawLine(game->player[0].position.x,game->player[0].position.y,endX1,endY1,BLUE);
-		DrawLine(game->player[0].position.x,game->player[0].position.y,endX2,endY2,RED);
+		DrawLine(game->player[i].position.x,game->player[i].position.y,endX1,endY1,BLUE);
+		DrawLine(game->player[i].position.x,game->player[i].position.y,endX2,endY2,RED);
 	}
 }
 

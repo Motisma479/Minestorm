@@ -5,7 +5,7 @@
 #include "input.h"
 #include "save.h"
 
-void loadSounds(Game *game, Sound *shot, Sound *explosion)
+static void loadSounds(Game *game, Sound *shot, Sound *explosion)
 {
 	Wave wave = LoadWave("assets/music.wav");
 	game->music = LoadSoundFromWave(wave);
@@ -27,7 +27,7 @@ void loadSounds(Game *game, Sound *shot, Sound *explosion)
 	PlaySound(game->music);
 }
 
-void unloadData(Game *game, Sound *shot, Sound *explosion)
+static void unloadData(Game *game, Sound *shot, Sound *explosion)
 {
 	UnloadTexture(game->atlas);
 	UnloadTexture(game->background);
