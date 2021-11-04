@@ -36,6 +36,7 @@ void unloadData(Game *game, Sound *shot, Sound *explosion)
 	UnloadSound(game->levelIntro);
 	UnloadSound(*shot);
 	UnloadSound(*explosion);
+	CloseAudioDevice();
 }
 
 int main()
