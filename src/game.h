@@ -79,22 +79,11 @@ int gameEnemyAliveCount(Game* game);
 void gameAddBullet(Game *game, BulletSource source, Enemy *enemy);
 void gameRemoveBullet(Game *game);
 void gameCollisions(Game* game);
-
-void loadData(Game* game);
-void unloadData(Game* game);
-
 void gameIsOver(Game* game);
-void Shutdown(Game* game);
 
 bool initGame(Game* game);
 void processInput(Game* game);
 void updateGame(Game* game);
 void runGameLoop(Game* game);
 void shutdown(Game* game);
-
 int addEnemy(Game *game, EnemySize size, EnemyType type);
-
-void pauseGame(Game* game);
-void drawGameBackground(Game* game);
-void loadGameData(Game* game);
-void unloadGameData(Game* game);

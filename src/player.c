@@ -56,7 +56,7 @@ void updatePlayer(Player* player, float deltaTime)
 	}
 }
 
-void drawPlayer(Player* player, float scale, Color color, const Texture2D texture)
+void drawPlayer(Player* player, float scale, Color color, const Texture2D* texture)
 {
 	if (player->lives > 0)
 	{
@@ -70,9 +70,10 @@ void drawPlayer(Player* player, float scale, Color color, const Texture2D textur
 		};
 		Vector2 origin = {playerPos.width / 2, (playerPos.height / 2) + 5};
 
-		DrawTexturePro(texture, textureCoord,
-					   playerPos, origin, player->rotation + 90.0f, color);
+		DrawTexturePro(*texture, textureCoord,
+					playerPos, origin, player->rotation + 90.0f, color);
 	}
+
 }
 
 void teleportingPlayer(Player* player)

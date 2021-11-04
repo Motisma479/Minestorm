@@ -3,11 +3,11 @@
 
 void initLayer(MineLayer* layer)
 {
-	*layer = (MineLayer){0};
 	layer->scale = 640.0f;
 	layer->position = (Vector2d){ (float)SCREEN_WIDTH / 2.0f,
 		(float)SCREEN_HEIGHT / 2.0f};
 	layer->active = true;
+	//layer->active = false;
 	layer->rotation = 0.0f;
 	layer->layerEnd = false;
 }
@@ -29,15 +29,14 @@ int updateLayer(MineLayer* layer, float deltaTime)
 	}
 	return (0);
 }
-
-void drawLayer(MineLayer* layer, const Texture2D texture)
+void drawLayer(MineLayer* layer, const Texture2D* texture)
 {
 	if (layer->active && layer->scale >= 32.0f)
 	{
-		Rectangle rect = { texture.width / 2.0f,0.0f,texture.width / 4.0f,texture.height / 2.0f };
+		Rectangle rect = { texture->width / 2.0f,0.0f,texture->width / 4.0f,texture->height / 2.0f };
 		Rectangle position = { layer->position.x,layer->position.y,layer->scale,layer->scale};
 		Vector2 center = { layer->scale / 2.0f,layer->scale / 2.0f };
 
-		DrawTexturePro(texture, rect, position, center, layer->rotation, WHITE);
+		DrawTexturePro(*texture, rect, position, center, layer->rotation, WHITE);
 	}
 }

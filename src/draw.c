@@ -6,13 +6,13 @@ static void drawLives(Game *game, Player *player, Vector2d offset, Color color)
 {
 	float scale = 0.1f;
 	if (player->lives > 0)
-		drawPlayer(player, scale, color, game->atlas);
+		drawPlayer(player, scale, color, &game->atlas);
 	player->position = (Vector2d){220+offset.x, 12+offset.y};
 	if (player->lives > 1)
-		drawPlayer(player, scale, color, game->atlas);
+		drawPlayer(player, scale, color, &game->atlas);
 	player->position = (Vector2d){240+offset.x, 12+offset.y};
 	if (player->lives > 2)
-		drawPlayer(player, scale, color, game->atlas);
+		drawPlayer(player, scale, color, &game->atlas);
 }
 
 static void drawLives2(Game *game, Player *player, Vector2d offset, Color color)
@@ -21,13 +21,13 @@ static void drawLives2(Game *game, Player *player, Vector2d offset, Color color)
 	player->rotation = -90.0f;
 	player->position = (Vector2d){SCREEN_WIDTH-53-offset.x, 12+offset.y};
 	if (player->lives > 0)
-		drawPlayer(player, scale, color, game->atlas);
+		drawPlayer(player, scale, color, &game->atlas);
 	player->position = (Vector2d){SCREEN_WIDTH-73-offset.x, 12+offset.y};
 	if (player->lives > 1)
-		drawPlayer(player, scale, color, game->atlas);
+		drawPlayer(player, scale, color, &game->atlas);
 	player->position = (Vector2d){SCREEN_WIDTH-93-offset.x, 12+offset.y};
 	if (player->lives > 2)
-		drawPlayer(player, scale, color, game->atlas);
+		drawPlayer(player, scale, color, &game->atlas);
 }
 
 static void drawScoreBoard(Game *game, Vector2d offset)
@@ -167,17 +167,17 @@ void drawGame(Game* game)
 					{
 						Bullet* bullet = &game->bullets[i];
 						if (bullet->source == BS_PLAYER1)
-							drawBullet(bullet, game->atlas, SKYBLUE);
+							drawBullet(bullet, &game->atlas, SKYBLUE);
 						else if (bullet->source == BS_PLAYER2)
-							drawBullet(bullet, game->atlas, GREEN);
+							drawBullet(bullet, &game->atlas, GREEN);
 						else if (bullet->source == BS_ENEMY)
-							drawBullet(bullet, game->atlas, RED);
+							drawBullet(bullet, &game->atlas, RED);
 					}
-					drawPlayer(&game->player[0], 0.25f, SKYBLUE, game->atlas);
+					drawPlayer(&game->player[0], 0.25f, SKYBLUE, &game->atlas);
 					if (game->twoPlayers)
-						drawPlayer(&game->player[1], 0.25f, GREEN, game->atlas);
+						drawPlayer(&game->player[1], 0.25f, GREEN, &game->atlas);
 				}
-				drawLayer(&game->layer, game->atlas);
+				drawLayer(&game->layer, &game->atlas);
 			}
 		}break;
 		default:;
@@ -211,7 +211,8 @@ void drawPlayerGizmo(Game* game)
 			float endY2 = game->player[i].position.y + getDirection(game->player[i].rotation + 90.0f).y*30;
 
 
-			DrawLine(game->player[i].position.x,game->player[i].position.y,endX1,endY1,GREEN);
+
+			DrawLine(game->player[i].position.x,game->player[i].position.y,endX1,endY1,BLUE);
 			DrawLine(game->player[i].position.x,game->player[i].position.y,endX2,endY2,RED);
 		}
 	}
@@ -224,9 +225,26 @@ void drawPlayerGizmo(Game* game)
 		float endY2 = game->player[0].position.y + getDirection(game->player[0].rotation + 90.0f).y*30;
 
 
-		DrawLine(game->player[0].position.x,game->player[0].position.y,endX1,endY1,GREEN);
+		DrawLine(game->player[0].position.x,game->player[0].position.y,endX1,endY1,BLUE);
 		DrawLine(game->player[0].position.x,game->player[0].position.y,endX2,endY2,RED);
 	}
+}
 
+void drawEnemyGizmo(Game* game)
+{
+	for(int i = 0; i < game->enemyCount ; i++)
+	{
+		if(game->enemies[i].active)
+		{
+			float endX1 = game->enemies[i].position.x + getDirection(game->enemies[i].rotation).x*35;
+			float endY1 = game->enemies[i].position.y + getDirection(game->enemies[i].rotation).y*35;
 
+			float endX2 = game->enemies[i].position.x + getDirection(game->enemies[i].rotation + 90.0f).x*35;
+			float endY2 = game->enemies[i].position.y + getDirection(game->enemies[i].rotation + 90.0f).y*35;
+
+			DrawLine(game->enemies[i].position.x  ,game->enemies[i].position.y,endX1,endY1,RED);
+			DrawLine(game->enemies[i].position.x  ,game->enemies[i].position.y,endX2,endY2,BLUE);
+		}
+
+	}
 }

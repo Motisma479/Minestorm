@@ -3,6 +3,10 @@
 #include "collision.h"
 #include "levels.h"
 #include "player.h"
+#include <stddef.h>
+
+/* float posX = 0.0f; */
+/* float posY = 0.0f; */
 
 int addEnemy(Game *game, EnemySize size, EnemyType type)
 {
@@ -63,11 +67,11 @@ void updateGame(Game* game)
 					Bullet* bullet = &game->bullets[i];
 					updateBullet(bullet,game->ticksCount);
 					if (bullet->source == BS_PLAYER1)
-						drawBullet(bullet, game->atlas, BLUE);
+						drawBullet(bullet, &game->atlas, BLUE);
 					if (bullet->source == BS_PLAYER2)
-						drawBullet(bullet, game->atlas, GREEN);
+						drawBullet(bullet, &game->atlas, GREEN);
 					if (bullet->source == BS_ENEMY)
-						drawBullet(bullet, game->atlas, RED);
+						drawBullet(bullet, &game->atlas, RED);
 				}
 
 				for(int i = 0; i < game->enemyCount; i++)
@@ -302,6 +306,7 @@ static void bulletBulletCollisions(Game *game, bool *player1Hit, bool *player2Hi
 		}
 	}
 
+
 }
 
 void gameCollisions(Game* game)
@@ -443,12 +448,16 @@ void gameCollisions(Game* game)
 	{
 		drawShape(player1.head, ARRAY_SIZE(player1.head), (player1Hit) ? RED : GREEN);
 		drawShape(player1.tail, ARRAY_SIZE(player1.tail), (player1Hit) ? RED : GREEN);
-		drawPlayerGizmo(game);
+
 		if (game->twoPlayers)
 		{
 			drawShape(player2.head, ARRAY_SIZE(player2.head), (player2Hit) ? RED : GREEN);
 			drawShape(player2.tail, ARRAY_SIZE(player2.tail), (player2Hit) ? RED : GREEN);
 		}
+
+		/*********DRAW PLAYERS GIZMO**********/
+		drawPlayerGizmo(game);
+		drawEnemyGizmo(game);
 	}
 }
 

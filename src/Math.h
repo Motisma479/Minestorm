@@ -98,12 +98,16 @@ typedef union Shapes
 
 //Type's of shape
 //typedef enum ShapeType{POINT_SHAPE = 1,SEGMENT_SHAPE,AABB_SHAPE,
+                        //OBB_SHAPE,TRIANGLE_SHAPE,CONVEX_SHAPE} ShapeType;
+	//OBB_SHAPE,TRIANGLE_SHAPE,CONVEX_SHAPE} ShapeType;
 //OBB_SHAPE,TRIANGLE_SHAPE,CONVEX_SHAPE} ShapeType;
 //OBB_SHAPE,TRIANGLE_SHAPE,CONVEX_SHAPE} ShapeType;
 
 //Polygon
 //typedef struct PolygonShape
 //{
+    //ShapeType type;
+    //Shapes shapes;
 //ShapeType type;
 //Shapes shapes;
 
@@ -153,6 +157,5 @@ bool rangeOverlapRange(Range r1, Range r2);
 
 //bool intersect(PolygonShape shape1,int type1,PolygonShape shape2,int type2);
 //void getNumberOfVertices(PolygonShape shape,int type,int* nbVertices);
-
 int satAlgorithm(const Vector2d *a, const Vector2d *b, int sizeA, int sizeB);
 int satAlgorithmPolygonCircle(const Vector2d* v, int vSize, const Circle* circle);

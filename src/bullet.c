@@ -27,12 +27,12 @@ void updateBullet(Bullet* bullet,float deltaTime)
 	else if (position->y > (float)SCREEN_HEIGHT - 10.0f) { position->y = 10.0f; }
 }
 
-void drawBullet(Bullet* bullet, const Texture2D texture, Color color)
+void drawBullet(Bullet* bullet, const Texture2D* texture, Color color)
 {
 	Rectangle rect     = {885, 116, 25, 25};
 	Rectangle position = {bullet->position.x,bullet->position.y ,
 		rect.width / 4, rect.height / 4};
 	Vector2 origin     = {position.width / 2, position.height / 2};
 
-	DrawTexturePro(texture,rect,position,origin, 0, color);
+	DrawTexturePro(*texture,rect,position,origin, 0, color);
 }
