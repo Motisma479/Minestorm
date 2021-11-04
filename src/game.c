@@ -64,12 +64,12 @@ void updateGame(Game* game)
 				{
 					Bullet* bullet = &game->bullets[i];
 					updateBullet(bullet,game->deltaTime);
-					/*if (bullet->source == BS_PLAYER1)
+					if (bullet->source == BS_PLAYER1)
 						drawBullet(bullet, &game->atlas, BLUE);
 					if (bullet->source == BS_PLAYER2)
 						drawBullet(bullet, &game->atlas, GREEN);
 					if (bullet->source == BS_ENEMY)
-						drawBullet(bullet, &game->atlas, RED);*/
+						drawBullet(bullet, &game->atlas, RED);
 				}
 
 				for(int i = 0; i < game->enemyCount; i++)
