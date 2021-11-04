@@ -3,17 +3,15 @@
 #include "collision.h"
 #include "levels.h"
 #include "player.h"
-#include <stddef.h>
+#include "save.h"
 
 int addEnemy(Game *game, EnemySize size, EnemyType type)
-
 {
 	for (int i = 0; i < game->enemyCount;i++)
 	{
 		Enemy *enemy = &game->enemies[i];
 		if (!enemy->active)
 		{
-
 			initEnemy(enemy, enemy->position, type, size);
 			enemy->active = true;
 			return (1);
@@ -64,12 +62,12 @@ void updateGame(Game* game)
 				{
 					Bullet* bullet = &game->bullets[i];
 					updateBullet(bullet,game->ticksCount);
-					if (bullet->source == BS_PLAYER1)
+					/*if (bullet->source == BS_PLAYER1)
 						drawBullet(bullet, &game->atlas, BLUE);
 					if (bullet->source == BS_PLAYER2)
 						drawBullet(bullet, &game->atlas, GREEN);
 					if (bullet->source == BS_ENEMY)
-						drawBullet(bullet, &game->atlas, RED);
+						drawBullet(bullet, &game->atlas, RED);*/
 				}
 
 				for(int i = 0; i < game->enemyCount; i++)
@@ -304,8 +302,6 @@ static void bulletBulletCollisions(Game *game, bool *player1Hit, bool *player2Hi
 			break;
 		}
 	}
-
-
 }
 
 void gameCollisions(Game* game)
@@ -483,14 +479,17 @@ void gameIsOver(Game* game)
 {
 	if (game->state == GS_PLAY && !game->twoPlayers)
 	{
-		if (game->player[0].lives <= 0)
+		if (game->player[0].lives <= 0){
 			game->state = GS_GAMEOVER;
+			saveHScore(game->highScore);
+		}
 	}
 	else if (game->twoPlayers)
 	{
-		if (game->player[0].lives <= 0 &&
-			game->player[1].lives <= 0 )
+		if (game->player[0].lives <= 0 && game->player[1].lives <= 0 ){
 			game->state = GS_GAMEOVER;
+			saveHScore(game->highScore);
+		}
 	}
 
 	for(int i = 0; i < game->enemyCount; i++)

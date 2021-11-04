@@ -194,7 +194,6 @@ void drawGame(Game* game)
 		drawScoreBoard(game, (Vector2d){30, 400});
 		drawGameOver(game);
 	}
-	DrawFPS(0, 0);
 	EndDrawing();
 }
 

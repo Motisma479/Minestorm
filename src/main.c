@@ -3,13 +3,16 @@
 #include "levels.h"
 #include "draw.h"
 #include "input.h"
+#include "save.h"
 
 int main()
 {
 	Game game = {0};
 
+
 	SetConfigFlags(FLAG_VSYNC_HINT);
 	InitWindow(SCREEN_WIDTH,SCREEN_HEIGHT,"MATHIEU-OSVALDO-VICTOR");
+	game.highScore = loadHScore();
 	SetExitKey(KEY_NULL);
 	SetTargetFPS(60);
 	game.state = GS_MENU;
@@ -23,7 +26,6 @@ int main()
 	game.atlas = LoadTexture("assets/mines.png");
 	game.background = LoadTexture("assets/background.png");
 	game.foreground = LoadTexture("assets/foreground.png");
-	game.slowDown = 1.0f;
 	float goal = 0;
 	float deltaTime = 0;
 	while (!WindowShouldClose() && game.state != GS_CLOSE)

@@ -2,12 +2,12 @@ PROGRAM=minestorm
 
 # Add your objs to generate in OBJS var
 
-OBJS=src/main.o src/game.o src/player.o src/mineLayer.o src/enemy.o src/draw.o src/bullet.o src/Math.o src/levels.o src/input.o src/collision.o
+OBJS=src/main.o src/game.o src/player.o src/mineLayer.o src/enemy.o src/draw.o src/bullet.o src/Math.o src/levels.o src/input.o src/collision.o src/save.o
 
 CC=gcc
 TARGET=$(shell $(CC) -dumpmachine)
 
-CFLAGS=-O0 -g -Wall -Wextra -Wno-unused-parameter
+CFLAGS=-O0 -g -Wall -Wextra -Wno-unused-parameter -Wunused-function
 CPPFLAGS=-Iinclude -Ithird_party/include -MMD
 LDFLAGS=-Lthird_party/libs-$(TARGET)
 LDLIBS=-lraylib

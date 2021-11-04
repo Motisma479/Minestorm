@@ -7,6 +7,9 @@
 #include "Math.h"
 #include "enemy.h"
 
+
+typedef unsigned long long int u64;
+
 typedef enum
 {
 	GS_MENU,
@@ -39,20 +42,20 @@ typedef struct Player
 	Vector2d     acceleration;
     float        rotation;
 	char         lives;
-	unsigned long long int score;
+	u64          score;
 	PlayerAction action;
 	Rectangle    textureCoord;
 } Player;
 
 typedef struct Game
 {
-	GameState state;
 	Texture2D atlas;
 	Texture2D foreground;
 	Texture2D background;
-
+	GameState state;
 	Player    player[2];
 	MineLayer layer;
+	u64       highScore;
 	int       enemyCount;
 	int       bulletCount;
 	Bullet    bullets[BULLET_CAPACITY];
@@ -60,13 +63,12 @@ typedef struct Game
 	int       level;
 	int       framesCounter;
 	float     ticksCount;
-	bool      twoPlayers;
-	bool      levelStart;
-	unsigned long long int highScore;
+	float     slowDown;
 	DrawState draw;
 	bool      mineLayerSpawned;
-	float     slowDown;
 	bool      mineLayerUpdated;
+	bool      twoPlayers;
+	bool      levelStart;
 } Game;
 
 bool initGame(Game* game);
@@ -87,4 +89,6 @@ void processInput(Game* game);
 void updateGame(Game* game);
 void runGameLoop(Game* game);
 void shutdown(Game* game);
+
 int  addEnemy(Game *game, EnemySize size, EnemyType type);
+
