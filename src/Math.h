@@ -54,9 +54,8 @@ typedef struct AABB
 {
     Vector2d min;
     Vector2d max;
-    //Vector2d position;
-    //Vector2d size;
 } AABB;
+
 //Oriented box
 typedef struct OBB
 {
@@ -81,38 +80,6 @@ typedef struct ConvexPolygon
     Vector2d* points;
 
 } ConvexPolygon;
-
-//Union for store all polygon
-typedef union Shapes
-{
-    Vector2d vector;
-    LineSegment segment;
-    AABB rectAB;
-    OBB  rectOB;
-    Triangle triangle;
-    ConvexPolygon convexPoly;
-    //Circle circle;
-
-} Shapes;
-
-
-//Type's of shape
-//typedef enum ShapeType{POINT_SHAPE = 1,SEGMENT_SHAPE,AABB_SHAPE,
-                        //OBB_SHAPE,TRIANGLE_SHAPE,CONVEX_SHAPE} ShapeType;
-	//OBB_SHAPE,TRIANGLE_SHAPE,CONVEX_SHAPE} ShapeType;
-//OBB_SHAPE,TRIANGLE_SHAPE,CONVEX_SHAPE} ShapeType;
-//OBB_SHAPE,TRIANGLE_SHAPE,CONVEX_SHAPE} ShapeType;
-
-//Polygon
-//typedef struct PolygonShape
-//{
-    //ShapeType type;
-    //Shapes shapes;
-//ShapeType type;
-//Shapes shapes;
-
-//} PolygonShape;
-
 
 //2D Vector functions
 Vector2d zeroVector2d();
@@ -149,7 +116,6 @@ bool testCircleRect(Circle c, AABB rect);
 //Fonctions for the SAT
 Vector2d getCenterConvexPoly(Vector2d *v, int size);
 Range getPointProjOnVector(Vector2d vector, Vector2d point);
-//void getNumberOfVertices(PolygonShape shape,int type,int* nbVertices);
 Range getMinRange(Range r1, Range r2);
 Range getMaxRange(Range r1, Range r2);
 bool rangeOverlapRange(Range r1, Range r2);
@@ -159,3 +125,4 @@ bool rangeOverlapRange(Range r1, Range r2);
 //void getNumberOfVertices(PolygonShape shape,int type,int* nbVertices);
 int satAlgorithm(const Vector2d *a, const Vector2d *b, int sizeA, int sizeB);
 int satAlgorithmPolygonCircle(const Vector2d* v, int vSize, const Circle* circle);
+

@@ -9,9 +9,9 @@ typedef struct MineLayer
 	bool active;
 	float rotation;
 	bool layerEnd;
-
 } MineLayer;
 
 void initLayer(MineLayer* layer);
-int updateLayer(MineLayer* layer,float deltaTime);
+int updateLayer(MineLayer* layer, float deltaTime, bool *levelStart);
 void drawLayer(MineLayer* layer, const Texture2D* texture);
+

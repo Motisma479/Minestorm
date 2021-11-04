@@ -5,16 +5,15 @@
 #include "player.h"
 #include <stddef.h>
 
-/* float posX = 0.0f; */
-/* float posY = 0.0f; */
-
 int addEnemy(Game *game, EnemySize size, EnemyType type)
+
 {
 	for (int i = 0; i < game->enemyCount;i++)
 	{
 		Enemy *enemy = &game->enemies[i];
 		if (!enemy->active)
 		{
+
 			initEnemy(enemy, enemy->position, type, size);
 			enemy->active = true;
 			return (1);
@@ -43,15 +42,14 @@ void updateGame(Game* game)
 			game->player[1].action &= ~(PA_SHOOT);
 		}break;
 		case GS_PLAY:{
-			if (game->levelStart == false)
+			if (game->levelStart == false && !game->mineLayerUpdated)
 			{
-				if (updateLayer(&game->layer, game->ticksCount))
+				if (updateLayer(&game->layer, game->ticksCount, &game->levelStart))
 				{
-					game->levelStart = true;
 					startLevel(game);
 				}
 			}
-			else
+			else if (game->levelStart)
 			{
 				updatePlayer(&game->player[0], game->ticksCount);
 				if (game->player[0].action & PA_SHOOT)
@@ -91,9 +89,10 @@ static void gameAddEnemyBullet(Game *game, Enemy *enemy)
 	float   angle;
 	float speed = 100.0f;
 	Vector2d direction = subsVector2d(game->player[0].position, enemy->position);
+
 	Vector2d direction1 = subsVector2d(game->player[1].position, enemy->position);
 
-	if (lengthVector2d(direction) > lengthVector2d(direction1))
+	if (lengthVector2d(direction) > lengthVector2d(direction1) && game->twoPlayers)
 		direction = direction1;
 
 	direction = normalizeVector2d(direction);
@@ -457,7 +456,7 @@ void gameCollisions(Game* game)
 
 		/*********DRAW PLAYERS GIZMO**********/
 		drawPlayerGizmo(game);
-		drawEnemyGizmo(game);
+		//drawEnemyGizmo(game);
 	}
 }
 

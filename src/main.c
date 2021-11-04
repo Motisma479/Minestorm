@@ -8,7 +8,7 @@ int main()
 {
 	Game game = {0};
 
-	SetConfigFlags(FLAG_MSAA_4X_HINT);
+	SetConfigFlags(FLAG_VSYNC_HINT);
 	InitWindow(SCREEN_WIDTH,SCREEN_HEIGHT,"MATHIEU-OSVALDO-VICTOR");
 	SetExitKey(KEY_NULL);
 	SetTargetFPS(60);
@@ -36,10 +36,12 @@ int main()
 		goal = 0;
 		BeginDrawing();
 		DrawTextureEx(game.background, (Vector2){0, 0}, 0, 1.0f, WHITE);
+		game.mineLayerUpdated = false;
 		while (goal < deltaTime)
 		{
 			game.ticksCount = 0.00035;
 			updateGame(&game);
+			game.mineLayerUpdated = true;
 			goal += 0.00035;
 		}
 		drawGame(&game); 

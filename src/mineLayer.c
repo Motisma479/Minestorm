@@ -12,11 +12,11 @@ void initLayer(MineLayer* layer)
 	layer->layerEnd = false;
 }
 
-int updateLayer(MineLayer* layer, float deltaTime)
+int updateLayer(MineLayer* layer, float deltaTime, bool *levelStart)
 {
 	if (layer->active && layer->scale >= 32.0f)
 	{
-		layer->scale -= layer->scale*1000.0f / 1024.0f*deltaTime;
+		layer->scale -= layer->scale*5000.0f / 100.0f*deltaTime;
 		layer->position.y -= 3.0f;
 	}
 
@@ -25,6 +25,7 @@ int updateLayer(MineLayer* layer, float deltaTime)
 		layer->scale = 0.0f;
 		layer->active = false;
 		layer->layerEnd = true;
+		*levelStart = true;
 		return (1);
 	}
 	return (0);

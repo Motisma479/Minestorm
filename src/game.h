@@ -66,6 +66,7 @@ typedef struct Game
 	DrawState draw;
 	bool      mineLayerSpawned;
 	float     slowDown;
+	bool      mineLayerUpdated;
 } Game;
 
 bool initGame(Game* game);
@@ -86,4 +87,4 @@ void processInput(Game* game);
 void updateGame(Game* game);
 void runGameLoop(Game* game);
 void shutdown(Game* game);
-int addEnemy(Game *game, EnemySize size, EnemyType type);
+int  addEnemy(Game *game, EnemySize size, EnemyType type);

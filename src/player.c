@@ -71,7 +71,7 @@ void drawPlayer(Player* player, float scale, Color color, const Texture2D* textu
 		Vector2 origin = {playerPos.width / 2, (playerPos.height / 2) + 5};
 
 		DrawTexturePro(*texture, textureCoord,
-					playerPos, origin, player->rotation + 90.0f, color);
+					   playerPos, origin, player->rotation + 90.0f, color);
 	}
 
 }

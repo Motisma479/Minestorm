@@ -1,4 +1,5 @@
 #include "Math.h"
+#include <raylib.h>
 #include <stdio.h>
 
 Vector2d zeroVector2d()
@@ -16,9 +17,9 @@ Vector2d subsVector2d(Vector2d a,Vector2d b)
 bool isEqualToVector2d(Vector2d a,Vector2d b)
 {
     bool test = (a.x - b.x) >= -EPSILON  && (a.x - b.x) <= EPSILON && 
-		(a.y - b.y) >= -EPSILON  && (a.y - b.y) <= EPSILON;
+	(a.y - b.y) >= -EPSILON  && (a.y - b.y) <= EPSILON;
 
-    return test;
+	return test;
 }
 Vector2d normalizeVector2d(Vector2d v)
 {
@@ -134,63 +135,16 @@ bool testCircleRect(Circle c, AABB rect)
     float distY;
 
     if(c.center.x < rect.min.x) distX = rect.min.x;
-    else distX = rect.max.x;
+	else distX = rect.max.x;
 
     if(c.center.y < rect.min.y) distY = rect.min.y;
     else distY = rect.max.y;
 
-    float distSq = lengthSqVector2d((Vector2d){distX,distY});
+	float distSq = lengthSqVector2d((Vector2d){distX,distY});
 
     return distSq <= c.radius * c.radius;
 
 }
-
-/*int countVertices(PolygonShape)
-{
-
-}
-*/
-
-/*void getNumberOfVertices(PolygonShape shape,int type,int* nbVertices)
-{
-	//int count;
-	shape.type = type;
-
-    switch (shape.type)
-    {
-        case POINT_SHAPE:
-		*nbVertices = 1;
-		break;
-        case SEGMENT_SHAPE:
-		*nbVertices = 2;
-		break;
-        case TRIANGLE_SHAPE:
-		*nbVertices = 3;
-		break;
-        case AABB_SHAPE:
-		*nbVertices = 4;
-		break;
-        case OBB_SHAPE:
-		*nbVertices = 4;
-		break;
-        case CONVEX_SHAPE:
-		for(int i = 0; i < shape.shapes.convexPoly.nbPoints; i++)
-		{
-			Vector2d* p1 = &shape.shapes.convexPoly.points[i];
-			//Next vertex;
-			Vector2d* p2 = &shape.shapes.convexPoly.points[ i + 1 == shape.shapes.convexPoly.nbPoints ? 0 : i+1 ];
-
-			if(!isEqualToVector2d(*p1,*p2))
-			{
-				*nbVertices += 1;
-			}
-		}
-		break;
-        default:
-		break;
-    }
-}
-*/
 
 Range getMinRange(Range r1, Range r2)
 {
@@ -214,7 +168,6 @@ Vector2d getNormal(Vector2d a, Vector2d b)
 
 	result.x = -(b.y - a.y);
 	result.y = (b.x - a.x);
-	//result = normalizeVector2d(result);
 	return (result);
 }
 
@@ -265,16 +218,6 @@ int satAlgorithm(const Vector2d *a,const Vector2d *b, int sizeA, int sizeB)
 		Range range2 = range1;
 
 		Vector2d normal = getNormal(a[i], a[i + 1]);
-/* 		printf("normal x.%f y.%f x.%f y.%f %f %f\n",a[i].x, a[i].y, a[i+1].x, a[i+1].y, normal.x, normal.y);
-		Vector2d absNormal = normal;
-		Vector2d normalized = absNormal;
-		if (absNormal.x < 0)
-			absNormal.x = -absNormal.x;
-		if (absNormal.y < 0)
-			absNormal.y = -absNormal.y;
-		absNormal.x += a[i].x;
-		absNormal.y += a[i].y; */
-		//DrawLine(absNormal.x, absNormal.y, absNormal.x + (10*normalized.x), absNormal.y + (10*normalized.y), WHITE);
 		for (int j = 0; j < sizeA;j++)
 		{
 			float projection = dotProduct(a[j], normal);
