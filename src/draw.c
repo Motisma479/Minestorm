@@ -233,7 +233,7 @@ void drawEnemyGizmo(Game* game)
 {
 	for(int i = 0; i < game->enemyCount ; i++)
 	{
-		if(game->enemies[i].active)
+		if(game->enemies[i].type != ET_NONE && game->enemies[i].active)
 		{
 			float endX1 = game->enemies[i].position.x + getDirection(game->enemies[i].rotation).x*35;
 			float endY1 = game->enemies[i].position.y + getDirection(game->enemies[i].rotation).y*35;

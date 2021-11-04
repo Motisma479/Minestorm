@@ -452,7 +452,7 @@ void gameCollisions(Game* game)
 
 		/*********DRAW PLAYERS GIZMO**********/
 		drawPlayerGizmo(game);
-		//drawEnemyGizmo(game);
+		drawEnemyGizmo(game);
 	}
 }
 
