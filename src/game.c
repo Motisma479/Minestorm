@@ -29,13 +29,14 @@ void updateGame(Game* game)
 	switch(game->state)
 	{
 		case GS_MENU:{
-			if (game->player[1].action & PA_SHOOT)
+			if (game->player[1].action & PA_SHOOT||
+				game->player[0].action & PA_SHOOT)
 			{
 				game->state = GS_PLAY;
-				game->twoPlayers = true;
-			}
-			else if (game->player[0].action & PA_SHOOT)
 				game->state = GS_PLAY;
+				StopSound(game->music);
+				PlaySound(game->levelIntro);
+			}
 			game->player[0].action &= ~(PA_SHOOT);
 			game->player[1].action &= ~(PA_SHOOT);
 		}break;
@@ -49,6 +50,7 @@ void updateGame(Game* game)
 			}
 			else if (game->levelStart)
 			{
+				StopSound(game->levelIntro);
 				updatePlayer(&game->player[0], game->ticksCount);
 				if (game->player[0].action & PA_SHOOT)
 					gameAddBullet(game, BS_PLAYER1, NULL);
@@ -118,6 +120,7 @@ static void gameAddEnemyBullet(Game *game, Enemy *enemy)
 
 	if (!enemy->shot)
 	{
+		game->bulletShot = true;
 		initBullet(&bullet, position, angle, BS_ENEMY, speed);
 		enemy->shot = true;
 	}
@@ -149,6 +152,7 @@ void gameAddBullet(Game *game, BulletSource source, Enemy *enemy)
 			float angle = player->rotation;
 
 			Bullet bullet = {0};
+			game->bulletShot = true;
 			initBullet(&bullet, position, angle, source, speed);
 			game->bullets[game->bulletCount] = bullet;
 			game->bulletCount += 1;
@@ -298,6 +302,7 @@ static void bulletBulletCollisions(Game *game, bool *player1Hit, bool *player2Hi
 			*player2Hit = checkCollisionPlayerBullet(*player2, *bullet, game->draw);
 		if (*player1Hit || *player2Hit)
 		{
+			game->entityDestroyed = true;
 			bullet->lifeTime = 1000.0f;
 			break;
 		}
@@ -315,7 +320,8 @@ void gameCollisions(Game* game)
 	bulletBulletCollisions(game, &player1Hit, &player2Hit, &player1, &player2);
 	for(int i = 0; i < game->enemyCount; i++)
 	{
-		if ((player1Hit  && game->player[0].lives > 0)|| (player2Hit && game->player[1].lives > 0))
+		if ((player1Hit  && game->player[0].lives > 0) ||
+			(player2Hit && game->player[1].lives > 0))
 		{
 			Player *player = &game->player[0];
 			if (player2Hit)
@@ -331,6 +337,8 @@ void gameCollisions(Game* game)
 			startLevel(game);
 			initLayer(&game->layer);
 			game->levelStart = false;
+			StopSound(game->music);
+			PlaySound(game->levelIntro);
 			break;
 		}
 		Enemy* enemy = &game->enemies[i];
@@ -340,6 +348,7 @@ void gameCollisions(Game* game)
 			if (collisionEnemyBullet(game, enemy, bullet))
 			{
 				enemy->type = ET_NONE;
+				game->entityDestroyed = true;
 				bullet->lifeTime = 1000.0f;
 			}
 		}
@@ -497,7 +506,6 @@ void gameIsOver(Game* game)
 		if (game->enemies[i].type != ET_NONE)
 			return;
 	}
-
 	if (game->mineLayerSpawned)
 	{
 		game->level++;

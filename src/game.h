@@ -65,10 +65,14 @@ typedef struct Game
 	float     ticksCount;
 	float     slowDown;
 	DrawState draw;
+	Sound     music;
+	Sound     levelIntro;
 	bool      mineLayerSpawned;
 	bool      mineLayerUpdated;
 	bool      twoPlayers;
 	bool      levelStart;
+	bool      bulletShot;
+	bool      entityDestroyed;
 } Game;
 
 bool initGame(Game* game);

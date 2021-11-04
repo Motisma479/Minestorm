@@ -5,6 +5,39 @@
 #include "input.h"
 #include "save.h"
 
+void loadSounds(Game *game, Sound *shot, Sound *explosion)
+{
+	Wave wave = LoadWave("assets/music.wav");
+	game->music = LoadSoundFromWave(wave);
+	UnloadWave(wave);
+	wave = LoadWave("assets/start.wav");
+	game->levelIntro = LoadSoundFromWave(wave);
+	UnloadWave(wave);
+	wave = LoadWave("assets/shot.wav");
+	*shot = LoadSoundFromWave(wave);
+	UnloadWave(wave);
+	PlaySound(game->music);
+	wave = LoadWave("assets/explosion.wav");
+	*explosion = LoadSoundFromWave(wave);
+	UnloadWave(wave);
+	SetSoundVolume(game->music, 0.3);
+	SetSoundVolume(game->levelIntro, 0.3);
+	SetSoundVolume(*shot, 0.5);
+	SetSoundVolume(*explosion, 0.2);
+	PlaySound(game->music);
+}
+
+void unloadData(Game *game, Sound *shot, Sound *explosion)
+{
+	UnloadTexture(game->atlas);
+	UnloadTexture(game->background);
+	UnloadTexture(game->foreground);
+	UnloadSound(game->music);
+	UnloadSound(game->levelIntro);
+	UnloadSound(*shot);
+	UnloadSound(*explosion);
+}
+
 int main()
 {
 	Game game = {0};
@@ -12,6 +45,7 @@ int main()
 
 	SetConfigFlags(FLAG_VSYNC_HINT);
 	InitWindow(SCREEN_WIDTH,SCREEN_HEIGHT,"MATHIEU-OSVALDO-VICTOR");
+	InitAudioDevice();
 	game.highScore = loadHScore();
 	SetExitKey(KEY_NULL);
 	SetTargetFPS(60);
@@ -26,6 +60,10 @@ int main()
 	game.atlas = LoadTexture("assets/mines.png");
 	game.background = LoadTexture("assets/background.png");
 	game.foreground = LoadTexture("assets/foreground.png");
+	Sound shot;
+	Sound explosion;
+
+	loadSounds(&game, &shot, &explosion);
 	float goal = 0;
 	float deltaTime = 0;
 	while (!WindowShouldClose() && game.state != GS_CLOSE)
@@ -39,6 +77,8 @@ int main()
 		BeginDrawing();
 		DrawTextureEx(game.background, (Vector2){0, 0}, 0, 1.0f, WHITE);
 		game.mineLayerUpdated = false;
+		game.bulletShot = false;
+		game.entityDestroyed = false;
 		while (goal < deltaTime)
 		{
 			game.ticksCount = 0.00035;
@@ -47,12 +87,13 @@ int main()
 			goal += 0.00035;
 		}
 		drawGame(&game); 
+		if (game.bulletShot)
+			PlaySound(shot);
+		if (game.entityDestroyed)
+			PlaySound(explosion);
 		game.framesCounter++;
 	}
-
-	UnloadTexture(game.atlas);
-	UnloadTexture(game.background);
-	UnloadTexture(game.foreground);
+	unloadData(&game, &shot, &explosion);
 
 	CloseWindow();
 	return 0;

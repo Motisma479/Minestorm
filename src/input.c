@@ -92,6 +92,8 @@ void getInput(Game* game)
 			game->mineLayerSpawned = false;
 			game->level = 1;
 			startLevel(game);
+			StopSound(game->levelIntro);
+			PlaySound(game->music);
 		}
 	}
 }
