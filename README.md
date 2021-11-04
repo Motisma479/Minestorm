@@ -5,9 +5,9 @@ In this projet, we use the math library we developed in math class. For all coll
 we have to use the SAT algorithm, that we had to write ourselves.
 
 ## Authors
-    - ROBION   Mathieu       - (v.caraulan@student.isartdigital.com)
+    - ROBION   Mathieu       - (m.robion@student.isartdigital.com)
 	- LUANDA   Osvaldo Bento - (o.luanda@student.isartdigital.com)
-    - CARAULAN Victor        - (m.robion@student.isartdigital.com)
+    - CARAULAN Victor        - (v.caraulan@student.isartdigital.com)
 
 
 ## Mathematical tools

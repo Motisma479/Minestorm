@@ -62,7 +62,7 @@ typedef struct Game
 	Enemy     enemies[ENEMY_COUNT];
 	int       level;
 	int       framesCounter;
-	float     ticksCount;
+	float     deltaTime;
 	float     slowDown;
 	DrawState draw;
 	Sound     music;

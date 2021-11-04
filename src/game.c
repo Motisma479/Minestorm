@@ -43,7 +43,7 @@ void updateGame(Game* game)
 		case GS_PLAY:{
 			if (game->levelStart == false && !game->mineLayerUpdated)
 			{
-				if (updateLayer(&game->layer, game->ticksCount, &game->levelStart))
+				if (updateLayer(&game->layer, game->deltaTime, &game->levelStart))
 				{
 					startLevel(game);
 				}
@@ -51,19 +51,19 @@ void updateGame(Game* game)
 			else if (game->levelStart)
 			{
 				StopSound(game->levelIntro);
-				updatePlayer(&game->player[0], game->ticksCount);
+				updatePlayer(&game->player[0], game->deltaTime);
 				if (game->player[0].action & PA_SHOOT)
 					gameAddBullet(game, BS_PLAYER1, NULL);
 				if (game->twoPlayers)
 				{
-					updatePlayer(&game->player[1], game->ticksCount);
+					updatePlayer(&game->player[1], game->deltaTime);
 					if (game->player[1].action & PA_SHOOT)
 						gameAddBullet(game, BS_PLAYER2, NULL);
 				}
 				for(int i = 0; i < game->bulletCount; i++)
 				{
 					Bullet* bullet = &game->bullets[i];
-					updateBullet(bullet,game->ticksCount);
+					updateBullet(bullet,game->deltaTime);
 					/*if (bullet->source == BS_PLAYER1)
 						drawBullet(bullet, &game->atlas, BLUE);
 					if (bullet->source == BS_PLAYER2)
@@ -73,7 +73,7 @@ void updateGame(Game* game)
 				}
 
 				for(int i = 0; i < game->enemyCount; i++)
-					updateEnemy(game, &game->enemies[i], game->ticksCount, &game->player[0], &game->player[1]);
+					updateEnemy(game, &game->enemies[i], game->deltaTime, &game->player[0], &game->player[1]);
 				gameCollisions(game);
 				gameRemoveBullet(game);
 				gameIsOver(game);
